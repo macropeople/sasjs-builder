@@ -1,0 +1,62 @@
+.services-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+
+  .main-content {
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: space-between;
+    height: 100%;
+    .folders {
+      width: 25%;
+      height: 100%;
+
+      h3 {
+        display: inline-block;
+        padding-right: 4px;
+      }
+
+      i.add {
+        cursor: pointer;
+      }
+
+      .folder-list {
+        margin-top: 8px;
+      }
+    }
+
+    .services {
+      width: 74%;
+      height: 100%;
+      margin-top: 0;
+
+      .header {
+        font-weight: 700;
+        font-size: 1.28571429em;
+      }
+
+      .header,
+      .description {
+        padding: 8px;
+      }
+    }
+  }
+}
+
+.new-folder-form {
+  padding: 16px;
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .naming-conventions {
+    font-size: 1.1em;
+    padding: 16px 0;
+  }
+}
