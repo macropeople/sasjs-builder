@@ -49,6 +49,14 @@ const ServiceModal = ({ service, isOpen }) => {
             })}
           </>
         )}
+        {service && service.response && (
+          <>
+            <Header as="h3" content="Response Tables" />
+            {service.response.map(table => {
+              return <ServiceTable table={table} key={table.tableName} />;
+            })}
+          </>
+        )}
       </Form>
     </Modal>
   );

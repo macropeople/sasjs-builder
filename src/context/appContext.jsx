@@ -124,25 +124,33 @@ const json = {
               ]
             }
           ],
-          response: {
-            springs: [
-              {
-                area: "Adak",
-                s: "spring1",
-                "-": "44"
-              },
-              {
-                area: "Adel",
-                s: "spring2",
-                "-": "22"
-              },
-              {
-                area: "blah",
-                s: "sprin3",
-                "-": "-3"
-              }
-            ]
-          }
+          response: [
+            {
+              tableName: "springs",
+              columns: [
+                { name: "area", numeric: false },
+                { name: "s", numeric: false },
+                { name: "-", numeric: true }
+              ],
+              rows: [
+                {
+                  area: "Adak",
+                  s: "spring1",
+                  "-": "44"
+                },
+                {
+                  area: "Adel",
+                  s: "spring2",
+                  "-": "22"
+                },
+                {
+                  area: "blah",
+                  s: "sprin3",
+                  "-": "-3"
+                }
+              ]
+            }
+          ]
         }
       ]
     },

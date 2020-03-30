@@ -6,7 +6,7 @@ const ServiceTable = ({ table }) => {
   return (
     <div>
       <Header as="h3" content={table.tableName} />
-      <Table celled collapsing>
+      <Table celled>
         <Table.Header>
           <Table.Row>
             {table.columns.map(column => {
