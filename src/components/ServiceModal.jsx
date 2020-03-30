@@ -8,10 +8,18 @@ const ServiceModal = ({ service, isOpen }) => {
   const [description, setDescription] = useState(
     service ? service.description : ""
   );
+  const [requestTables, setRequestTables] = useState(
+    service && service.request ? service.request : []
+  );
+  const [responseTables, setResponseTables] = useState(
+    service && service.response ? service.response : []
+  );
 
   useEffect(() => {
     if (service) {
       setName(service.name);
+      setRequestTables(service.request || []);
+      setResponseTables(service.response || []);
     }
   }, [service]);
   return (
@@ -41,15 +49,15 @@ const ServiceModal = ({ service, isOpen }) => {
             onChange={e => setDescription(e.target.value)}
           />
         </Form.Group>
-        {service && service.request && (
+        {requestTables.length && (
           <>
             <Header as="h3" content="Request Tables" />
-            {service.request.map(table => {
+            {requestTables.map(table => {
               return <ServiceTable table={table} key={table.tableName} />;
             })}
           </>
         )}
-        {service && service.response && (
+        {responseTables.length && (
           <>
             <Header as="h3" content="Response Tables" />
             {service.response.map(table => {
