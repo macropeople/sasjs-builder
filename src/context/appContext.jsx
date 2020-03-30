@@ -92,13 +92,38 @@ const json = {
         {
           name: "getData",
           description: "My Another Service Maker",
-          request: {
-            areas: [
-              {
-                area: "Adel"
-              }
-            ]
-          },
+          request: [
+            {
+              tableName: "areas",
+              columns: [
+                { name: "area", numeric: false },
+                { name: "name", numeric: false },
+                { name: "count", numeric: true }
+              ],
+              rows: [
+                {
+                  area: "Belfast",
+                  name: "Krishna",
+                  count: 45
+                },
+                {
+                  area: "Comber",
+                  name: "Christine",
+                  count: 13
+                },
+                {
+                  area: "Newry",
+                  name: "Allan",
+                  count: 77
+                },
+                {
+                  area: "Portrush",
+                  name: "Mihajlo",
+                  count: 4
+                }
+              ]
+            }
+          ],
           response: {
             springs: [
               {
