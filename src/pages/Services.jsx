@@ -4,11 +4,13 @@ import "./Services.scss";
 import { AppContext } from "../context/appContext";
 import Folder from "../components/Folder";
 import AddFolderModal from "../components/AddFolderModal";
+import ServiceModal from "../components/ServiceModal";
 
 const Services = () => {
   const { masterJson, setMasterJson } = useContext(AppContext);
   const folders = masterJson && masterJson.folders ? masterJson.folders : [];
   const [currentFolder, setCurrentFolder] = useState(null);
+  const [currentService, setCurrentService] = useState(null);
   const [addFolderModalOpen, setaddFolderModalOpen] = useState(false);
   const [showFolderNameError, setShowFolderNameError] = useState(false);
 
@@ -61,7 +63,7 @@ const Services = () => {
             <Card.Group>
               {currentFolder.services.map((service, index) => {
                 return (
-                  <Card key={index}>
+                  <Card key={index} onClick={() => setCurrentService(service)}>
                     <Card.Header>{service.name}</Card.Header>
                     <Card.Description>{service.description}</Card.Description>
                   </Card>
@@ -90,6 +92,7 @@ const Services = () => {
           }
         }}
       />
+      <ServiceModal isOpen={!!currentService} service={currentService} />
     </div>
   );
 };
