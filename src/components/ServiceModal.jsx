@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, Modal, Header, Form } from "semantic-ui-react";
+import { Input, Modal, Header, Form, Icon, Popup } from "semantic-ui-react";
 import "./ServiceModal.scss";
 import ServiceTable from "./ServiceTable";
 
@@ -49,42 +49,83 @@ const ServiceModal = ({ service, isOpen }) => {
             onChange={e => setDescription(e.target.value)}
           />
         </Form.Group>
-        {requestTables.length && (
-          <>
-            <Header as="h3" content="Request Tables" />
-            {requestTables.map((table, index) => {
-              return (
-                <ServiceTable
-                  table={table}
-                  key={table.tableName}
-                  onUpdate={updatedTable => {
-                    const currentRequestTables = [...requestTables];
-                    currentRequestTables[index] = updatedTable;
-                    setRequestTables(currentRequestTables);
-                  }}
-                />
-              );
-            })}
-          </>
-        )}
-        {responseTables.length && (
-          <>
-            <Header as="h3" content="Response Tables" />
-            {service.response.map((table, index) => {
-              return (
-                <ServiceTable
-                  table={table}
-                  key={table.tableName}
-                  onUpdate={updatedTable => {
-                    const currentResponseTables = [...responseTables];
-                    currentResponseTables[index] = updatedTable;
-                    setResponseTables(currentResponseTables);
-                  }}
-                />
-              );
-            })}
-          </>
-        )}
+        <Header as="h3" className="tables-header">
+          Request Tables
+          <Popup
+            inverted
+            content="Add request table"
+            trigger={
+              <Icon
+                name="add circle"
+                className="icon-button"
+                color="blue"
+                onClick={() => {
+                  debugger;
+                  const currentRequestTables = [...requestTables];
+                  currentRequestTables.push({
+                    tableName: `NewRequestTable${currentRequestTables.length +
+                      1}`,
+                    columns: [{ name: "column1", numeric: false }],
+                    rows: [{ column1: "" }]
+                  });
+                  setRequestTables(currentRequestTables);
+                }}
+              />
+            }
+          />
+        </Header>
+        {!!requestTables.length &&
+          requestTables.map((table, index) => {
+            return (
+              <ServiceTable
+                table={table}
+                key={table.tableName}
+                onUpdate={updatedTable => {
+                  const currentRequestTables = [...requestTables];
+                  currentRequestTables[index] = updatedTable;
+                  setRequestTables(currentRequestTables);
+                }}
+              />
+            );
+          })}
+        <Header as="h3" className="tables-header">
+          Response Tables
+          <Popup
+            inverted
+            content="Add response table"
+            trigger={
+              <Icon
+                name="add circle"
+                className="icon-button"
+                color="blue"
+                onClick={() => {
+                  const currentResponseTables = [...responseTables];
+                  currentResponseTables.push({
+                    tableName: `NewResponseTable${currentResponseTables.length +
+                      1}`,
+                    columns: [{ name: "column1", numeric: false }],
+                    rows: [{ column1: "" }]
+                  });
+                  setResponseTables(currentResponseTables);
+                }}
+              />
+            }
+          />
+        </Header>
+        {!!responseTables.length &&
+          service.response.map((table, index) => {
+            return (
+              <ServiceTable
+                table={table}
+                key={table.tableName}
+                onUpdate={updatedTable => {
+                  const currentResponseTables = [...responseTables];
+                  currentResponseTables[index] = updatedTable;
+                  setResponseTables(currentResponseTables);
+                }}
+              />
+            );
+          })}
       </Form>
     </Modal>
   );

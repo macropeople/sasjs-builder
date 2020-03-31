@@ -160,15 +160,23 @@ const json = {
         {
           name: "createUser",
           description: "creating a new user (admin task)",
-          response: {
-            newuser: [
-              {
-                name: "Krishna",
-                id: 42,
-                I: "IE"
-              }
-            ]
-          }
+          response: [
+            {
+              tableName: "newuser",
+              columns: [
+                { name: "name", numeric: false },
+                { name: "id", numeric: true },
+                { name: "I", numeric: false }
+              ],
+              rows: [
+                {
+                  name: "Krishna",
+                  id: 42,
+                  I: "IE"
+                }
+              ]
+            }
+          ]
         },
         {
           name: "getData",
