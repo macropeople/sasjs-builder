@@ -94,6 +94,7 @@ const Services = () => {
       />
       <ServiceModal
         service={currentService}
+        path={currentFolder ? currentFolder.name : ""}
         onClose={() => setCurrentService(null)}
       />
     </div>

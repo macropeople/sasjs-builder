@@ -18,7 +18,7 @@ const ServiceTable = ({ table, onUpdate }) => {
     <div className="service-table-container">
       <Header as="h3" content={table.tableName} />
       <div className="table-inner-container">
-        <Table celled collapsing>
+        <Table celled>
           <Table.Header>
             <Table.Row>
               {columns.map((column, index) => {
