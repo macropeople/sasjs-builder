@@ -1,0 +1,47 @@
+.service-table-container {
+  display: flex;
+  flex-direction: column;
+
+  table {
+    display: inline-block;
+  }
+
+  .table-inner-container {
+    display: flex;
+    overflow-y: auto;
+  }
+
+  .icon-button {
+    margin: 0 8px;
+  }
+}
+
+.service-header-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  i {
+    margin-left: 16px;
+    padding-top: 0;
+  }
+}
+
+.half-width {
+  width: 50%;
+  float: left;
+}
+
+.editable-cell {
+  height: 100%;
+  width: 100%;
+  padding: 8px;
+
+  &:hover::after {
+    position: absolute;
+    content: "\270e";
+    padding-left: 8px;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #0d71bb;
+  }
+}

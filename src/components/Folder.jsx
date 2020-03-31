@@ -19,7 +19,7 @@ const Folder = props => {
           content="Delete folder"
           trigger={
             <Icon
-              name="trash alternate outline"
+              name="remove circle"
               color="red"
               onClick={() => {
                 setShowConfirmDelete(true);

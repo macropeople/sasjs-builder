@@ -52,16 +52,36 @@ const ServiceModal = ({ service, isOpen }) => {
         {requestTables.length && (
           <>
             <Header as="h3" content="Request Tables" />
-            {requestTables.map(table => {
-              return <ServiceTable table={table} key={table.tableName} />;
+            {requestTables.map((table, index) => {
+              return (
+                <ServiceTable
+                  table={table}
+                  key={table.tableName}
+                  onUpdate={updatedTable => {
+                    const currentRequestTables = [...requestTables];
+                    currentRequestTables[index] = updatedTable;
+                    setRequestTables(currentRequestTables);
+                  }}
+                />
+              );
             })}
           </>
         )}
         {responseTables.length && (
           <>
             <Header as="h3" content="Response Tables" />
-            {service.response.map(table => {
-              return <ServiceTable table={table} key={table.tableName} />;
+            {service.response.map((table, index) => {
+              return (
+                <ServiceTable
+                  table={table}
+                  key={table.tableName}
+                  onUpdate={updatedTable => {
+                    const currentResponseTables = [...responseTables];
+                    currentResponseTables[index] = updatedTable;
+                    setResponseTables(currentResponseTables);
+                  }}
+                />
+              );
             })}
           </>
         )}

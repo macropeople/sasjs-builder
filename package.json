@@ -1,5 +1,5 @@
 {
-  "name": "service-builder-poc",
+  "name": "sasjs-builder",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
