@@ -8,7 +8,7 @@ const AddFolderModal = ({
   onCancel
 }) => {
   return (
-    <Modal open={isOpen} size="tiny">
+    <Modal open={isOpen} size="tiny" onClose={onCancel}>
       <Header icon="add" content="Add New Folder" />
       <Form
         className="new-folder-form"

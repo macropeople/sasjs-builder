@@ -92,7 +92,10 @@ const Services = () => {
           }
         }}
       />
-      <ServiceModal isOpen={!!currentService} service={currentService} />
+      <ServiceModal
+        service={currentService}
+        onClose={() => setCurrentService(null)}
+      />
     </div>
   );
 };

@@ -3,8 +3,16 @@ import { Input, Modal, Header, Form, Icon, Popup } from "semantic-ui-react";
 import "./ServiceModal.scss";
 import ServiceTable from "./ServiceTable";
 
-const ServiceModal = ({ service, isOpen }) => {
+const ServiceModal = ({ service, onClose }) => {
   const [name, setName] = useState(service ? service.name : "");
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (service) {
+      setIsOpen(true);
+    }
+  }, [service]);
+
   const [description, setDescription] = useState(
     service ? service.description : ""
   );
@@ -22,12 +30,14 @@ const ServiceModal = ({ service, isOpen }) => {
       setResponseTables(service.response || []);
     }
   }, [service]);
-  return (
+  return service ? (
     <Modal
       open={isOpen}
       size="large"
-      closeOnEscape={true}
-      closeOnDimmerClick={true}
+      onClose={() => {
+        setIsOpen(false);
+        onClose();
+      }}
     >
       <Header icon="server" content={name} />
       <Form className="service-form">
@@ -128,6 +138,8 @@ const ServiceModal = ({ service, isOpen }) => {
           })}
       </Form>
     </Modal>
+  ) : (
+    <></>
   );
 };
 

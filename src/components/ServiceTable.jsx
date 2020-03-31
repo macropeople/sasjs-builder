@@ -65,7 +65,7 @@ const ServiceTable = ({ table, onUpdate }) => {
                         }}
                       />
                       <Icon
-                        name="remove circle"
+                        name="trash alternate outline"
                         color="red"
                         onClick={() => {
                           const updatedColumns = [
