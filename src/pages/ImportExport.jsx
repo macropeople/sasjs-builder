@@ -30,6 +30,13 @@ const ImportExport = () => {
     document.body.appendChild(downloadLink);
     downloadLink.click();
     downloadLink.remove();
+    toast({
+      type: "success",
+      icon: "file",
+      title: "Success!",
+      description: `Your JSON file has now been downloaded.`,
+      time: 2000
+    });
   };
 
   const onFileChanged = event => {
