@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ContentEditable from "react-contenteditable";
-import { Header, Table, Checkbox, Icon, Popup } from "semantic-ui-react";
+import { Table, Checkbox, Icon, Popup } from "semantic-ui-react";
 import "./ServiceTable.scss";
 
 const ServiceTable = ({ table, onUpdate }) => {
@@ -16,7 +16,6 @@ const ServiceTable = ({ table, onUpdate }) => {
 
   return (
     <div className="service-table-container">
-      <Header as="h3" content={table.tableName} />
       <div className="table-inner-container">
         <Table celled>
           <Table.Header>

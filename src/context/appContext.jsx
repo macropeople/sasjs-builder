@@ -22,72 +22,92 @@ const json = {
         {
           name: "appInit",
           description: "My first Service Maker",
-          response: {
-            areas: [
-              {
-                area: "Adak"
-              },
-              {
-                area: "Adel"
-              }
-            ]
-          }
+          response: [
+            {
+              tableName: "areas",
+              columns: [{ name: "area", numeric: false }],
+              rows: [
+                {
+                  area: "Adak"
+                },
+                {
+                  area: "Adel"
+                }
+              ]
+            }
+          ]
         },
         {
           name: "appInitTest2",
           description: "My first Service Maker",
-          response: {
-            areas: [
-              {
-                area: "Adak"
-              },
-              {
-                area: "Adel"
-              }
-            ]
-          }
+          response: [
+            {
+              tableName: "areas",
+              columns: [{ name: "area", numeric: false }],
+              rows: [
+                {
+                  area: "Adak"
+                },
+                {
+                  area: "Adel"
+                }
+              ]
+            }
+          ]
         },
         {
           name: "appInitTest3",
           description: "My first Service Maker",
-          response: {
-            areas: [
-              {
-                area: "Adak"
-              },
-              {
-                area: "Adel"
-              }
-            ]
-          }
+          response: [
+            {
+              tableName: "areas",
+              columns: [{ name: "area", numeric: false }],
+              rows: [
+                {
+                  area: "Adak"
+                },
+                {
+                  area: "Adel"
+                }
+              ]
+            }
+          ]
         },
         {
           name: "appInitTest4",
           description: "My first Service Maker",
-          response: {
-            areas: [
-              {
-                area: "Adak"
-              },
-              {
-                area: "Adel"
-              }
-            ]
-          }
+          response: [
+            {
+              tableName: "areas",
+              columns: [{ name: "area", numeric: false }],
+              rows: [
+                {
+                  area: "Adak"
+                },
+                {
+                  area: "Adel"
+                }
+              ]
+            }
+          ]
         },
         {
           name: "appInitTest5",
           description: "My first Service Maker",
-          response: {
-            areas: [
-              {
-                area: "Adak"
-              },
-              {
-                area: "Adel"
-              }
-            ]
-          }
+          response: [
+            {
+              tableName: "areas",
+              columns: [{ name: "area", numeric: false }],
+              rows: [
+                {
+                  area: "Adak"
+                },
+                {
+                  area: "Adel"
+                }
+              ]
+            }
+          ]
         },
         {
           name: "getData",
@@ -181,20 +201,28 @@ const json = {
         {
           name: "getData",
           description: "My Another Service Maker",
-          request: {
-            deleteuser: [
-              {
-                username: "johnny"
-              }
-            ]
-          },
-          response: {
-            result: [
-              {
-                success: "true"
-              }
-            ]
-          }
+          request: [
+            {
+              tableName: "deleteuser",
+              columns: [{ name: "username", numeric: false }],
+              rows: [
+                {
+                  username: "johnny"
+                }
+              ]
+            }
+          ],
+          response: [
+            {
+              tableName: "result",
+              columns: [{ name: "success", numeric: false }],
+              rows: [
+                {
+                  success: "true"
+                }
+              ]
+            }
+          ]
         }
       ]
     }

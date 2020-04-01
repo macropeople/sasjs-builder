@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Highlight from "react-highlight.js";
+import { toast } from "react-semantic-toasts";
 import "./CodeSnippet.scss";
 import { Header, Icon, Popup } from "semantic-ui-react";
 
 const CodeSnippet = ({ path, serviceName, requestTables, responseTables }) => {
   const [snippet, setSnippet] = useState("");
   useEffect(() => {
-    let codeSnippet = `const sasjs = new SASjs({/* Your config here */});\n\nsasjs.request("${path}/${serviceName}"`;
+    let codeSnippet = `const sasJs = new SASjs({/* Your config here */});\n\nsasJs.request("${path}/${serviceName}"`;
     if (requestTables.length) {
       codeSnippet += `,\n${JSON.stringify(
         [...requestTables.map(r => r.rows)],
@@ -41,10 +42,21 @@ const CodeSnippet = ({ path, serviceName, requestTables, responseTables }) => {
           content="Copy snippet"
           trigger={
             <Icon
-              name="copy"
+              name="copy outline"
               className="icon-button"
               color="blue"
-              onClick={() => {}}
+              onClick={() => {
+                navigator.clipboard.writeText(snippet).then(() => {
+                  toast({
+                    type: "success",
+                    icon: "copy outline",
+                    title: "Code snippet copied",
+                    description:
+                      "Paste into your text editor and get started with SASjs!",
+                    time: 2000
+                  });
+                });
+              }}
             />
           }
         />

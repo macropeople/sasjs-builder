@@ -1,7 +1,8 @@
 import React from "react";
 import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
-import "./App.scss";
 import "semantic-ui-css/semantic.min.css";
+import "react-semantic-toasts/styles/react-semantic-alert.css";
+import "./App.scss";
 import ImportExport from "./pages/ImportExport";
 import Configuration from "./pages/Configuration";
 import Services from "./pages/Services";

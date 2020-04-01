@@ -8,6 +8,7 @@ import {
   Popup,
   Accordion
 } from "semantic-ui-react";
+import { toast } from "react-semantic-toasts";
 import "./ServiceModal.scss";
 import ServiceTable from "./ServiceTable";
 import CodeSnippet from "./CodeSnippet";
@@ -46,6 +47,7 @@ const ServiceModal = ({ service, path, onClose }) => {
       setResponseTables(service.response || []);
     }
   }, [service]);
+
   return service ? (
     <Modal
       open={isOpen}
@@ -116,8 +118,32 @@ const ServiceModal = ({ service, path, onClose }) => {
                           : setCurrentRequestTable(table)
                       }
                     >
-                      {table.tableName}
                       <Icon name="dropdown" />
+                      <Header
+                        as="h3"
+                        className="table-name-header"
+                        content={table.tableName}
+                      />
+                      <Icon
+                        name="trash alternate outline"
+                        color="red"
+                        onClick={e => {
+                          e.stopPropagation();
+                          const updatedTables = [
+                            ...requestTables.filter(
+                              t => t.tableName !== table.tableName
+                            )
+                          ];
+                          setRequestTables(updatedTables);
+                          toast({
+                            type: "info",
+                            icon: "trash alternate outline",
+                            title: "Table Removed",
+                            description: `Table ${table.tableName} has now been removed.`,
+                            time: 2000
+                          });
+                        }}
+                      />
                     </Accordion.Title>
                     <Accordion.Content
                       active={
@@ -167,7 +193,7 @@ const ServiceModal = ({ service, path, onClose }) => {
             <Accordion>
               {responseTables.map((table, index) => {
                 return (
-                  <div key={table.tableName}>
+                  <div key={index}>
                     <Accordion.Title
                       active={
                         currentResponseTable &&
@@ -179,8 +205,32 @@ const ServiceModal = ({ service, path, onClose }) => {
                           : setCurrentResponseTable(table);
                       }}
                     >
-                      {table.tableName}
                       <Icon name="dropdown" />
+                      <Header
+                        as="h3"
+                        className="table-name-header"
+                        content={table.tableName}
+                      />
+                      <Icon
+                        name="trash alternate outline"
+                        color="red"
+                        onClick={e => {
+                          e.stopPropagation();
+                          const updatedTables = [
+                            ...responseTables.filter(
+                              t => t.tableName !== table.tableName
+                            )
+                          ];
+                          setResponseTables(updatedTables);
+                          toast({
+                            type: "info",
+                            icon: "trash alternate outline",
+                            title: "Table Removed",
+                            description: `Table ${table.tableName} has now been removed.`,
+                            time: 2000
+                          });
+                        }}
+                      />
                     </Accordion.Title>
                     <Accordion.Content
                       active={

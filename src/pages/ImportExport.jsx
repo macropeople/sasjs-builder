@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
-import { Button, Header, Message } from "semantic-ui-react";
-
+import { Button, Header } from "semantic-ui-react";
+import { toast } from "react-semantic-toasts";
 import "./ImportExport.scss";
 import FileUpload from "../components/FileUpload";
 import { AppContext } from "../context/appContext";
@@ -8,15 +8,18 @@ import { AppContext } from "../context/appContext";
 const ImportExport = () => {
   const { setMasterJson } = useContext(AppContext);
   const [json, setJson] = useState(null);
-  const [isError, setIsError] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const importJson = () => {
-    setShowSuccessMessage(false);
     setMasterJson(json);
+    toast({
+      type: "success",
+      icon: "database",
+      title: "File imported successfully",
+      description: `Your configuration and services have now been loaded.`,
+      time: 2000
+    });
   };
   const onFileChanged = event => {
-    setIsError(false);
     let file = event.target.files[0];
     if (!file) {
       setJson(null);
@@ -30,11 +33,23 @@ const ImportExport = () => {
         try {
           json = JSON.parse(e.target.result);
         } catch (e) {
-          setIsError(true);
+          toast({
+            type: "error",
+            icon: "file",
+            title: "Oops! There was an error parsing your JSON file.",
+            description: `Your JSON file could not be parsed. Please check the file and try again`,
+            time: 2000
+          });
         }
         if (json) {
           setJson(json);
-          setShowSuccessMessage(true);
+          toast({
+            type: "success",
+            icon: "file",
+            title: "File read successful",
+            description: `Your JSON file has now been read. Click Import JSON to load it in.`,
+            time: 2000
+          });
         }
       };
     })();
@@ -43,23 +58,6 @@ const ImportExport = () => {
   return (
     <div className="import-export-container">
       <Header as="h1">Import / Export</Header>
-      {isError && (
-        <Message negative>
-          <Message.Header>
-            Oops! There was an error parsing your JSON file.
-          </Message.Header>
-          <p>Please check the file and try again.</p>
-        </Message>
-      )}
-      {showSuccessMessage && (
-        <Message positive>
-          <Message.Header>Success! Your file has now been read.</Message.Header>
-          <p>
-            Click the <strong>Import JSON</strong> button to load the
-            configuration and services.
-          </p>
-        </Message>
-      )}
       <div className="file-upload">
         <FileUpload text="Upload JSON file" onFileChange={onFileChanged} />
         {json && (
