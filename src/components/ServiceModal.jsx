@@ -14,21 +14,18 @@ import CodeSnippet from "./CodeSnippet";
 
 const ServiceModal = ({ service, path, onClose }) => {
   const [name, setName] = useState(service ? service.name : "");
-  const [currentRequestTable, setCurrentRequestTable] = useState(
-    service && service.request && service.request.length
-      ? service.request[0]
-      : null
-  );
-  const [currentResponseTable, setCurrentResponseTable] = useState(
-    service && service.response && service.response.length
-      ? service.response[0]
-      : null
-  );
+  const [currentRequestTable, setCurrentRequestTable] = useState(null);
+  const [currentResponseTable, setCurrentResponseTable] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (service) {
       setIsOpen(true);
+      if (service.request && service.request.length) {
+        setCurrentRequestTable(service.request[0]);
+      } else if (service.response && service.response.length) {
+        setCurrentResponseTable(service.response[0]);
+      }
     }
   }, [service]);
 
@@ -90,7 +87,6 @@ const ServiceModal = ({ service, path, onClose }) => {
                   className="icon-button"
                   color="blue"
                   onClick={() => {
-                    debugger;
                     const currentRequestTables = [...requestTables];
                     currentRequestTables.push({
                       tableName: `NewRequestTable${currentRequestTables.length +
