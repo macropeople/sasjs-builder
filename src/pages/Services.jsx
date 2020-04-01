@@ -1,4 +1,4 @@
-import React, { useContext, useState, useCallback } from "react";
+import React, { useContext, useState, useCallback, useEffect } from "react";
 import { Header, Segment, Icon, Message, Card, Popup } from "semantic-ui-react";
 import "./Services.scss";
 import { AppContext } from "../context/appContext";
@@ -8,7 +8,7 @@ import ServiceModal from "../components/ServiceModal";
 
 const Services = () => {
   const { masterJson, setMasterJson } = useContext(AppContext);
-  const folders = masterJson && masterJson.folders ? masterJson.folders : [];
+  const [folders, setFolders] = useState([]);
   const [currentFolder, setCurrentFolder] = useState(null);
   const [currentService, setCurrentService] = useState(null);
   const [addFolderModalOpen, setaddFolderModalOpen] = useState(false);
@@ -20,19 +20,33 @@ const Services = () => {
     setCurrentFolder(null);
   };
 
+  useEffect(() => {
+    setFolders(masterJson.folders ? masterJson.folders : []);
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    setMasterJson({ ...masterJson, folders });
+    // eslint-disable-next-line
+  }, [folders]);
+
   const updateFolder = useCallback(
     updatedService => {
-      const index = currentFolder.services.findIndex(
+      const folderIndex = folders.indexOf(currentFolder);
+      const serviceIndex = currentFolder.services.findIndex(
         s => s.name === currentService.name
       );
       const updatedFolder = {
         ...currentFolder,
         services: [...currentFolder.services]
       };
-      updatedFolder.services[index] = updatedService;
+      updatedFolder.services[serviceIndex] = updatedService;
       setCurrentFolder(updatedFolder);
+      const updatedFolders = [...folders];
+      updatedFolders[folderIndex] = updatedFolder;
+      setFolders(updatedFolders);
     },
-    [currentService, currentFolder]
+    [currentService, currentFolder, folders]
   );
 
   return (
@@ -96,10 +110,7 @@ const Services = () => {
           const folderExists = folders.some(f => f.name === newFolderName);
           if (!folderExists) {
             const newFolder = { name: newFolderName, services: [] };
-            setMasterJson({
-              ...masterJson,
-              folders: [...masterJson.folders, newFolder]
-            });
+            setFolders([...folders, newFolder]);
             setCurrentFolder(newFolder);
             setaddFolderModalOpen(false);
           } else {

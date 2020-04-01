@@ -44,7 +44,12 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
   }, [service]);
 
   useEffect(() => {
-    const serviceObject = { name, description, requestTables, responseTables };
+    const serviceObject = {
+      name,
+      description,
+      requestTables,
+      responseTables
+    };
     onUpdate(serviceObject);
     toast({
       type: "info",
@@ -53,6 +58,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
       description: `Service ${name} has now been updated.`,
       time: 2000
     });
+    // eslint-disable-next-line
   }, [requestTables, responseTables, description, name]);
 
   return service ? (
