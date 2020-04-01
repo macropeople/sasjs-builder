@@ -1,37 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { Input, Modal, Header, Form, Icon, Popup } from "semantic-ui-react";
-import Highlight from "react-highlight.js";
+import {
+  Input,
+  Modal,
+  Header,
+  Form,
+  Icon,
+  Popup,
+  Accordion
+} from "semantic-ui-react";
 import "./ServiceModal.scss";
 import ServiceTable from "./ServiceTable";
+import CodeSnippet from "./CodeSnippet";
 
 const ServiceModal = ({ service, path, onClose }) => {
   const [name, setName] = useState(service ? service.name : "");
+  const [currentRequestTable, setCurrentRequestTable] = useState(
+    service && service.request && service.request.length
+      ? service.request[0]
+      : null
+  );
+  const [currentResponseTable, setCurrentResponseTable] = useState(
+    service && service.response && service.response.length
+      ? service.response[0]
+      : null
+  );
   const [isOpen, setIsOpen] = useState(false);
-
-  const getCodeSnippet = () => {
-    let snippet = `SASjs.request("${path}/${service.name}"`;
-    if (requestTables.length) {
-      snippet += `,\n${JSON.stringify(
-        [...requestTables.map(r => r.rows)],
-        null,
-        1
-      )})`;
-    } else {
-      snippet += ")";
-    }
-
-    snippet += "\n.then(";
-
-    if (responseTables.length) {
-      snippet += `res => {\n    console.log(res);\n/* Response Format\n${JSON.stringify(
-        [...responseTables.map(r => r.rows)],
-        null,
-        1
-      )}\n*/\n});`;
-    }
-
-    return snippet;
-  };
 
   useEffect(() => {
     if (service) {
@@ -111,20 +104,45 @@ const ServiceModal = ({ service, path, onClose }) => {
               }
             />
           </Header>
-          {!!requestTables.length &&
-            requestTables.map((table, index) => {
-              return (
-                <ServiceTable
-                  table={table}
-                  key={table.tableName}
-                  onUpdate={updatedTable => {
-                    const currentRequestTables = [...requestTables];
-                    currentRequestTables[index] = updatedTable;
-                    setRequestTables(currentRequestTables);
-                  }}
-                />
-              );
-            })}
+          {!!requestTables.length && (
+            <Accordion>
+              {requestTables.map((table, index) => {
+                return (
+                  <div key={table.tableName}>
+                    <Accordion.Title
+                      active={
+                        currentRequestTable &&
+                        currentRequestTable.name === table.name
+                      }
+                      onClick={() =>
+                        currentRequestTable
+                          ? setCurrentRequestTable(null)
+                          : setCurrentRequestTable(table)
+                      }
+                    >
+                      {table.tableName}
+                      <Icon name="dropdown" />
+                    </Accordion.Title>
+                    <Accordion.Content
+                      active={
+                        currentRequestTable &&
+                        currentRequestTable.name === table.name
+                      }
+                    >
+                      <ServiceTable
+                        table={table}
+                        onUpdate={updatedTable => {
+                          const currentResponseTables = [...responseTables];
+                          currentResponseTables[index] = updatedTable;
+                          setResponseTables(currentResponseTables);
+                        }}
+                      />
+                    </Accordion.Content>
+                  </div>
+                );
+              })}
+            </Accordion>
+          )}
           <Header as="h3" className="tables-header">
             Response Tables
             <Popup
@@ -149,25 +167,53 @@ const ServiceModal = ({ service, path, onClose }) => {
               }
             />
           </Header>
-          {!!responseTables.length &&
-            service.response.map((table, index) => {
-              return (
-                <ServiceTable
-                  table={table}
-                  key={table.tableName}
-                  onUpdate={updatedTable => {
-                    const currentResponseTables = [...responseTables];
-                    currentResponseTables[index] = updatedTable;
-                    setResponseTables(currentResponseTables);
-                  }}
-                />
-              );
-            })}
+          {!!responseTables.length && (
+            <Accordion>
+              {responseTables.map((table, index) => {
+                return (
+                  <div key={table.tableName}>
+                    <Accordion.Title
+                      active={
+                        currentResponseTable &&
+                        currentResponseTable.name === table.name
+                      }
+                      onClick={() => {
+                        currentResponseTable
+                          ? setCurrentResponseTable(null)
+                          : setCurrentResponseTable(table);
+                      }}
+                    >
+                      {table.tableName}
+                      <Icon name="dropdown" />
+                    </Accordion.Title>
+                    <Accordion.Content
+                      active={
+                        currentResponseTable &&
+                        currentResponseTable.name === table.name
+                      }
+                    >
+                      <ServiceTable
+                        table={table}
+                        onUpdate={updatedTable => {
+                          const currentResponseTables = [...responseTables];
+                          currentResponseTables[index] = updatedTable;
+                          setResponseTables(currentResponseTables);
+                        }}
+                      />
+                    </Accordion.Content>
+                  </div>
+                );
+              })}
+            </Accordion>
+          )}
         </Form>
         {!!service && (
-          <Highlight language="javascript" className="code-snippet">
-            {getCodeSnippet()}
-          </Highlight>
+          <CodeSnippet
+            path={path}
+            serviceName={service.name}
+            requestTables={requestTables}
+            responseTables={responseTables}
+          />
         )}
       </div>
     </Modal>
