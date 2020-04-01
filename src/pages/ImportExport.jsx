@@ -13,7 +13,7 @@ const ImportExport = () => {
     setMasterJson(json);
     toast({
       type: "success",
-      icon: "database",
+      icon: "file",
       title: "File imported successfully",
       description: `Your configuration and services have now been loaded.`,
       time: 2000

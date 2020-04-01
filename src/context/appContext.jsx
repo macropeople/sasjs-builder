@@ -22,7 +22,7 @@ const json = {
         {
           name: "appInit",
           description: "My first Service Maker",
-          response: [
+          responseTables: [
             {
               tableName: "areas",
               columns: [{ name: "area", numeric: false }],
@@ -40,7 +40,7 @@ const json = {
         {
           name: "appInitTest2",
           description: "My first Service Maker",
-          response: [
+          responseTables: [
             {
               tableName: "areas",
               columns: [{ name: "area", numeric: false }],
@@ -58,7 +58,7 @@ const json = {
         {
           name: "appInitTest3",
           description: "My first Service Maker",
-          response: [
+          responseTables: [
             {
               tableName: "areas",
               columns: [{ name: "area", numeric: false }],
@@ -76,7 +76,7 @@ const json = {
         {
           name: "appInitTest4",
           description: "My first Service Maker",
-          response: [
+          responseTables: [
             {
               tableName: "areas",
               columns: [{ name: "area", numeric: false }],
@@ -94,7 +94,7 @@ const json = {
         {
           name: "appInitTest5",
           description: "My first Service Maker",
-          response: [
+          responseTables: [
             {
               tableName: "areas",
               columns: [{ name: "area", numeric: false }],
@@ -112,7 +112,7 @@ const json = {
         {
           name: "getData",
           description: "My Another Service Maker",
-          request: [
+          requestTables: [
             {
               tableName: "areas",
               columns: [
@@ -144,7 +144,7 @@ const json = {
               ]
             }
           ],
-          response: [
+          responseTables: [
             {
               tableName: "springs",
               columns: [
@@ -180,7 +180,7 @@ const json = {
         {
           name: "createUser",
           description: "creating a new user (admin task)",
-          response: [
+          responseTables: [
             {
               tableName: "newuser",
               columns: [
@@ -201,7 +201,7 @@ const json = {
         {
           name: "getData",
           description: "My Another Service Maker",
-          request: [
+          requestTables: [
             {
               tableName: "deleteuser",
               columns: [{ name: "username", numeric: false }],
@@ -212,7 +212,7 @@ const json = {
               ]
             }
           ],
-          response: [
+          responseTables: [
             {
               tableName: "result",
               columns: [{ name: "success", numeric: false }],

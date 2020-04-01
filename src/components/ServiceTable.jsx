@@ -30,19 +30,24 @@ const ServiceTable = ({ table, onUpdate }) => {
                         disabled={false}
                         onKeyDown={e => {
                           if (e.keyCode === 13) {
-                            const value = e.target.innerHTML
+                            const newColumnName = e.target.innerHTML
                               .replace(`<div class="editable-cell">`, "")
                               .replace("</div>", "");
                             const newColumns = [...columns];
-                            newColumns[index] = {
-                              name: value,
-                              numeric: newColumns[index].numeric
-                            };
+                            const oldColumnName = newColumns[index].name;
+                            newColumns[index].name = newColumnName;
                             setColumns(newColumns);
+                            const newRows = rows.map(row => {
+                              const cellValue = row[oldColumnName];
+                              delete row[oldColumnName];
+                              row[newColumnName] = cellValue;
+                              return row;
+                            });
+                            setRows(newRows);
                             onUpdate({
                               tableName: table.tableName,
                               columns: newColumns,
-                              rows
+                              rows: newRows
                             });
                           }
                         }}

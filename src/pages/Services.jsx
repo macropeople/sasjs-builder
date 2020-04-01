@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useCallback } from "react";
 import { Header, Segment, Icon, Message, Card, Popup } from "semantic-ui-react";
 import "./Services.scss";
 import { AppContext } from "../context/appContext";
@@ -19,6 +19,21 @@ const Services = () => {
     setMasterJson({ ...masterJson, folders: newFolders });
     setCurrentFolder(null);
   };
+
+  const updateFolder = useCallback(
+    updatedService => {
+      const index = currentFolder.services.findIndex(
+        s => s.name === currentService.name
+      );
+      const updatedFolder = {
+        ...currentFolder,
+        services: [...currentFolder.services]
+      };
+      updatedFolder.services[index] = updatedService;
+      setCurrentFolder(updatedFolder);
+    },
+    [currentService, currentFolder]
+  );
 
   return (
     <div className="services-container">
@@ -92,11 +107,14 @@ const Services = () => {
           }
         }}
       />
-      <ServiceModal
-        service={currentService}
-        path={currentFolder ? currentFolder.name : ""}
-        onClose={() => setCurrentService(null)}
-      />
+      {currentFolder && currentService && (
+        <ServiceModal
+          service={currentService}
+          path={currentFolder.name}
+          onClose={() => setCurrentService(null)}
+          onUpdate={updateFolder}
+        />
+      )}
     </div>
   );
 };

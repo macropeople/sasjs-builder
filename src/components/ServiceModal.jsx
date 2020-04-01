@@ -12,46 +12,54 @@ import { toast } from "react-semantic-toasts";
 import "./ServiceModal.scss";
 import ServiceTable from "./ServiceTable";
 import CodeSnippet from "./CodeSnippet";
+import ContentEditable from "react-contenteditable";
 
-const ServiceModal = ({ service, path, onClose }) => {
+const ServiceModal = ({ service, path, onClose, onUpdate }) => {
   const [name, setName] = useState(service ? service.name : "");
   const [currentRequestTable, setCurrentRequestTable] = useState(null);
   const [currentResponseTable, setCurrentResponseTable] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [description, setDescription] = useState("");
+  const [requestTables, setRequestTables] = useState([]);
+  const [responseTables, setResponseTables] = useState([]);
 
   useEffect(() => {
     if (service) {
       setIsOpen(true);
-      if (service.request && service.request.length) {
-        setCurrentRequestTable(service.request[0]);
-      } else if (service.response && service.response.length) {
-        setCurrentResponseTable(service.response[0]);
+      if (service.requestTables && service.requestTables.length) {
+        setCurrentRequestTable(service.requestTables[0]);
+      } else if (service.responseTables && service.responseTables.length) {
+        setCurrentResponseTable(service.responseTables[0]);
       }
     }
   }, [service]);
 
-  const [description, setDescription] = useState(
-    service ? service.description : ""
-  );
-  const [requestTables, setRequestTables] = useState(
-    service && service.request ? service.request : []
-  );
-  const [responseTables, setResponseTables] = useState(
-    service && service.response ? service.response : []
-  );
-
   useEffect(() => {
     if (service) {
       setName(service.name);
-      setRequestTables(service.request || []);
-      setResponseTables(service.response || []);
+      setDescription(service.description);
+      setRequestTables(service.requestTables || []);
+      setResponseTables(service.responseTables || []);
     }
   }, [service]);
+
+  useEffect(() => {
+    const serviceObject = { name, description, requestTables, responseTables };
+    onUpdate(serviceObject);
+    toast({
+      type: "info",
+      icon: "save",
+      title: "Service updated",
+      description: `Service ${name} has now been updated.`,
+      time: 2000
+    });
+  }, [requestTables, responseTables, description, name]);
 
   return service ? (
     <Modal
       open={isOpen}
       size="large"
+      closeIcon
       onClose={() => {
         setIsOpen(false);
         onClose();
@@ -119,10 +127,21 @@ const ServiceModal = ({ service, path, onClose }) => {
                       }
                     >
                       <Icon name="dropdown" />
-                      <Header
-                        as="h3"
+                      <ContentEditable
                         className="table-name-header"
-                        content={table.tableName}
+                        html={`<h3 class="table-name-header">${table.tableName}</h3>`}
+                        onClick={e => e.stopPropagation()}
+                        disabled={false}
+                        onKeyDown={e => {
+                          if (e.keyCode === 13) {
+                            const value = e.target.innerHTML
+                              .replace(`<h3 class="table-name-header">`, "")
+                              .replace("</h3>", "");
+                            const newRequestTables = [...requestTables];
+                            newRequestTables[index].tableName = value;
+                            setRequestTables(newRequestTables);
+                          }
+                        }}
                       />
                       <Icon
                         name="trash alternate outline"
@@ -154,9 +173,9 @@ const ServiceModal = ({ service, path, onClose }) => {
                       <ServiceTable
                         table={table}
                         onUpdate={updatedTable => {
-                          const currentResponseTables = [...responseTables];
-                          currentResponseTables[index] = updatedTable;
-                          setResponseTables(currentResponseTables);
+                          const currentRequestTables = [...requestTables];
+                          currentRequestTables[index] = updatedTable;
+                          setRequestTables(currentRequestTables);
                         }}
                       />
                     </Accordion.Content>
@@ -206,10 +225,21 @@ const ServiceModal = ({ service, path, onClose }) => {
                       }}
                     >
                       <Icon name="dropdown" />
-                      <Header
-                        as="h3"
+                      <ContentEditable
                         className="table-name-header"
-                        content={table.tableName}
+                        html={`<h3 class="table-name-header">${table.tableName}</h3>`}
+                        onClick={e => e.stopPropagation()}
+                        disabled={false}
+                        onKeyDown={e => {
+                          if (e.keyCode === 13) {
+                            const value = e.target.innerHTML
+                              .replace(`<h3 class="table-name-header">`, "")
+                              .replace("</h3>", "");
+                            const newResponseTables = [...responseTables];
+                            newResponseTables[index].tableName = value;
+                            setResponseTables(newResponseTables);
+                          }
+                        }}
                       />
                       <Icon
                         name="trash alternate outline"
