@@ -6,7 +6,7 @@ import FileUpload from "../components/FileUpload";
 import { AppContext } from "../context/appContext";
 
 const ImportExport = () => {
-  const { setMasterJson } = useContext(AppContext);
+  const { setMasterJson, masterJson } = useContext(AppContext);
   const [json, setJson] = useState(null);
 
   const importJson = () => {
@@ -19,6 +19,19 @@ const ImportExport = () => {
       time: 2000
     });
   };
+
+  const exportJson = () => {
+    const dataStr =
+      "data:text/json;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(masterJson, null, 2));
+    const downloadLink = document.createElement("a");
+    downloadLink.setAttribute("href", dataStr);
+    downloadLink.setAttribute("download", "sasServices.json");
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    downloadLink.remove();
+  };
+
   const onFileChanged = event => {
     let file = event.target.files[0];
     if (!file) {
@@ -63,6 +76,11 @@ const ImportExport = () => {
         {json && (
           <Button secondary onClick={importJson}>
             Import JSON
+          </Button>
+        )}
+        {!!Object.keys(masterJson).length && (
+          <Button secondary onClick={exportJson}>
+            Export JSON
           </Button>
         )}
       </div>
