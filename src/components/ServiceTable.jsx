@@ -25,31 +25,29 @@ const ServiceTable = ({ table, onUpdate }) => {
                   <Table.HeaderCell key={index}>
                     <div className="service-header-cell">
                       <ContentEditable
-                        className="half-width"
+                        className="semi-width"
                         html={`<div class="editable-cell">${column.name}</div>`}
                         disabled={false}
-                        onKeyDown={e => {
-                          if (e.keyCode === 13) {
-                            const newColumnName = e.target.innerHTML
-                              .replace(`<div class="editable-cell">`, "")
-                              .replace("</div>", "");
-                            const newColumns = [...columns];
-                            const oldColumnName = newColumns[index].name;
-                            newColumns[index].name = newColumnName;
-                            setColumns(newColumns);
-                            const newRows = rows.map(row => {
-                              const cellValue = row[oldColumnName];
-                              delete row[oldColumnName];
-                              row[newColumnName] = cellValue;
-                              return row;
-                            });
-                            setRows(newRows);
-                            onUpdate({
-                              tableName: table.tableName,
-                              columns: newColumns,
-                              rows: newRows
-                            });
-                          }
+                        onBlur={(e) => {
+                          const newColumnName = e.target.innerHTML
+                            .replace(`<div class="editable-cell">`, "")
+                            .replace("</div>", "");
+                          const newColumns = [...columns];
+                          const oldColumnName = newColumns[index].name;
+                          newColumns[index].name = newColumnName;
+                          setColumns(newColumns);
+                          const newRows = rows.map((row) => {
+                            const cellValue = row[oldColumnName];
+                            delete row[oldColumnName];
+                            row[newColumnName] = cellValue;
+                            return row;
+                          });
+                          setRows(newRows);
+                          onUpdate({
+                            tableName: table.tableName,
+                            columns: newColumns,
+                            rows: newRows,
+                          });
                         }}
                       />
                       <Checkbox
@@ -64,7 +62,7 @@ const ServiceTable = ({ table, onUpdate }) => {
                           onUpdate({
                             tableName: table.tableName,
                             columns: updatedColumns,
-                            rows
+                            rows,
                           });
                         }}
                       />
@@ -73,16 +71,16 @@ const ServiceTable = ({ table, onUpdate }) => {
                         color="red"
                         onClick={() => {
                           const updatedColumns = [
-                            ...columns.filter((_, i) => i !== index)
+                            ...columns.filter((_, i) => i !== index),
                           ];
                           setColumns(updatedColumns);
                           const updatedRows = [...rows];
-                          updatedRows.forEach(row => delete row[column.name]);
+                          updatedRows.forEach((row) => delete row[column.name]);
                           setRows(updatedRows);
                           onUpdate({
                             tableName: table.tableName,
                             columns: updatedColumns,
-                            rows: updatedRows
+                            rows: updatedRows,
                           });
                         }}
                       />
@@ -94,32 +92,30 @@ const ServiceTable = ({ table, onUpdate }) => {
           </Table.Header>
           <Table.Body>
             {rows.map((row, rowIndex) => {
-              const columnNames = columns.map(c => c.name);
+              const columnNames = columns.map((c) => c.name);
               const sortedColumnNames = Object.keys(row).sort(
                 (a, b) => columnNames.indexOf(a) - columnNames.indexOf(b)
               );
               return (
                 <Table.Row key={rowIndex}>
-                  {sortedColumnNames.map(columnName => {
+                  {sortedColumnNames.map((columnName) => {
                     return (
                       <Table.Cell key={`${columnName}${rowIndex}`}>
                         <ContentEditable
                           html={`<div class="editable-cell">${row[columnName]}</div>`}
                           disabled={false}
-                          onKeyDown={e => {
-                            if (e.keyCode === 13) {
-                              const value = e.target.innerHTML
-                                .replace(`<div class="editable-cell">`, "")
-                                .replace("</div>", "");
-                              const newRows = [...rows];
-                              newRows[rowIndex][columnName] = value;
-                              setRows(newRows);
-                              onUpdate({
-                                tableName: table.tableName,
-                                columns,
-                                rows: newRows
-                              });
-                            }
+                          onBlur={(e) => {
+                            const value = e.target.innerHTML
+                              .replace(`<div class="editable-cell">`, "")
+                              .replace("</div>", "");
+                            const newRows = [...rows];
+                            newRows[rowIndex][columnName] = value;
+                            setRows(newRows);
+                            onUpdate({
+                              tableName: table.tableName,
+                              columns,
+                              rows: newRows,
+                            });
                           }}
                         />
                       </Table.Cell>
@@ -143,13 +139,13 @@ const ServiceTable = ({ table, onUpdate }) => {
                 const newColumnName = `Column${columns.length + 1}`;
                 currentColumns.push({ name: newColumnName, numeric: false });
                 const currentRows = [...rows];
-                currentRows.forEach(row => (row[newColumnName] = ""));
+                currentRows.forEach((row) => (row[newColumnName] = ""));
                 setColumns(currentColumns);
                 setRows(currentRows);
                 onUpdate({
                   tableName: table.tableName,
                   columns: currentColumns,
-                  rows: currentRows
+                  rows: currentRows,
                 });
               }}
             />

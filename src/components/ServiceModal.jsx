@@ -6,7 +6,7 @@ import {
   Form,
   Icon,
   Popup,
-  Accordion
+  Accordion,
 } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import "./ServiceModal.scss";
@@ -48,7 +48,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
       name,
       description,
       requestTables,
-      responseTables
+      responseTables,
     };
     onUpdate(serviceObject);
     toast({
@@ -56,7 +56,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
       icon: "save",
       title: "Service updated",
       description: `Service ${name} has now been updated.`,
-      time: 2000
+      time: 2000,
     });
     // eslint-disable-next-line
   }, [requestTables, responseTables, description, name]);
@@ -81,7 +81,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
               label="Service Name"
               defaultValue={name}
               placeholder="Service Name"
-              onChange={e => setName(e.target.value)}
+              onBlur={(e) => setName(e.target.value)}
             />
             <Form.Field
               control={Input}
@@ -89,7 +89,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
               defaultValue={description}
               label="Service Description"
               placeholder="Service Description"
-              onChange={e => setDescription(e.target.value)}
+              onBlur={(e) => setDescription(e.target.value)}
             />
           </Form.Group>
           <Header as="h3" className="tables-header">
@@ -105,10 +105,11 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                   onClick={() => {
                     const currentRequestTables = [...requestTables];
                     currentRequestTables.push({
-                      tableName: `NewRequestTable${currentRequestTables.length +
-                        1}`,
+                      tableName: `NewRequestTable${
+                        currentRequestTables.length + 1
+                      }`,
                       columns: [{ name: "column1", numeric: false }],
-                      rows: [{ column1: "" }]
+                      rows: [{ column1: "" }],
                     });
                     setRequestTables(currentRequestTables);
                   }}
@@ -136,28 +137,26 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                       <ContentEditable
                         className="table-name-header"
                         html={`<h3 class="table-name-header">${table.tableName}</h3>`}
-                        onClick={e => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
                         disabled={false}
-                        onKeyDown={e => {
-                          if (e.keyCode === 13) {
-                            const value = e.target.innerHTML
-                              .replace(`<h3 class="table-name-header">`, "")
-                              .replace("</h3>", "");
-                            const newRequestTables = [...requestTables];
-                            newRequestTables[index].tableName = value;
-                            setRequestTables(newRequestTables);
-                          }
+                        onBlur={(e) => {
+                          const value = e.target.innerHTML
+                            .replace(`<h3 class="table-name-header">`, "")
+                            .replace("</h3>", "");
+                          const newRequestTables = [...requestTables];
+                          newRequestTables[index].tableName = value;
+                          setRequestTables(newRequestTables);
                         }}
                       />
                       <Icon
                         name="trash alternate outline"
                         color="red"
-                        onClick={e => {
+                        onClick={(e) => {
                           e.stopPropagation();
                           const updatedTables = [
                             ...requestTables.filter(
-                              t => t.tableName !== table.tableName
-                            )
+                              (t) => t.tableName !== table.tableName
+                            ),
                           ];
                           setRequestTables(updatedTables);
                           toast({
@@ -165,7 +164,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                             icon: "trash alternate outline",
                             title: "Table Removed",
                             description: `Table ${table.tableName} has now been removed.`,
-                            time: 2000
+                            time: 2000,
                           });
                         }}
                       />
@@ -178,7 +177,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                     >
                       <ServiceTable
                         table={table}
-                        onUpdate={updatedTable => {
+                        onUpdate={(updatedTable) => {
                           const currentRequestTables = [...requestTables];
                           currentRequestTables[index] = updatedTable;
                           setRequestTables(currentRequestTables);
@@ -203,10 +202,11 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                   onClick={() => {
                     const currentResponseTables = [...responseTables];
                     currentResponseTables.push({
-                      tableName: `NewResponseTable${currentResponseTables.length +
-                        1}`,
+                      tableName: `NewResponseTable${
+                        currentResponseTables.length + 1
+                      }`,
                       columns: [{ name: "column1", numeric: false }],
-                      rows: [{ column1: "" }]
+                      rows: [{ column1: "" }],
                     });
                     setResponseTables(currentResponseTables);
                   }}
@@ -234,28 +234,26 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                       <ContentEditable
                         className="table-name-header"
                         html={`<h3 class="table-name-header">${table.tableName}</h3>`}
-                        onClick={e => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
                         disabled={false}
-                        onKeyDown={e => {
-                          if (e.keyCode === 13) {
-                            const value = e.target.innerHTML
-                              .replace(`<h3 class="table-name-header">`, "")
-                              .replace("</h3>", "");
-                            const newResponseTables = [...responseTables];
-                            newResponseTables[index].tableName = value;
-                            setResponseTables(newResponseTables);
-                          }
+                        onBlur={(e) => {
+                          const value = e.target.innerHTML
+                            .replace(`<h3 class="table-name-header">`, "")
+                            .replace("</h3>", "");
+                          const newResponseTables = [...responseTables];
+                          newResponseTables[index].tableName = value;
+                          setResponseTables(newResponseTables);
                         }}
                       />
                       <Icon
                         name="trash alternate outline"
                         color="red"
-                        onClick={e => {
+                        onClick={(e) => {
                           e.stopPropagation();
                           const updatedTables = [
                             ...responseTables.filter(
-                              t => t.tableName !== table.tableName
-                            )
+                              (t) => t.tableName !== table.tableName
+                            ),
                           ];
                           setResponseTables(updatedTables);
                           toast({
@@ -263,7 +261,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                             icon: "trash alternate outline",
                             title: "Table Removed",
                             description: `Table ${table.tableName} has now been removed.`,
-                            time: 2000
+                            time: 2000,
                           });
                         }}
                       />
@@ -276,7 +274,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                     >
                       <ServiceTable
                         table={table}
-                        onUpdate={updatedTable => {
+                        onUpdate={(updatedTable) => {
                           const currentResponseTables = [...responseTables];
                           currentResponseTables[index] = updatedTable;
                           setResponseTables(currentResponseTables);
