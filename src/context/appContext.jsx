@@ -1,14 +1,26 @@
 import React, { createContext, useState, useEffect } from "react";
 
 export const AppContext = createContext({
-  masterJson: {},
-  setMasterJson: json => {},
+  masterJson: {
+    sasJsConfig: {
+      serverUrl: "http://sas.analytium.co.uk",
+      appLoc: "/common/appInit",
+      serverType: "SASVIYA",
+    },
+  },
+  setMasterJson: (json) => {},
   isNewJson: false,
-  setIsNewJson: value => {}
+  setIsNewJson: (value) => {},
 });
 
 export const AppProvider = ({ children }) => {
-  const [masterJson, setMasterJson] = useState({});
+  const [masterJson, setMasterJson] = useState({
+    sasJsConfig: {
+      serverUrl: "http://sas.analytium.co.uk",
+      appLoc: "/common/appInit",
+      serverType: "SASVIYA",
+    },
+  });
   const [isNewJson, setIsNewJson] = useState(false);
 
   useEffect(() => {

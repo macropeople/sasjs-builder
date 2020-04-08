@@ -14,8 +14,8 @@ const Services = () => {
   const [addFolderModalOpen, setaddFolderModalOpen] = useState(false);
   const [showFolderNameError, setShowFolderNameError] = useState(false);
 
-  const deleteFolder = folder => {
-    const newFolders = folders.filter(f => f.name !== folder.name);
+  const deleteFolder = (folder) => {
+    const newFolders = folders.filter((f) => f.name !== folder.name);
     setMasterJson({ ...masterJson, folders: newFolders });
     setCurrentFolder(null);
   };
@@ -31,16 +31,20 @@ const Services = () => {
   }, [folders]);
 
   const updateFolder = useCallback(
-    updatedService => {
+    (updatedService) => {
       const folderIndex = folders.indexOf(currentFolder);
       const serviceIndex = currentFolder.services.findIndex(
-        s => s.name === currentService.name
+        (s) => s.name === currentService.name
       );
       const updatedFolder = {
         ...currentFolder,
-        services: [...currentFolder.services]
+        services: [...currentFolder.services],
       };
-      updatedFolder.services[serviceIndex] = updatedService;
+      if (serviceIndex >= 0) {
+        updatedFolder.services[serviceIndex] = updatedService;
+      } else {
+        updatedFolder.services.push(updatedService);
+      }
       setCurrentFolder(updatedFolder);
       const updatedFolders = [...folders];
       updatedFolders[folderIndex] = updatedFolder;
@@ -82,6 +86,24 @@ const Services = () => {
         </Segment>
         <Segment raised size="large" className="services">
           <h3>Services</h3>
+          {currentFolder && (
+            <Popup
+              inverted
+              content="Add service"
+              trigger={
+                <Icon
+                  name="add"
+                  color="blue"
+                  onClick={() =>
+                    setCurrentService({
+                      name: "My Service",
+                      description: "My service",
+                    })
+                  }
+                />
+              }
+            />
+          )}
           {!currentFolder && (
             <Message info>
               <Message.Header>No folder selected</Message.Header>
@@ -106,8 +128,8 @@ const Services = () => {
         isOpen={addFolderModalOpen}
         showFolderNameError={showFolderNameError}
         onCancel={() => setaddFolderModalOpen(false)}
-        onAddFolder={newFolderName => {
-          const folderExists = folders.some(f => f.name === newFolderName);
+        onAddFolder={(newFolderName) => {
+          const folderExists = folders.some((f) => f.name === newFolderName);
           if (!folderExists) {
             const newFolder = { name: newFolderName, services: [] };
             setFolders([...folders, newFolder]);

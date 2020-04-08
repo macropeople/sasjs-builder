@@ -17,22 +17,22 @@ const Configuration = () => {
   const sasJsConfig =
     masterJson && masterJson.sasJsConfig ? masterJson.sasJsConfig : {};
 
-  const saveForm = event => {
+  const saveForm = (event) => {
     event.preventDefault();
     const appConfigFields = ["author", "name", "description"];
     const sasJsConfigFields = [
       "serverUrl",
       "appLoc",
       "pathSAS9",
-      "pathSASViya"
+      "pathSASViya",
     ];
 
     const appConfig = {};
     const sasJsConfig = {};
-    appConfigFields.forEach(field => {
+    appConfigFields.forEach((field) => {
       appConfig[field] = event.target.elements[field].value;
     });
-    sasJsConfigFields.forEach(field => {
+    sasJsConfigFields.forEach((field) => {
       sasJsConfig[field] = event.target.elements[field].value;
     });
     sasJsConfig.serverType = serverType;
@@ -90,7 +90,7 @@ const Configuration = () => {
             <label>Server URL</label>
             <input
               name="serverUrl"
-              placeholder="Description"
+              placeholder="Server URL"
               defaultValue={sasJsConfig.serverUrl}
             />
           </Form.Field>
@@ -115,13 +115,13 @@ const Configuration = () => {
                 {
                   key: "SAS9",
                   value: "SAS9",
-                  text: "SAS9"
+                  text: "SAS9",
                 },
                 {
                   key: "SASVIYA",
                   value: "SASVIYA",
-                  text: "SASVIYA"
-                }
+                  text: "SASVIYA",
+                },
               ]}
             />
           </Form.Field>
