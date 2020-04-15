@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Highlight from "react-highlight.js";
 import { toast } from "react-semantic-toasts";
 import "./CodeSnippet.scss";
-import { Header, Icon, Popup } from "semantic-ui-react";
+import { Header } from "semantic-ui-react";
+import PopupIcon from "./PopupIcon";
 
 const CodeSnippet = ({ path, serviceName, requestTables, responseTables }) => {
   const [snippet, setSnippet] = useState("");
@@ -10,7 +11,7 @@ const CodeSnippet = ({ path, serviceName, requestTables, responseTables }) => {
     let codeSnippet = `const sasJs = new SASjs({/* Your config here */});\n\nsasJs.request("${path}/${serviceName}"`;
     if (requestTables.length) {
       codeSnippet += `,\n${JSON.stringify(
-        [...requestTables.map(r => r.rows)],
+        [...requestTables.map((r) => r.rows)],
         null,
         1
       )})`;
@@ -22,7 +23,7 @@ const CodeSnippet = ({ path, serviceName, requestTables, responseTables }) => {
 
     if (responseTables.length) {
       codeSnippet += `res => {\n    console.log(res);\n/* Response Format\n${JSON.stringify(
-        [...responseTables.map(r => r.rows)],
+        [...responseTables.map((r) => r.rows)],
         null,
         1
       )}\n*/\n});`;
@@ -37,29 +38,23 @@ const CodeSnippet = ({ path, serviceName, requestTables, responseTables }) => {
     <>
       <Header as="h3" className="tables-header">
         <code>SASjs</code> Code Snippet
-        <Popup
-          inverted
-          content="Copy snippet"
-          trigger={
-            <Icon
-              name="copy outline"
-              className="icon-button"
-              color="blue"
-              onClick={() => {
-                navigator.clipboard.writeText(snippet).then(() => {
-                  toast({
-                    type: "success",
-                    icon: "copy outline",
-                    title: "Code snippet copied",
-                    description:
-                      "Paste into your text editor and get started with SASjs!",
-                    time: 2000
-                  });
-                });
-              }}
-            />
-          }
-        />
+        <PopupIcon
+          text="Copy snippet"
+          color="blue"
+          icon="copy outline"
+          onClick={() => {
+            navigator.clipboard.writeText(snippet).then(() => {
+              toast({
+                type: "success",
+                icon: "copy outline",
+                title: "Code snippet copied",
+                description:
+                  "Paste into your text editor and get started with SASjs!",
+                time: 2000,
+              });
+            });
+          }}
+        ></PopupIcon>
       </Header>
       <Highlight language="javascript" className="code-snippet">
         {snippet}

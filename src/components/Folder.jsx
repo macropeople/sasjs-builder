@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Icon, Confirm, Popup } from "semantic-ui-react";
+import { Icon, Confirm } from "semantic-ui-react";
 import "./Folder.scss";
+import PopupIcon from "./PopupIcon";
 
-const Folder = props => {
+const Folder = (props) => {
   const { folder, selected, onClick, onDelete } = props;
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   return (
@@ -14,18 +15,13 @@ const Folder = props => {
         >
           <Icon name="folder"></Icon> {folder.name}
         </div>
-        <Popup
-          inverted
-          content="Delete folder"
-          trigger={
-            <Icon
-              name="trash alternate outline"
-              color="red"
-              onClick={() => {
-                setShowConfirmDelete(true);
-              }}
-            />
-          }
+        <PopupIcon
+          text="Delete folder"
+          icon="trash alternate outline"
+          color="red"
+          onClick={() => {
+            setShowConfirmDelete(true);
+          }}
         />
       </div>
       <Confirm

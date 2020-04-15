@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from "react";
-import {
-  Input,
-  Modal,
-  Header,
-  Form,
-  Icon,
-  Popup,
-  Accordion,
-} from "semantic-ui-react";
+import { Input, Modal, Header, Form, Icon, Accordion } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import "./ServiceModal.scss";
 import ServiceTable from "./ServiceTable";
 import CodeSnippet from "./CodeSnippet";
 import ContentEditable from "react-contenteditable";
+import PopupIcon from "./PopupIcon";
 
 const ServiceModal = ({ service, path, onClose, onUpdate }) => {
   const [name, setName] = useState(service ? service.name : "");
@@ -94,27 +87,21 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
           </Form.Group>
           <Header as="h3" className="tables-header">
             Request Tables
-            <Popup
-              inverted
-              content="Add request table"
-              trigger={
-                <Icon
-                  name="add circle"
-                  className="icon-button"
-                  color="blue"
-                  onClick={() => {
-                    const currentRequestTables = [...requestTables];
-                    currentRequestTables.push({
-                      tableName: `NewRequestTable${
-                        currentRequestTables.length + 1
-                      }`,
-                      columns: [{ name: "column1", numeric: false }],
-                      rows: [{ column1: "" }],
-                    });
-                    setRequestTables(currentRequestTables);
-                  }}
-                />
-              }
+            <PopupIcon
+              text="Add request table"
+              icon="add circle"
+              color="blue"
+              onClick={() => {
+                const currentRequestTables = [...requestTables];
+                currentRequestTables.push({
+                  tableName: `NewRequestTable${
+                    currentRequestTables.length + 1
+                  }`,
+                  columns: [{ name: "column1", numeric: false }],
+                  rows: [{ column1: "" }],
+                });
+                setRequestTables(currentRequestTables);
+              }}
             />
           </Header>
           {!!requestTables.length && (
@@ -191,27 +178,21 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
           )}
           <Header as="h3" className="tables-header">
             Response Tables
-            <Popup
-              inverted
-              content="Add response table"
-              trigger={
-                <Icon
-                  name="add circle"
-                  className="icon-button"
-                  color="blue"
-                  onClick={() => {
-                    const currentResponseTables = [...responseTables];
-                    currentResponseTables.push({
-                      tableName: `NewResponseTable${
-                        currentResponseTables.length + 1
-                      }`,
-                      columns: [{ name: "column1", numeric: false }],
-                      rows: [{ column1: "" }],
-                    });
-                    setResponseTables(currentResponseTables);
-                  }}
-                />
-              }
+            <PopupIcon
+              text="Add response table"
+              icon="add circle"
+              color="blue"
+              onClick={() => {
+                const currentResponseTables = [...responseTables];
+                currentResponseTables.push({
+                  tableName: `NewResponseTable${
+                    currentResponseTables.length + 1
+                  }`,
+                  columns: [{ name: "column1", numeric: false }],
+                  rows: [{ column1: "" }],
+                });
+                setResponseTables(currentResponseTables);
+              }}
             />
           </Header>
           {!!responseTables.length && (

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ContentEditable from "react-contenteditable";
-import { Table, Checkbox, Icon, Popup } from "semantic-ui-react";
+import { Table, Checkbox, Icon } from "semantic-ui-react";
 import "./ServiceTable.scss";
+import PopupIcon from "./PopupIcon";
 
 const ServiceTable = ({ table, onUpdate }) => {
   const [columns, setColumns] = useState([]);
@@ -126,30 +127,24 @@ const ServiceTable = ({ table, onUpdate }) => {
             })}
           </Table.Body>
         </Table>
-        <Popup
-          inverted
-          content="Add column"
-          trigger={
-            <Icon
-              name="add circle"
-              className="icon-button"
-              color="blue"
-              onClick={() => {
-                const currentColumns = [...columns];
-                const newColumnName = `Column${columns.length + 1}`;
-                currentColumns.push({ name: newColumnName, numeric: false });
-                const currentRows = [...rows];
-                currentRows.forEach((row) => (row[newColumnName] = ""));
-                setColumns(currentColumns);
-                setRows(currentRows);
-                onUpdate({
-                  tableName: table.tableName,
-                  columns: currentColumns,
-                  rows: currentRows,
-                });
-              }}
-            />
-          }
+        <PopupIcon
+          text="Add column"
+          icon="add circle"
+          color="blue"
+          onClick={() => {
+            const currentColumns = [...columns];
+            const newColumnName = `Column${columns.length + 1}`;
+            currentColumns.push({ name: newColumnName, numeric: false });
+            const currentRows = [...rows];
+            currentRows.forEach((row) => (row[newColumnName] = ""));
+            setColumns(currentColumns);
+            setRows(currentRows);
+            onUpdate({
+              tableName: table.tableName,
+              columns: currentColumns,
+              rows: currentRows,
+            });
+          }}
         />
       </div>
     </div>

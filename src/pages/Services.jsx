@@ -5,6 +5,7 @@ import { AppContext } from "../context/appContext";
 import Folder from "../components/Folder";
 import AddFolderModal from "../components/AddFolderModal";
 import ServiceModal from "../components/ServiceModal";
+import PopupIcon from "../components/PopupIcon";
 
 const Services = () => {
   const { masterJson, setMasterJson } = useContext(AppContext);
@@ -59,16 +60,11 @@ const Services = () => {
       <div className="main-content">
         <Segment raised size="huge" className="folders">
           <h3>Folders</h3>
-          <Popup
-            inverted
-            content="Add folder"
-            trigger={
-              <Icon
-                name="add"
-                color="blue"
-                onClick={() => setaddFolderModalOpen(true)}
-              />
-            }
+          <PopupIcon
+            text="Add folder"
+            icon="add"
+            color="blue"
+            onClick={() => setaddFolderModalOpen(true)}
           />
           <div className="folder-list">
             {folders.map((folder, index) => {
