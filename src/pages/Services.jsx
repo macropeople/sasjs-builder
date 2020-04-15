@@ -17,7 +17,7 @@ const Services = () => {
 
   const deleteFolder = (folder) => {
     const newFolders = folders.filter((f) => f.name !== folder.name);
-    setMasterJson({ ...masterJson, folders: newFolders });
+    setFolders(newFolders);
     setCurrentFolder(null);
   };
 

@@ -6,33 +6,31 @@ import ServiceTable from "./ServiceTable";
 import CodeSnippet from "./CodeSnippet";
 import ContentEditable from "react-contenteditable";
 import PopupIcon from "./PopupIcon";
+import produce from "immer";
 
 const ServiceModal = ({ service, path, onClose, onUpdate }) => {
-  const [name, setName] = useState(service ? service.name : "");
+  const [name, setName] = useState(service.name);
   const [currentRequestTable, setCurrentRequestTable] = useState(null);
   const [currentResponseTable, setCurrentResponseTable] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(service.description);
   const [requestTables, setRequestTables] = useState([]);
   const [responseTables, setResponseTables] = useState([]);
 
   useEffect(() => {
     if (service) {
       setIsOpen(true);
+      if (service) {
+        setName(service.name);
+        setDescription(service.description);
+        setRequestTables(service.requestTables || []);
+        setResponseTables(service.responseTables || []);
+      }
       if (service.requestTables && service.requestTables.length) {
         setCurrentRequestTable(service.requestTables[0]);
       } else if (service.responseTables && service.responseTables.length) {
         setCurrentResponseTable(service.responseTables[0]);
       }
-    }
-  }, [service]);
-
-  useEffect(() => {
-    if (service) {
-      setName(service.name);
-      setDescription(service.description);
-      setRequestTables(service.requestTables || []);
-      setResponseTables(service.responseTables || []);
     }
   }, [service]);
 
@@ -72,14 +70,14 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
               control={Input}
               type="text"
               label="Service Name"
-              defaultValue={name}
+              value={name}
               placeholder="Service Name"
               onBlur={(e) => setName(e.target.value)}
             />
             <Form.Field
               control={Input}
               type="text"
-              defaultValue={description}
+              value={description}
               label="Service Description"
               placeholder="Service Description"
               onBlur={(e) => setDescription(e.target.value)}
@@ -165,9 +163,13 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                       <ServiceTable
                         table={table}
                         onUpdate={(updatedTable) => {
-                          const currentRequestTables = [...requestTables];
-                          currentRequestTables[index] = updatedTable;
-                          setRequestTables(currentRequestTables);
+                          const newRequestTables = produce(
+                            requestTables,
+                            (draft) => {
+                              draft[index] = updatedTable;
+                            }
+                          );
+                          setRequestTables(newRequestTables);
                         }}
                       />
                     </Accordion.Content>
@@ -183,15 +185,15 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
               icon="add circle"
               color="blue"
               onClick={() => {
-                const currentResponseTables = [...responseTables];
-                currentResponseTables.push({
-                  tableName: `NewResponseTable${
-                    currentResponseTables.length + 1
-                  }`,
-                  columns: [{ name: "column1", numeric: false }],
-                  rows: [{ column1: "" }],
+                const newResponseTables = produce(responseTables, (draft) => {
+                  draft.push({
+                    tableName: `NewResponseTable${draft.length + 1}`,
+                    columns: [{ name: "column1", numeric: false }],
+                    rows: [{ column1: "" }],
+                  });
                 });
-                setResponseTables(currentResponseTables);
+
+                setResponseTables(newResponseTables);
               }}
             />
           </Header>
@@ -256,9 +258,13 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                       <ServiceTable
                         table={table}
                         onUpdate={(updatedTable) => {
-                          const currentResponseTables = [...responseTables];
-                          currentResponseTables[index] = updatedTable;
-                          setResponseTables(currentResponseTables);
+                          const newResponseTables = produce(
+                            responseTables,
+                            (draft) => {
+                              draft[index] = updatedTable;
+                            }
+                          );
+                          setResponseTables(newResponseTables);
                         }}
                       />
                     </Accordion.Content>
