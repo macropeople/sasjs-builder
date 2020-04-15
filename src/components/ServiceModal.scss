@@ -26,3 +26,18 @@
   display: inline;
   padding: 8px;
 }
+
+.ui.fullscreen.scrolling.modal {
+  left: auto !important;
+}
+
+.code {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+
+  .code-snippet-container,
+  .try-it-out {
+    width: 49%;
+  }
+}

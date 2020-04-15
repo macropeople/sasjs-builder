@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
+import SASjs from "sasjs";
 
 export const AppContext = createContext({
   masterJson: {
@@ -9,30 +10,36 @@ export const AppContext = createContext({
     },
   },
   setMasterJson: (json) => {},
-  isNewJson: false,
-  setIsNewJson: (value) => {},
 });
 
 export const AppProvider = ({ children }) => {
   const [masterJson, setMasterJson] = useState({
     sasJsConfig: {
-      serverUrl: "http://sas.analytium.co.uk",
+      serverUrl: "",
       appLoc: "/common/appInit",
       serverType: "SASVIYA",
     },
   });
-  const [isNewJson, setIsNewJson] = useState(false);
+  const [adapter, setAdapter] = useState(null);
 
   useEffect(() => {
-    if (!!masterJson) {
-      setIsNewJson(true);
+    setAdapter(
+      new SASjs({
+        serverUrl: "",
+        appLoc: "/common/appInit",
+        serverType: "SASVIYA",
+      })
+    );
+  }, []);
+
+  useEffect(() => {
+    if (masterJson && masterJson.sasJsConfig) {
+      setAdapter(new SASjs(masterJson.sasJsConfig));
     }
   }, [masterJson]);
 
   return (
-    <AppContext.Provider
-      value={{ masterJson, setMasterJson, isNewJson, setIsNewJson }}
-    >
+    <AppContext.Provider value={{ masterJson, setMasterJson, adapter }}>
       {children}
     </AppContext.Provider>
   );

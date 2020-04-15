@@ -7,6 +7,7 @@ import CodeSnippet from "./CodeSnippet";
 import ContentEditable from "react-contenteditable";
 import PopupIcon from "./PopupIcon";
 import produce from "immer";
+import TryItOut from "./TryItOut";
 
 const ServiceModal = ({ service, path, onClose, onUpdate }) => {
   const [name, setName] = useState(service.name);
@@ -55,7 +56,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
   return service ? (
     <Modal
       open={isOpen}
-      size="large"
+      size="fullscreen"
       closeIcon
       onClose={() => {
         setIsOpen(false);
@@ -275,12 +276,20 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
           )}
         </Form>
         {!!service && (
-          <CodeSnippet
-            path={path}
-            serviceName={service.name}
-            requestTables={requestTables}
-            responseTables={responseTables}
-          />
+          <div className="code">
+            <CodeSnippet
+              path={path}
+              serviceName={service.name}
+              requestTables={requestTables}
+              responseTables={responseTables}
+            />
+            <TryItOut
+              path={path}
+              serviceName={service.name}
+              requestTables={requestTables}
+              responseTables={responseTables}
+            />
+          </div>
         )}
       </div>
     </Modal>
