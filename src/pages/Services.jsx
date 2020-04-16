@@ -80,7 +80,7 @@ const Services = () => {
             })}
           </div>
         </Segment>
-        <Segment raised size="large" className="services">
+        <Segment raised size="huge" className="services">
           <h3>Services</h3>
           {currentFolder && (
             <Popup
