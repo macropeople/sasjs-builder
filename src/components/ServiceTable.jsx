@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ContentEditable from "react-contenteditable";
-import { Table, Checkbox, Icon } from "semantic-ui-react";
+import { Table, Checkbox, Icon, Popup } from "semantic-ui-react";
 import "./ServiceTable.scss";
 import PopupIcon from "./PopupIcon";
 import { produce } from "immer";
@@ -55,26 +55,34 @@ const ServiceTable = ({ table, onUpdate }) => {
                           });
                         }}
                       />
-                      <Checkbox
-                        toggle
-                        checked={column.numeric}
-                        onChange={() => {
-                          const newColumn = produce(column, (draft) => {
-                            draft.numeric = !column.numeric;
-                            return draft;
-                          });
+                      <Popup
+                        inverted
+                        content={
+                          column.numeric ? "Numeric field" : "Non-numeric field"
+                        }
+                        trigger={
+                          <Checkbox
+                            toggle
+                            checked={column.numeric}
+                            onChange={() => {
+                              const newColumn = produce(column, (draft) => {
+                                draft.numeric = !column.numeric;
+                                return draft;
+                              });
 
-                          const newColumns = produce(columns, (draft) => {
-                            draft[index] = newColumn;
-                            return draft;
-                          });
-                          setColumns(newColumns);
-                          onUpdate({
-                            tableName: table.tableName,
-                            columns: newColumns,
-                            rows,
-                          });
-                        }}
+                              const newColumns = produce(columns, (draft) => {
+                                draft[index] = newColumn;
+                                return draft;
+                              });
+                              setColumns(newColumns);
+                              onUpdate({
+                                tableName: table.tableName,
+                                columns: newColumns,
+                                rows,
+                              });
+                            }}
+                          />
+                        }
                       />
                       <Icon
                         name="trash alternate outline"
@@ -174,6 +182,31 @@ const ServiceTable = ({ table, onUpdate }) => {
           }}
         />
       </div>
+      <PopupIcon
+        text="Add row"
+        icon="add circle"
+        color="blue"
+        onClick={() => {
+          const newRows = produce(rows, (draft) => {
+            const row = {};
+            columns.forEach((column) => {
+              if (column.numeric) {
+                row[column.name] = 0;
+              } else {
+                row[column.name] = "";
+              }
+            });
+            draft.push(row);
+            return draft;
+          });
+          setRows(newRows);
+          onUpdate({
+            tableName: table.tableName,
+            columns,
+            rows: newRows,
+          });
+        }}
+      />
     </div>
   );
 };
