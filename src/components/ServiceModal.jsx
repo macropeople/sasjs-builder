@@ -66,24 +66,22 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
       <Header icon="server" content={name} />
       <div className="service-modal-inner-container">
         <Form className="service-form">
-          <Form.Group>
-            <Form.Field
-              control={Input}
-              type="text"
-              label="Service Name"
-              value={name}
-              placeholder="Service Name"
-              onBlur={(e) => setName(e.target.value)}
-            />
-            <Form.Field
-              control={Input}
-              type="text"
-              value={description}
-              label="Service Description"
-              placeholder="Service Description"
-              onBlur={(e) => setDescription(e.target.value)}
-            />
-          </Form.Group>
+          <Form.Field
+            control={Input}
+            type="text"
+            label="Service Name"
+            value={name}
+            placeholder="Service Name"
+            onBlur={(e) => setName(e.target.value)}
+          />
+          <Form.Field
+            control={Input}
+            type="text"
+            value={description}
+            label="Service Description"
+            placeholder="Service Description"
+            onBlur={(e) => setDescription(e.target.value)}
+          />
           <Header as="h3" className="tables-header">
             Request Tables
             <PopupIcon
