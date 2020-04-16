@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import SASjs from "sasjs";
+import LoginModal from "../pages/LoginModal";
+import { useCallback } from "react";
 
 export const AppContext = createContext({
   masterJson: {
@@ -21,15 +23,16 @@ export const AppProvider = ({ children }) => {
     },
   });
   const [adapter, setAdapter] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    setAdapter(
-      new SASjs({
-        serverUrl: "",
-        appLoc: "/common/appInit",
-        serverType: "SASVIYA",
-      })
-    );
+    const sasjs = new SASjs({
+      serverUrl: "",
+      appLoc: "/common/appInit",
+      serverType: "SASVIYA",
+    });
+    setAdapter(sasjs);
+    sasjs.checkSession().then((response) => setIsLoggedIn(response.isLoggedIn));
   }, []);
 
   useEffect(() => {
@@ -38,9 +41,20 @@ export const AppProvider = ({ children }) => {
     }
   }, [masterJson]);
 
+  const logIn = useCallback(
+    (username, password) => {
+      adapter
+        .logIn(username, password)
+        .then((res) => setIsLoggedIn(true))
+        .catch(() => setIsLoggedIn(false));
+    },
+    [adapter]
+  );
+
   return (
-    <AppContext.Provider value={{ masterJson, setMasterJson, adapter }}>
+    <AppContext.Provider value={{ masterJson, setMasterJson, adapter, logIn }}>
       {children}
+      <LoginModal isOpen={!isLoggedIn} />
     </AppContext.Provider>
   );
 };

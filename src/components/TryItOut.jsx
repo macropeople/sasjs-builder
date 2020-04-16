@@ -14,7 +14,7 @@ const TryItOut = ({ path, serviceName, requestTables, responseTables }) => {
         Try it out
       </Header>
       <Button secondary onClick={makeRequest}>
-        <Icon name="rocket"></Icon>Send request
+        <Icon name="plane"></Icon>Send request
       </Button>
     </div>
   );
