@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, Modal, Header, Form, Icon, Accordion } from "semantic-ui-react";
+import { Input, Modal, Header, Form, Icon, Tab } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import "./ServiceModal.scss";
 import ServiceTable from "./ServiceTable";
@@ -102,63 +102,66 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
             />
           </Header>
           {!!requestTables.length && (
-            <Accordion>
-              {requestTables.map((table, index) => {
-                return (
-                  <div key={table.tableName}>
-                    <Accordion.Title
-                      active={
-                        currentRequestTable &&
-                        currentRequestTable.name === table.name
-                      }
-                      onClick={() =>
-                        currentRequestTable
-                          ? setCurrentRequestTable(null)
-                          : setCurrentRequestTable(table)
-                      }
-                    >
-                      <Icon name="dropdown" />
-                      <ContentEditable
-                        className="table-name-header"
-                        html={`<h3 class="table-name-header">${table.tableName}</h3>`}
-                        onClick={(e) => e.stopPropagation()}
-                        disabled={false}
-                        onBlur={(e) => {
-                          const value = e.target.innerHTML
-                            .replace(`<h3 class="table-name-header">`, "")
-                            .replace("</h3>", "");
-                          const newRequestTables = [...requestTables];
-                          newRequestTables[index].tableName = value;
-                          setRequestTables(newRequestTables);
-                        }}
-                      />
-                      <Icon
-                        name="trash alternate outline"
-                        color="red"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const updatedTables = [
-                            ...requestTables.filter(
-                              (t) => t.tableName !== table.tableName
-                            ),
-                          ];
-                          setRequestTables(updatedTables);
-                          toast({
-                            type: "info",
-                            icon: "trash alternate outline",
-                            title: "Table Removed",
-                            description: `Table ${table.tableName} has now been removed.`,
-                            time: 2000,
-                          });
-                        }}
-                      />
-                    </Accordion.Title>
-                    <Accordion.Content
+            <Tab
+              menu={{
+                tabular: true,
+                fluid: true,
+              }}
+              panes={requestTables.map((table, index) => {
+                return {
+                  menuItem: table.tableName,
+                  render: () => (
+                    <Tab.Pane
+                      key={table.tableName}
                       active={
                         currentRequestTable &&
                         currentRequestTable.name === table.name
                       }
                     >
+                      <Header
+                        as="h3"
+                        className="tables-header"
+                        onClick={() =>
+                          currentRequestTable
+                            ? setCurrentRequestTable(null)
+                            : setCurrentRequestTable(table)
+                        }
+                      >
+                        <ContentEditable
+                          className="table-name-header"
+                          html={`<h3 class="table-name-header">${table.tableName}</h3>`}
+                          onClick={(e) => e.stopPropagation()}
+                          disabled={false}
+                          onBlur={(e) => {
+                            const value = e.target.innerHTML
+                              .replace(`<h3 class="table-name-header">`, "")
+                              .replace("</h3>", "");
+                            const newRequestTables = [...requestTables];
+                            newRequestTables[index].tableName = value;
+                            setRequestTables(newRequestTables);
+                          }}
+                        />
+                        <Icon
+                          name="trash alternate outline"
+                          color="red"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const updatedTables = [
+                              ...requestTables.filter(
+                                (t) => t.tableName !== table.tableName
+                              ),
+                            ];
+                            setRequestTables(updatedTables);
+                            toast({
+                              type: "info",
+                              icon: "trash alternate outline",
+                              title: "Table Removed",
+                              description: `Table ${table.tableName} has now been removed.`,
+                              time: 2000,
+                            });
+                          }}
+                        />
+                      </Header>
                       <ServiceTable
                         table={table}
                         onUpdate={(updatedTable) => {
@@ -171,11 +174,11 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                           setRequestTables(newRequestTables);
                         }}
                       />
-                    </Accordion.Content>
-                  </div>
-                );
+                    </Tab.Pane>
+                  ),
+                };
               })}
-            </Accordion>
+            ></Tab>
           )}
           <Header as="h3" className="tables-header">
             Response Tables
@@ -197,63 +200,66 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
             />
           </Header>
           {!!responseTables.length && (
-            <Accordion>
-              {responseTables.map((table, index) => {
-                return (
-                  <div key={index}>
-                    <Accordion.Title
-                      active={
-                        currentResponseTable &&
-                        currentResponseTable.name === table.name
-                      }
-                      onClick={() => {
-                        currentResponseTable
-                          ? setCurrentResponseTable(null)
-                          : setCurrentResponseTable(table);
-                      }}
-                    >
-                      <Icon name="dropdown" />
-                      <ContentEditable
-                        className="table-name-header"
-                        html={`<h3 class="table-name-header">${table.tableName}</h3>`}
-                        onClick={(e) => e.stopPropagation()}
-                        disabled={false}
-                        onBlur={(e) => {
-                          const value = e.target.innerHTML
-                            .replace(`<h3 class="table-name-header">`, "")
-                            .replace("</h3>", "");
-                          const newResponseTables = [...responseTables];
-                          newResponseTables[index].tableName = value;
-                          setResponseTables(newResponseTables);
-                        }}
-                      />
-                      <Icon
-                        name="trash alternate outline"
-                        color="red"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const updatedTables = [
-                            ...responseTables.filter(
-                              (t) => t.tableName !== table.tableName
-                            ),
-                          ];
-                          setResponseTables(updatedTables);
-                          toast({
-                            type: "info",
-                            icon: "trash alternate outline",
-                            title: "Table Removed",
-                            description: `Table ${table.tableName} has now been removed.`,
-                            time: 2000,
-                          });
-                        }}
-                      />
-                    </Accordion.Title>
-                    <Accordion.Content
+            <Tab
+              menu={{
+                tabular: true,
+                fluid: true,
+              }}
+              panes={responseTables.map((table, index) => {
+                return {
+                  menuItem: table.tableName,
+                  render: () => (
+                    <Tab.Pane
+                      key={index}
                       active={
                         currentResponseTable &&
                         currentResponseTable.name === table.name
                       }
                     >
+                      <Header
+                        as="h3"
+                        className="tables-header"
+                        onClick={() => {
+                          currentResponseTable
+                            ? setCurrentResponseTable(null)
+                            : setCurrentResponseTable(table);
+                        }}
+                      >
+                        <ContentEditable
+                          className="table-name-header"
+                          html={`<h3 class="table-name-header">${table.tableName}</h3>`}
+                          onClick={(e) => e.stopPropagation()}
+                          disabled={false}
+                          onBlur={(e) => {
+                            const value = e.target.innerHTML
+                              .replace(`<h3 class="table-name-header">`, "")
+                              .replace("</h3>", "");
+                            const newResponseTables = [...responseTables];
+                            newResponseTables[index].tableName = value;
+                            setResponseTables(newResponseTables);
+                          }}
+                        />
+                        <Icon
+                          name="trash alternate outline"
+                          color="red"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const updatedTables = [
+                              ...responseTables.filter(
+                                (t) => t.tableName !== table.tableName
+                              ),
+                            ];
+                            setResponseTables(updatedTables);
+                            toast({
+                              type: "info",
+                              icon: "trash alternate outline",
+                              title: "Table Removed",
+                              description: `Table ${table.tableName} has now been removed.`,
+                              time: 2000,
+                            });
+                          }}
+                        />
+                      </Header>
                       <ServiceTable
                         table={table}
                         onUpdate={(updatedTable) => {
@@ -266,11 +272,11 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                           setResponseTables(newResponseTables);
                         }}
                       />
-                    </Accordion.Content>
-                  </div>
-                );
+                    </Tab.Pane>
+                  ),
+                };
               })}
-            </Accordion>
+            ></Tab>
           )}
         </Form>
         {!!service && (
