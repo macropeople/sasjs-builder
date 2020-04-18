@@ -6,6 +6,7 @@ import Folder from "../components/Folder";
 import AddFolderModal from "../components/AddFolderModal";
 import ServiceModal from "../components/ServiceModal";
 import PopupIcon from "../components/PopupIcon";
+import { sortByName } from "../utils";
 
 const Services = () => {
   const { masterJson, setMasterJson } = useContext(AppContext);
@@ -66,7 +67,8 @@ const Services = () => {
             onClick={() => setaddFolderModalOpen(true)}
           />
           <div className="folder-list">
-            {folders.map((folder, index) => {
+            {folders.sort(sortByName).map((folder, index) => {
+              debugger;
               return (
                 <Folder
                   key={index}

@@ -22,6 +22,7 @@ export const AppProvider = ({ children }) => {
       serverUrl: "",
       appLoc: "/common/appInit",
       serverType: "SASVIYA",
+      debug: true,
     },
   });
   const [adapter, setAdapter] = useState(null);
@@ -32,6 +33,7 @@ export const AppProvider = ({ children }) => {
       serverUrl: "",
       appLoc: "/common/appInit",
       serverType: "SASVIYA",
+      debug: true,
     });
     setAdapter(sasjs);
     const config = sasjs.getSasjsConfig();

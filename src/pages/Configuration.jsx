@@ -1,5 +1,12 @@
 import React, { useContext, useState } from "react";
-import { Header, Segment, Button, Form, Message } from "semantic-ui-react";
+import {
+  Header,
+  Segment,
+  Button,
+  Form,
+  Message,
+  Checkbox,
+} from "semantic-ui-react";
 import { AppContext } from "../context/AppContext";
 import "./Configuration.scss";
 
@@ -36,6 +43,7 @@ const Configuration = () => {
       sasJsConfig[field] = event.target.elements[field].value;
     });
     sasJsConfig.serverType = serverType;
+    sasJsConfig.debug = event.target.elements["debug"].checked;
     setMasterJson({ ...masterJson, appConfig, sasJsConfig });
     setShowSuccessMessage(true);
   };
@@ -115,6 +123,10 @@ const Configuration = () => {
                 },
               ]}
             />
+          </Form.Field>
+          <Form.Field>
+            <label>Debug</label>
+            <Checkbox toggle name="debug" checked={sasJsConfig.debug} />
           </Form.Field>
           <Form.Field>
             <label>SAS9 Path</label>
