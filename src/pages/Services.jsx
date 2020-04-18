@@ -92,7 +92,7 @@ const Services = () => {
                   color="blue"
                   onClick={() =>
                     setCurrentService({
-                      name: "My Service",
+                      name: "myService",
                       description: "My service",
                     })
                   }

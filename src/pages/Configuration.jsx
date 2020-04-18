@@ -19,7 +19,7 @@ const Configuration = () => {
 
   const saveForm = (event) => {
     event.preventDefault();
-    const appConfigFields = ["author", "name", "description"];
+    const appConfigFields = ["name", "description"];
     const sasJsConfigFields = [
       "serverUrl",
       "appLoc",
@@ -58,14 +58,6 @@ const Configuration = () => {
         <Segment size="huge" raised>
           <Header as="h3">App Configuration</Header>
           <Form.Group widths="equal">
-            <Form.Field>
-              <label>Author</label>
-              <input
-                name="author"
-                placeholder="Author"
-                defaultValue={appConfig.author}
-              />
-            </Form.Field>
             <Form.Field>
               <label>Name</label>
               <input

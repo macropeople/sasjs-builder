@@ -70,14 +70,14 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
             control={Input}
             type="text"
             label="Service Name"
-            value={name}
+            defaultValue={name}
             placeholder="Service Name"
             onBlur={(e) => setName(e.target.value)}
           />
           <Form.Field
             control={Input}
             type="text"
-            value={description}
+            defaultValue={description}
             label="Service Description"
             placeholder="Service Description"
             onBlur={(e) => setDescription(e.target.value)}
@@ -89,15 +89,17 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
               icon="add circle"
               color="blue"
               onClick={() => {
-                const currentRequestTables = [...requestTables];
-                currentRequestTables.push({
-                  tableName: `NewRequestTable${
-                    currentRequestTables.length + 1
-                  }`,
-                  columns: [{ name: "column1", numeric: false }],
-                  rows: [{ column1: "" }],
+                const newRequestTables = produce(requestTables, (draft) => {
+                  draft.push({
+                    tableName: `NewRequestTable${draft.length + 1}`,
+                    columns: [{ name: "column1", numeric: false }],
+                    rows: [{ column1: "" }],
+                  });
                 });
-                setRequestTables(currentRequestTables);
+                setRequestTables(newRequestTables);
+                setCurrentRequestTable(
+                  newRequestTables[newRequestTables.length - 1]
+                );
               }}
             />
           </Header>
@@ -136,8 +138,12 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                             const value = e.target.innerHTML
                               .replace(`<h3 class="table-name-header">`, "")
                               .replace("</h3>", "");
-                            const newRequestTables = [...requestTables];
-                            newRequestTables[index].tableName = value;
+                            const newRequestTables = produce(
+                              requestTables,
+                              (draft) => {
+                                draft[index].tableName = value;
+                              }
+                            );
                             setRequestTables(newRequestTables);
                           }}
                         />
@@ -146,12 +152,17 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                           color="red"
                           onClick={(e) => {
                             e.stopPropagation();
-                            const updatedTables = [
-                              ...requestTables.filter(
-                                (t) => t.tableName !== table.tableName
-                              ),
-                            ];
-                            setRequestTables(updatedTables);
+                            const newRequestTables = produce(
+                              requestTables,
+                              (draft) => {
+                                draft = draft.filter(
+                                  (t) => t.tableName !== table.tableName
+                                );
+                              }
+                            );
+
+                            setRequestTables(newRequestTables);
+
                             toast({
                               type: "info",
                               icon: "trash alternate outline",
@@ -196,6 +207,9 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                 });
 
                 setResponseTables(newResponseTables);
+                setCurrentResponseTable(
+                  newResponseTables[newResponseTables.length - 1]
+                );
               }}
             />
           </Header>
@@ -234,8 +248,12 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                             const value = e.target.innerHTML
                               .replace(`<h3 class="table-name-header">`, "")
                               .replace("</h3>", "");
-                            const newResponseTables = [...responseTables];
-                            newResponseTables[index].tableName = value;
+                            const newResponseTables = produce(
+                              responseTables,
+                              (draft) => {
+                                draft[index].tableName = value;
+                              }
+                            );
                             setResponseTables(newResponseTables);
                           }}
                         />
@@ -244,12 +262,15 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                           color="red"
                           onClick={(e) => {
                             e.stopPropagation();
-                            const updatedTables = [
-                              ...responseTables.filter(
-                                (t) => t.tableName !== table.tableName
-                              ),
-                            ];
-                            setResponseTables(updatedTables);
+                            const newResponseTables = produce(
+                              responseTables,
+                              (draft) => {
+                                draft.filter(
+                                  (t) => t.tableName !== table.tableName
+                                );
+                              }
+                            );
+                            setResponseTables(newResponseTables);
                             toast({
                               type: "info",
                               icon: "trash alternate outline",

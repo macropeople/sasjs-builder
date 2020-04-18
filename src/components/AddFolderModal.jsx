@@ -5,14 +5,14 @@ const AddFolderModal = ({
   isOpen,
   onAddFolder,
   showFolderNameError,
-  onCancel
+  onCancel,
 }) => {
   return (
     <Modal open={isOpen} size="tiny" onClose={onCancel}>
       <Header icon="add" content="Add New Folder" />
       <Form
         className="new-folder-form"
-        onSubmit={e => onAddFolder(e.target.elements.folderName.value)}
+        onSubmit={(e) => onAddFolder(e.target.elements.folderName.value)}
       >
         <Modal.Content>
           {showFolderNameError && (
@@ -31,6 +31,7 @@ const AddFolderModal = ({
             maxLength="32"
             pattern="[_a-zA-Z][_a-zA-Z0-9]*"
             required
+            autoFocus
           />
           <div className="naming-conventions">
             Please make sure to follow the SAS naming convention for names:
