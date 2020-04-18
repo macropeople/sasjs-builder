@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
-import { Button, Header } from "semantic-ui-react";
+import { Button } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import "./ImportExport.scss";
 import FileUpload from "../components/FileUpload";
 import { AppContext } from "../context/AppContext";
 
-const ImportExport = () => {
+const ImportExport = (props) => {
   const { setMasterJson, masterJson } = useContext(AppContext);
 
   const importJson = (jsonObject) => {
@@ -17,6 +17,7 @@ const ImportExport = () => {
       description: `Your configuration and services have now been loaded.`,
       time: 2000,
     });
+    props.history.push("/configuration");
   };
 
   const exportJson = () => {
@@ -68,7 +69,6 @@ const ImportExport = () => {
   };
   return (
     <div className="import-export-container">
-      <Header as="h1">Import / Export</Header>
       <div className="file-upload">
         <FileUpload text="Upload JSON file" onFileChange={onFileChanged} />
         {!!Object.keys(masterJson).length && (

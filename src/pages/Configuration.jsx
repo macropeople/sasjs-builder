@@ -42,7 +42,6 @@ const Configuration = () => {
 
   return (
     <div className="configuration-container">
-      <Header as="h1">Configuration</Header>
       {showSuccessMessage && (
         <Message positive>
           <Message.Header>

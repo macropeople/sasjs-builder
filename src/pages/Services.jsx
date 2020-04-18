@@ -1,5 +1,5 @@
 import React, { useContext, useState, useCallback, useEffect } from "react";
-import { Header, Segment, Icon, Message, Card, Popup } from "semantic-ui-react";
+import { Segment, Icon, Message, Card, Popup } from "semantic-ui-react";
 import "./Services.scss";
 import { AppContext } from "../context/AppContext";
 import Folder from "../components/Folder";
@@ -56,7 +56,6 @@ const Services = () => {
 
   return (
     <div className="services-container">
-      <Header as="h1">Services</Header>
       <div className="main-content">
         <Segment raised size="huge" className="folders">
           <h3>Folders</h3>
