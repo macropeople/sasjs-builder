@@ -28,7 +28,6 @@ export const AppProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    debugger;
     const sasjs = new SASjs({
       serverUrl: "",
       appLoc: "/common/appInit",
@@ -37,19 +36,18 @@ export const AppProvider = ({ children }) => {
     setAdapter(sasjs);
     const config = sasjs.getSasjsConfig();
     // SASjs bug: serverUrl is set to location.hostname:<empty> when there is no port specified
-    setMasterJson({
-      ...masterJson,
+    setMasterJson((m) => ({
+      ...m,
       sasJsConfig: {
-        ...masterJson.sasJsConfig,
+        ...m.sasJsConfig,
         pathSAS9: config.pathSAS9,
         pathSASViya: config.pathSASViya,
       },
-    });
+    }));
     sasjs.checkSession().then((response) => setIsLoggedIn(response.isLoggedIn));
   }, []);
 
   useEffect(() => {
-    debugger;
     if (masterJson && masterJson.sasJsConfig) {
       setAdapter(new SASjs(masterJson.sasJsConfig));
     }

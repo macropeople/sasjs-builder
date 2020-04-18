@@ -8,6 +8,7 @@ import ContentEditable from "react-contenteditable";
 import PopupIcon from "./PopupIcon";
 import produce from "immer";
 import TryItOut from "./TryItOut";
+import { useCallback } from "react";
 
 const ServiceModal = ({ service, path, onClose, onUpdate }) => {
   const [name, setName] = useState(service.name);
@@ -17,6 +18,130 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
   const [description, setDescription] = useState(service.description);
   const [requestTables, setRequestTables] = useState([]);
   const [responseTables, setResponseTables] = useState([]);
+
+  const addRequestTable = useCallback(() => {
+    const newRequestTables = produce(requestTables, (draft) => {
+      draft.push({
+        tableName: `NewRequestTable${draft.length + 1}`,
+        columns: [{ name: "column1", numeric: false }],
+        rows: [{ column1: "" }],
+      });
+    });
+    setRequestTables(newRequestTables);
+    setCurrentRequestTable(newRequestTables[newRequestTables.length - 1]);
+  }, [requestTables]);
+
+  const addResponseTable = useCallback(() => {
+    const newResponseTables = produce(responseTables, (draft) => {
+      draft.push({
+        tableName: `NewResponseTable${draft.length + 1}`,
+        columns: [{ name: "column1", numeric: false }],
+        rows: [{ column1: "" }],
+      });
+    });
+    setResponseTables(newResponseTables);
+    setCurrentResponseTable(newResponseTables[newResponseTables.length - 1]);
+  }, [responseTables]);
+
+  const removeRequestTable = useCallback(
+    (table) => {
+      const newRequestTables = produce(requestTables, (draft) => {
+        return draft.filter((t) => t.tableName !== table.tableName);
+      });
+
+      setRequestTables(newRequestTables);
+      if (newRequestTables.length) {
+        setCurrentRequestTable(newRequestTables[0]);
+      } else {
+        setCurrentRequestTable(null);
+      }
+
+      toast({
+        type: "info",
+        icon: "trash alternate outline",
+        title: "Table Removed",
+        description: `Table ${table.tableName} has now been removed.`,
+        time: 2000,
+      });
+    },
+    [requestTables]
+  );
+
+  const removeResponseTable = useCallback(
+    (table) => {
+      const newResponseTables = produce(responseTables, (draft) => {
+        return draft.filter((t) => t.tableName !== table.tableName);
+      });
+
+      setResponseTables(newResponseTables);
+      if (newResponseTables.length) {
+        setCurrentResponseTable(newResponseTables[0]);
+      } else {
+        setCurrentResponseTable(null);
+      }
+
+      toast({
+        type: "info",
+        icon: "trash alternate outline",
+        title: "Table Removed",
+        description: `Table ${table.tableName} has now been removed.`,
+        time: 2000,
+      });
+    },
+    [responseTables]
+  );
+
+  const updateResponseTableName = useCallback(
+    (value, index) => {
+      const newResponseTables = produce(responseTables, (draft) => {
+        draft[index].tableName = value;
+      });
+      setResponseTables(newResponseTables);
+    },
+    [responseTables]
+  );
+
+  const updateRequestTableName = useCallback(
+    (value, index) => {
+      const newRequestTables = produce(requestTables, (draft) => {
+        draft[index].tableName = value;
+      });
+      setRequestTables(newRequestTables);
+    },
+    [requestTables]
+  );
+
+  const updateRequestTable = useCallback(
+    (updatedTable, index) => {
+      const newRequestTables = produce(requestTables, (draft) => {
+        draft[index] = updatedTable;
+      });
+      setRequestTables(newRequestTables);
+      if (
+        currentRequestTable &&
+        currentRequestTable.name === updatedTable.name
+      ) {
+        setCurrentRequestTable(updatedTable);
+      }
+    },
+    [requestTables, currentRequestTable]
+  );
+
+  const updateResponseTable = useCallback(
+    (updatedTable, index) => {
+      const newResponseTables = produce(responseTables, (draft) => {
+        draft[index] = updatedTable;
+      });
+      setResponseTables(newResponseTables);
+      if (
+        currentResponseTable &&
+        currentResponseTable.name === updatedTable.name
+      ) {
+        setCurrentResponseTable(updatedTable);
+      }
+    },
+    [responseTables, currentResponseTable]
+  );
 
   useEffect(() => {
     if (service) {
@@ -88,19 +213,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
               text="Add request table"
               icon="add circle"
               color="blue"
-              onClick={() => {
-                const newRequestTables = produce(requestTables, (draft) => {
-                  draft.push({
-                    tableName: `NewRequestTable${draft.length + 1}`,
-                    columns: [{ name: "column1", numeric: false }],
-                    rows: [{ column1: "" }],
-                  });
-                });
-                setRequestTables(newRequestTables);
-                setCurrentRequestTable(
-                  newRequestTables[newRequestTables.length - 1]
-                );
-              }}
+              onClick={addRequestTable}
             />
           </Header>
           {!!requestTables.length && (
@@ -138,13 +251,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                             const value = e.target.innerHTML
                               .replace(`<h3 class="table-name-header">`, "")
                               .replace("</h3>", "");
-                            const newRequestTables = produce(
-                              requestTables,
-                              (draft) => {
-                                draft[index].tableName = value;
-                              }
-                            );
-                            setRequestTables(newRequestTables);
+                            updateRequestTableName(value, index);
                           }}
                         />
                         <Icon
@@ -152,37 +259,14 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                           color="red"
                           onClick={(e) => {
                             e.stopPropagation();
-                            const newRequestTables = produce(
-                              requestTables,
-                              (draft) => {
-                                draft = draft.filter(
-                                  (t) => t.tableName !== table.tableName
-                                );
-                              }
-                            );
-
-                            setRequestTables(newRequestTables);
-
-                            toast({
-                              type: "info",
-                              icon: "trash alternate outline",
-                              title: "Table Removed",
-                              description: `Table ${table.tableName} has now been removed.`,
-                              time: 2000,
-                            });
+                            removeRequestTable(table);
                           }}
                         />
                       </Header>
                       <ServiceTable
                         table={table}
                         onUpdate={(updatedTable) => {
-                          const newRequestTables = produce(
-                            requestTables,
-                            (draft) => {
-                              draft[index] = updatedTable;
-                            }
-                          );
-                          setRequestTables(newRequestTables);
+                          updateRequestTable(updatedTable, index);
                         }}
                       />
                     </Tab.Pane>
@@ -197,20 +281,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
               text="Add response table"
               icon="add circle"
               color="blue"
-              onClick={() => {
-                const newResponseTables = produce(responseTables, (draft) => {
-                  draft.push({
-                    tableName: `NewResponseTable${draft.length + 1}`,
-                    columns: [{ name: "column1", numeric: false }],
-                    rows: [{ column1: "" }],
-                  });
-                });
-
-                setResponseTables(newResponseTables);
-                setCurrentResponseTable(
-                  newResponseTables[newResponseTables.length - 1]
-                );
-              }}
+              onClick={addResponseTable}
             />
           </Header>
           {!!responseTables.length && (
@@ -248,13 +319,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                             const value = e.target.innerHTML
                               .replace(`<h3 class="table-name-header">`, "")
                               .replace("</h3>", "");
-                            const newResponseTables = produce(
-                              responseTables,
-                              (draft) => {
-                                draft[index].tableName = value;
-                              }
-                            );
-                            setResponseTables(newResponseTables);
+                            updateResponseTableName(value, index);
                           }}
                         />
                         <Icon
@@ -262,35 +327,14 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
                           color="red"
                           onClick={(e) => {
                             e.stopPropagation();
-                            const newResponseTables = produce(
-                              responseTables,
-                              (draft) => {
-                                draft.filter(
-                                  (t) => t.tableName !== table.tableName
-                                );
-                              }
-                            );
-                            setResponseTables(newResponseTables);
-                            toast({
-                              type: "info",
-                              icon: "trash alternate outline",
-                              title: "Table Removed",
-                              description: `Table ${table.tableName} has now been removed.`,
-                              time: 2000,
-                            });
+                            removeResponseTable(table);
                           }}
                         />
                       </Header>
                       <ServiceTable
                         table={table}
                         onUpdate={(updatedTable) => {
-                          const newResponseTables = produce(
-                            responseTables,
-                            (draft) => {
-                              draft[index] = updatedTable;
-                            }
-                          );
-                          setResponseTables(newResponseTables);
+                          updateResponseTable(updatedTable, index);
                         }}
                       />
                     </Tab.Pane>

@@ -5,7 +5,7 @@ import Highlight from "react-highlight.js";
 import LoginModal from "../pages/LoginModal";
 
 const TryItOut = ({ path, serviceName, requestTables, responseTables }) => {
-  const { adapter, isLoggedIn, logIn } = useContext(AppContext);
+  const { adapter, isLoggedIn } = useContext(AppContext);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);

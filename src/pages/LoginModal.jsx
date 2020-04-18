@@ -10,7 +10,7 @@ const LoginModal = ({ onLogin }) => {
 
   const logIn = useCallback(() => {
     appContext.logIn(username, password).then(onLogin);
-  }, [username, password, appContext]);
+  }, [username, password, appContext, onLogin]);
 
   return (
     <Modal open={true} size="mini">

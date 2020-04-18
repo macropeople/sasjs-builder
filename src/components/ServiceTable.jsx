@@ -4,6 +4,7 @@ import { Table, Checkbox, Icon, Popup } from "semantic-ui-react";
 import "./ServiceTable.scss";
 import PopupIcon from "./PopupIcon";
 import { produce } from "immer";
+import { useCallback } from "react";
 
 const ServiceTable = ({ table, onUpdate }) => {
   const [columns, setColumns] = useState([]);
@@ -15,6 +16,140 @@ const ServiceTable = ({ table, onUpdate }) => {
       setRows(table.rows);
     }
   }, [table]);
+
+  useEffect(() => {
+    console.log("columns updated", columns);
+  }, [columns])
+
+  const updateColumnName = useCallback(
+    (columnIndex, newColumnName) => {
+      const oldColumnName = columns[columnIndex].name;
+      const newColumns = produce(columns, (draft) => {
+        draft[columnIndex].name = newColumnName;
+      });
+      const newRows = produce(rows, (draft) => {
+        draft.forEach((row) => {
+          const cellValue = row[oldColumnName];
+          delete row[oldColumnName];
+          row[newColumnName] = cellValue;
+        });
+      });
+      setColumns(newColumns);
+      setRows(newRows);
+      onUpdate({
+        tableName: table.tableName,
+        columns: newColumns,
+        rows: newRows,
+      });
+    },
+    [columns, rows, table.tableName, onUpdate]
+  );
+
+  const toggleColumnType = useCallback(
+    (columnIndex) => {
+      const newColumns = produce(columns, (draft) => {
+        draft[columnIndex].numeric = !draft[columnIndex].numeric;
+      });
+
+      setColumns(newColumns);
+      onUpdate({
+        tableName: table.tableName,
+        columns: newColumns,
+        rows,
+      });
+    },
+    [columns, rows, table.tableName, onUpdate]
+  );
+
+  const removeColumn = useCallback(
+    (columnIndex) => {
+      const column = columns[columnIndex];
+      const newColumns = produce(columns, (draft) => {
+        return draft.filter((_, i) => i !== columnIndex);
+      });
+      setColumns(newColumns);
+      const newRows = produce(rows, (draft) => {
+        draft.forEach((row) => delete row[column.name]);
+      });
+      setRows(newRows);
+      onUpdate({
+        tableName: table.tableName,
+        columns: newColumns,
+        rows: newRows,
+      });
+    },
+    [columns, rows, table.tableName, onUpdate]
+  );
+
+  const updateCell = useCallback(
+    (columnName, rowIndex, value) => {
+      const currentColumn = columns.find((c) => c.name === columnName);
+      if (currentColumn.numeric) {
+        if (Number.isNaN(Number(value))) {
+          const newColumns = produce(columns, draft => {
+            const column = draft.find((c) => c.name === columnName);
+            column.numeric = false;
+          })
+          const newRows = produce(rows, draft => {
+            draft.forEach(row => row[columnName] = `${row[columnName]}`)
+          })
+          setColumns(newColumns);
+          setRows(newRows);
+        } else {
+          value = Number(value);
+        }
+      }
+      const newRows = produce(rows, (draft) => {
+        draft[rowIndex][columnName] = value;
+      });
+      setRows(newRows);
+      onUpdate({
+        tableName: table.tableName,
+        columns,
+        rows: newRows,
+      });
+    },
+    [columns, rows, table.tableName, onUpdate]
+  );
+
+  const addColumn = useCallback(() => {
+    const newColumnName = `Column${columns.length + 1}`;
+    const newColumns = produce(columns, (draft) => {
+      draft.push({ name: newColumnName, numeric: true });
+      return draft;
+    });
+
+    const newRows = produce(rows, (draft) => {
+      draft.forEach((row) => (row[newColumnName] = ""));
+    });
+    setColumns(newColumns);
+    setRows(newRows);
+    onUpdate({
+      tableName: table.tableName,
+      columns: newColumns,
+      rows: newRows,
+    });
+  }, [columns, rows, table.tableName, onUpdate]);
+
+  const addRow = useCallback(() => {
+    const newRows = produce(rows, (draft) => {
+      const row = {};
+      columns.forEach((column) => {
+        if (column.numeric) {
+          row[column.name] = 0;
+        } else {
+          row[column.name] = "";
+        }
+      });
+      draft.push(row);
+    });
+    setRows(newRows);
+    onUpdate({
+      tableName: table.tableName,
+      columns,
+      rows: newRows,
+    });
+  }, [columns, rows, table.tableName, onUpdate]);
 
   return (
     <div className="service-table-container">
@@ -32,27 +167,10 @@ const ServiceTable = ({ table, onUpdate }) => {
                         onClick={(e) => e.stopPropagation()}
                         disabled={false}
                         onBlur={(e) => {
-                          const oldColumnName = columns[index].name;
                           const newColumnName = e.target.innerHTML
                             .replace(`<div class="editable-cell">`, "")
                             .replace("</div>", "");
-                          const newColumns = produce(columns, (draft) => {
-                            draft[index].name = newColumnName;
-                          });
-                          const newRows = produce(rows, (draft) => {
-                            draft.forEach((row) => {
-                              const cellValue = row[oldColumnName];
-                              delete row[oldColumnName];
-                              row[newColumnName] = cellValue;
-                            });
-                          });
-                          setColumns(newColumns);
-                          setRows(newRows);
-                          onUpdate({
-                            tableName: table.tableName,
-                            columns: newColumns,
-                            rows: newRows,
-                          });
+                          updateColumnName(index, newColumnName);
                         }}
                       />
                       <Popup
@@ -65,21 +183,7 @@ const ServiceTable = ({ table, onUpdate }) => {
                             toggle
                             checked={column.numeric}
                             onChange={() => {
-                              const newColumn = produce(column, (draft) => {
-                                draft.numeric = !column.numeric;
-                                return draft;
-                              });
-
-                              const newColumns = produce(columns, (draft) => {
-                                draft[index] = newColumn;
-                                return draft;
-                              });
-                              setColumns(newColumns);
-                              onUpdate({
-                                tableName: table.tableName,
-                                columns: newColumns,
-                                rows,
-                              });
+                              toggleColumnType(index);
                             }}
                           />
                         }
@@ -88,20 +192,7 @@ const ServiceTable = ({ table, onUpdate }) => {
                         name="trash alternate outline"
                         color="red"
                         onClick={() => {
-                          const newColumns = produce(columns, (draft) => {
-                            return draft.filter((_, i) => i !== index);
-                          });
-                          setColumns(newColumns);
-                          const newRows = produce(rows, (draft) => {
-                            draft.forEach((row) => delete row[column.name]);
-                            return draft;
-                          });
-                          setRows(newRows);
-                          onUpdate({
-                            tableName: table.tableName,
-                            columns: newColumns,
-                            rows: newRows,
-                          });
+                          removeColumn(index);
                         }}
                       />
                     </div>
@@ -112,13 +203,9 @@ const ServiceTable = ({ table, onUpdate }) => {
           </Table.Header>
           <Table.Body>
             {rows.map((row, rowIndex) => {
-              const columnNames = columns.map((c) => c.name);
-              const sortedColumnNames = Object.keys(row).sort(
-                (a, b) => columnNames.indexOf(a) - columnNames.indexOf(b)
-              );
               return (
                 <Table.Row key={rowIndex}>
-                  {sortedColumnNames.map((columnName) => {
+                  {columns.map((c) => c.name).map((columnName) => {
                     return (
                       <Table.Cell key={`${columnName}${rowIndex}`}>
                         <ContentEditable
@@ -126,27 +213,11 @@ const ServiceTable = ({ table, onUpdate }) => {
                           onClick={(e) => e.stopPropagation()}
                           disabled={false}
                           onBlur={(e) => {
-                            let value = e.target.innerHTML
+                            const value = e.target.innerHTML
                               .replace(`<div class="editable-cell">`, "")
                               .replace("</div>", "");
-                            if (
-                              columns.find((c) => c.name === columnName).numeric
-                            ) {
-                              value = Number(value);
-                              if (Number.isNaN(value)) {
-                                value = null;
-                              }
-                            }
-                            const newRows = produce(rows, (draft) => {
-                              draft[rowIndex][columnName] = value;
-                              return draft;
-                            });
-                            setRows(newRows);
-                            onUpdate({
-                              tableName: table.tableName,
-                              columns,
-                              rows: newRows,
-                            });
+
+                            updateCell(columnName, rowIndex, value);
                           }}
                         />
                       </Table.Cell>
@@ -161,51 +232,14 @@ const ServiceTable = ({ table, onUpdate }) => {
           text="Add column"
           icon="add circle"
           color="blue"
-          onClick={() => {
-            const newColumnName = `Column${columns.length + 1}`;
-            const newColumns = produce(columns, (draft) => {
-              draft.push({ name: newColumnName, numeric: false });
-              return draft;
-            });
-
-            const newRows = produce(rows, (draft) => {
-              draft.forEach((row) => (row[newColumnName] = ""));
-              return draft;
-            });
-            setColumns(newColumns);
-            setRows(newRows);
-            onUpdate({
-              tableName: table.tableName,
-              columns: newColumns,
-              rows: newRows,
-            });
-          }}
+          onClick={addColumn}
         />
       </div>
       <PopupIcon
         text="Add row"
         icon="add circle"
         color="blue"
-        onClick={() => {
-          const newRows = produce(rows, (draft) => {
-            const row = {};
-            columns.forEach((column) => {
-              if (column.numeric) {
-                row[column.name] = 0;
-              } else {
-                row[column.name] = "";
-              }
-            });
-            draft.push(row);
-            return draft;
-          });
-          setRows(newRows);
-          onUpdate({
-            tableName: table.tableName,
-            columns,
-            rows: newRows,
-          });
-        }}
+        onClick={addRow}
       />
     </div>
   );
