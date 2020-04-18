@@ -5,6 +5,7 @@ import "./ServiceTable.scss";
 import PopupIcon from "./PopupIcon";
 import { produce } from "immer";
 import { useCallback } from "react";
+import ContextMenu from "./ContextMenu";
 
 const ServiceTable = ({ table, onUpdate }) => {
   const [columns, setColumns] = useState([]);
@@ -19,7 +20,7 @@ const ServiceTable = ({ table, onUpdate }) => {
 
   useEffect(() => {
     console.log("columns updated", columns);
-  }, [columns])
+  }, [columns]);
 
   const updateColumnName = useCallback(
     (columnIndex, newColumnName) => {
@@ -86,13 +87,13 @@ const ServiceTable = ({ table, onUpdate }) => {
       const currentColumn = columns.find((c) => c.name === columnName);
       if (currentColumn.numeric) {
         if (Number.isNaN(Number(value))) {
-          const newColumns = produce(columns, draft => {
+          const newColumns = produce(columns, (draft) => {
             const column = draft.find((c) => c.name === columnName);
             column.numeric = false;
-          })
-          const newRows = produce(rows, draft => {
-            draft.forEach(row => row[columnName] = `${row[columnName]}`)
-          })
+          });
+          const newRows = produce(rows, (draft) => {
+            draft.forEach((row) => (row[columnName] = `${row[columnName]}`));
+          });
           setColumns(newColumns);
           setRows(newRows);
         } else {
@@ -173,7 +174,16 @@ const ServiceTable = ({ table, onUpdate }) => {
                           updateColumnName(index, newColumnName);
                         }}
                       />
-                      <Popup
+                      <ContextMenu
+                        numeric={column.numeric}
+                        onRemove={() => {
+                          removeColumn(index);
+                        }}
+                        onChangeType={() => {
+                          toggleColumnType(index);
+                        }}
+                      />
+                      {/* <Popup
                         inverted
                         content={
                           column.numeric ? "Numeric field" : "Non-numeric field"
@@ -194,7 +204,7 @@ const ServiceTable = ({ table, onUpdate }) => {
                         onClick={() => {
                           removeColumn(index);
                         }}
-                      />
+                      /> */}
                     </div>
                   </Table.HeaderCell>
                 );
@@ -205,24 +215,26 @@ const ServiceTable = ({ table, onUpdate }) => {
             {rows.map((row, rowIndex) => {
               return (
                 <Table.Row key={rowIndex}>
-                  {columns.map((c) => c.name).map((columnName) => {
-                    return (
-                      <Table.Cell key={`${columnName}${rowIndex}`}>
-                        <ContentEditable
-                          html={`<div class="editable-cell">${row[columnName]}</div>`}
-                          onClick={(e) => e.stopPropagation()}
-                          disabled={false}
-                          onBlur={(e) => {
-                            const value = e.target.innerHTML
-                              .replace(`<div class="editable-cell">`, "")
-                              .replace("</div>", "");
+                  {columns
+                    .map((c) => c.name)
+                    .map((columnName) => {
+                      return (
+                        <Table.Cell key={`${columnName}${rowIndex}`}>
+                          <ContentEditable
+                            html={`<div class="editable-cell">${row[columnName]}</div>`}
+                            onClick={(e) => e.stopPropagation()}
+                            disabled={false}
+                            onBlur={(e) => {
+                              const value = e.target.innerHTML
+                                .replace(`<div class="editable-cell">`, "")
+                                .replace("</div>", "");
 
-                            updateCell(columnName, rowIndex, value);
-                          }}
-                        />
-                      </Table.Cell>
-                    );
-                  })}
+                              updateCell(columnName, rowIndex, value);
+                            }}
+                          />
+                        </Table.Cell>
+                      );
+                    })}
                 </Table.Row>
               );
             })}

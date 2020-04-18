@@ -226,27 +226,27 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
                         currentRequestTable.name === table.name
                       }
                     >
-                      <Header
-                        as="h3"
-                        className="tables-header"
-                        onClick={() =>
-                          currentRequestTable
-                            ? setCurrentRequestTable(null)
-                            : setCurrentRequestTable(table)
-                        }
-                      >
-                        <ContentEditable
-                          className="table-name-header"
-                          html={`<h3 class="table-name-header">${table.tableName}</h3>`}
-                          onClick={(e) => e.stopPropagation()}
-                          disabled={false}
-                          onBlur={(e) => {
-                            const value = e.target.innerHTML
-                              .replace(`<h3 class="table-name-header">`, "")
-                              .replace("</h3>", "");
-                            updateRequestTableName(value, index);
-                          }}
-                        />
+                      <div className="tables-header">
+                        <Header
+                          as="h3"
+                          onClick={() =>
+                            currentRequestTable
+                              ? setCurrentRequestTable(null)
+                              : setCurrentRequestTable(table)
+                          }
+                        >
+                          <ContentEditable
+                            html={`<h3 class="table-name-header">${table.tableName}</h3>`}
+                            onClick={(e) => e.stopPropagation()}
+                            disabled={false}
+                            onBlur={(e) => {
+                              const value = e.target.innerHTML
+                                .replace(`<h3 class="table-name-header">`, "")
+                                .replace("</h3>", "");
+                              updateRequestTableName(value, index);
+                            }}
+                          />
+                        </Header>
                         <Icon
                           name="trash alternate outline"
                           color="red"
@@ -255,7 +255,7 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
                             removeRequestTable(table);
                           }}
                         />
-                      </Header>
+                      </div>
                       <ServiceTable
                         table={table}
                         onUpdate={(updatedTable) => {
@@ -294,27 +294,29 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
                         currentResponseTable.name === table.name
                       }
                     >
-                      <Header
-                        as="h3"
-                        className="tables-header"
-                        onClick={() => {
-                          currentResponseTable
-                            ? setCurrentResponseTable(null)
-                            : setCurrentResponseTable(table);
-                        }}
-                      >
-                        <ContentEditable
-                          className="table-name-header"
-                          html={`<h3 class="table-name-header">${table.tableName}</h3>`}
-                          onClick={(e) => e.stopPropagation()}
-                          disabled={false}
-                          onBlur={(e) => {
-                            const value = e.target.innerHTML
-                              .replace(`<h3 class="table-name-header">`, "")
-                              .replace("</h3>", "");
-                            updateResponseTableName(value, index);
+                      <div className="tables-header">
+                        <Header
+                          as="h3"
+                          className="tables-header"
+                          onClick={() => {
+                            currentResponseTable
+                              ? setCurrentResponseTable(null)
+                              : setCurrentResponseTable(table);
                           }}
-                        />
+                        >
+                          <ContentEditable
+                            className="table-name-header"
+                            html={`<h3 class="table-name-header">${table.tableName}</h3>`}
+                            onClick={(e) => e.stopPropagation()}
+                            disabled={false}
+                            onBlur={(e) => {
+                              const value = e.target.innerHTML
+                                .replace(`<h3 class="table-name-header">`, "")
+                                .replace("</h3>", "");
+                              updateResponseTableName(value, index);
+                            }}
+                          />
+                        </Header>
                         <Icon
                           name="trash alternate outline"
                           color="red"
@@ -323,7 +325,7 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
                             removeResponseTable(table);
                           }}
                         />
-                      </Header>
+                      </div>
                       <ServiceTable
                         table={table}
                         onUpdate={(updatedTable) => {

@@ -13,7 +13,9 @@
     height: 100%;
     .folders {
       width: 15%;
-      height: 100%;
+      height: auto;
+      min-height: 100%;
+      margin-bottom: 16px;
 
       h3 {
         display: inline-block;
@@ -31,7 +33,9 @@
 
     .services {
       width: 84%;
-      height: 100%;
+      height: auto;
+      min-height: 100%;
+      margin-bottom: 16px;
       margin-top: 0;
 
       h3 {

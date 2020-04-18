@@ -80,8 +80,16 @@ const Services = () => {
                   }}
                   onAddService={() => {
                     const service = {
-                      name: "myService",
-                      description: "My service",
+                      name: `myService${
+                        currentFolder.services
+                          ? currentFolder.services.length + 1
+                          : 1
+                      }`,
+                      description: `My service ${
+                        currentFolder.services
+                          ? currentFolder.services.length + 1
+                          : 1
+                      }`,
                     };
                     setCurrentService(service);
                     currentFolder.services.push(service);
