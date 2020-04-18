@@ -7,6 +7,7 @@ import AddFolderModal from "../components/AddFolderModal";
 import ServiceDetail from "../components/ServiceDetail";
 import PopupIcon from "../components/PopupIcon";
 import { sortByName } from "../utils";
+import produce from "immer";
 
 const Services = () => {
   const { masterJson, setMasterJson } = useContext(AppContext);
@@ -36,20 +37,21 @@ const Services = () => {
     (updatedService) => {
       const folderIndex = folders.indexOf(currentFolder);
       const serviceIndex = currentFolder.services.findIndex(
-        (s) => s.name === currentService.name
+        (s) => s.name === currentService.name || s.name === updatedService.name
       );
-      const updatedFolder = {
-        ...currentFolder,
-        services: [...currentFolder.services],
-      };
-      if (serviceIndex >= 0) {
-        updatedFolder.services[serviceIndex] = updatedService;
-      } else {
-        updatedFolder.services.push(updatedService);
-      }
+      const updatedFolder = produce(currentFolder, (draft) => {
+        if (serviceIndex >= 0) {
+          draft.services[serviceIndex] = updatedService;
+        } else {
+          draft.services.push(updatedService);
+        }
+      });
+
       setCurrentFolder(updatedFolder);
-      const updatedFolders = [...folders];
-      updatedFolders[folderIndex] = updatedFolder;
+      const updatedFolders = produce(folders, (draft) => {
+        draft[folderIndex] = updatedFolder;
+      });
+
       setFolders(updatedFolders);
     },
     [currentService, currentFolder, folders]
@@ -92,7 +94,15 @@ const Services = () => {
                       }`,
                     };
                     setCurrentService(service);
-                    currentFolder.services.push(service);
+                    const updatedFolder = produce(folder, (draft) => {
+                      draft.services.push(service);
+                    });
+
+                    const updatedFolders = produce(folders, (draft) => {
+                      draft[index] = updatedFolder;
+                    });
+                    setCurrentFolder(updatedFolder);
+                    setFolders(updatedFolders);
                   }}
                   onDelete={deleteFolder}
                 />
@@ -105,7 +115,9 @@ const Services = () => {
             <ServiceDetail
               service={currentService}
               path={currentFolder.name}
-              onUpdate={updateFolder}
+              onUpdate={(updatedService) => {
+                updateFolder(updatedService);
+              }}
             />
           )}
         </Segment>
