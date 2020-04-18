@@ -22,3 +22,18 @@ i.remove {
   padding: 8px;
   border-radius: 5px;
 }
+
+.folder-services {
+  width: 100%;
+  padding: 8px 0 0 16px;
+  display: flex;
+  flex-direction: column;
+
+  .service {
+    cursor: pointer;
+    padding: 8px 0;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

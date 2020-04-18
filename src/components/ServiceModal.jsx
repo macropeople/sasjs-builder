@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, Modal, Header, Form, Icon, Tab } from "semantic-ui-react";
+import { Input, Header, Form, Icon, Tab } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import "./ServiceModal.scss";
 import ServiceTable from "./ServiceTable";
@@ -14,7 +14,6 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
   const [name, setName] = useState(service.name);
   const [currentRequestTable, setCurrentRequestTable] = useState(null);
   const [currentResponseTable, setCurrentResponseTable] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
   const [description, setDescription] = useState(service.description);
   const [requestTables, setRequestTables] = useState([]);
   const [responseTables, setResponseTables] = useState([]);
@@ -145,13 +144,10 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
 
   useEffect(() => {
     if (service) {
-      setIsOpen(true);
-      if (service) {
-        setName(service.name);
-        setDescription(service.description);
-        setRequestTables(service.requestTables || []);
-        setResponseTables(service.responseTables || []);
-      }
+      setName(service.name);
+      setDescription(service.description);
+      setRequestTables(service.requestTables || []);
+      setResponseTables(service.responseTables || []);
       if (service.requestTables && service.requestTables.length) {
         setCurrentRequestTable(service.requestTables[0]);
       } else if (service.responseTables && service.responseTables.length) {
@@ -179,15 +175,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
   }, [requestTables, responseTables, description, name]);
 
   return service ? (
-    <Modal
-      open={isOpen}
-      size="fullscreen"
-      closeIcon
-      onClose={() => {
-        setIsOpen(false);
-        onClose();
-      }}
-    >
+    <>
       <Header icon="server" content={name} />
       <div className="service-modal-inner-container">
         <Form className="service-form">
@@ -361,7 +349,7 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
           </div>
         )}
       </div>
-    </Modal>
+    </>
   ) : (
     <></>
   );

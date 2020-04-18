@@ -68,13 +68,16 @@ const Services = () => {
           />
           <div className="folder-list">
             {folders.sort(sortByName).map((folder, index) => {
-              debugger;
               return (
                 <Folder
                   key={index}
                   folder={folder}
                   selected={currentFolder === folder}
                   onClick={() => setCurrentFolder(folder)}
+                  onServiceClick={(service) => {
+                    setCurrentFolder(folder);
+                    setCurrentService(service);
+                  }}
                   onDelete={deleteFolder}
                 />
               );
@@ -82,42 +85,13 @@ const Services = () => {
           </div>
         </Segment>
         <Segment raised size="huge" className="services">
-          <h3>Services</h3>
-          {currentFolder && (
-            <Popup
-              inverted
-              content="Add service"
-              trigger={
-                <Icon
-                  name="add"
-                  color="blue"
-                  onClick={() =>
-                    setCurrentService({
-                      name: "myService",
-                      description: "My service",
-                    })
-                  }
-                />
-              }
+          {currentFolder && currentService && (
+            <ServiceModal
+              service={currentService}
+              path={currentFolder.name}
+              onClose={() => setCurrentService(null)}
+              onUpdate={updateFolder}
             />
-          )}
-          {!currentFolder && (
-            <Message info>
-              <Message.Header>No folder selected</Message.Header>
-              Please select a folder from the sidebar to display services here.
-            </Message>
-          )}
-          {currentFolder && (
-            <Card.Group>
-              {currentFolder.services.map((service, index) => {
-                return (
-                  <Card key={index} onClick={() => setCurrentService(service)}>
-                    <Card.Header>{service.name}</Card.Header>
-                    <Card.Description>{service.description}</Card.Description>
-                  </Card>
-                );
-              })}
-            </Card.Group>
           )}
         </Segment>
       </div>
@@ -137,14 +111,6 @@ const Services = () => {
           }
         }}
       />
-      {currentFolder && currentService && (
-        <ServiceModal
-          service={currentService}
-          path={currentFolder.name}
-          onClose={() => setCurrentService(null)}
-          onUpdate={updateFolder}
-        />
-      )}
     </div>
   );
 };

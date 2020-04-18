@@ -2,16 +2,24 @@ import React, { useState } from "react";
 import { Icon, Confirm } from "semantic-ui-react";
 import "./Folder.scss";
 import PopupIcon from "./PopupIcon";
+import { useEffect } from "react";
 
 const Folder = (props) => {
-  const { folder, selected, onClick, onDelete } = props;
+  const { folder, selected, onClick, onDelete, onServiceClick } = props;
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(selected);
+
+  useEffect(() => {
+    setIsExpanded(selected);
+  }, [selected]);
   return (
     <>
       <div className="folder-container">
         <div
           className={selected ? "folder folder-selected" : "folder"}
-          onClick={() => onClick(folder)}
+          onClick={() => {
+            onClick(folder);
+          }}
         >
           <Icon name="folder"></Icon> {folder.name}
         </div>
@@ -24,6 +32,17 @@ const Folder = (props) => {
           }}
         />
       </div>
+      {isExpanded && (
+        <div className="folder-services">
+          {folder.services.map((service) => {
+            return (
+              <div className="service" onClick={() => onServiceClick(service)}>
+                {service.name}
+              </div>
+            );
+          })}
+        </div>
+      )}
       <Confirm
         open={showConfirmDelete}
         header={`Delete Folder ${folder.name}`}
