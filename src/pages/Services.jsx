@@ -94,15 +94,7 @@ const Services = () => {
                       }`,
                     };
                     setCurrentService(service);
-                    const updatedFolder = produce(folder, (draft) => {
-                      draft.services.push(service);
-                    });
-
-                    const updatedFolders = produce(folders, (draft) => {
-                      draft[index] = updatedFolder;
-                    });
-                    setCurrentFolder(updatedFolder);
-                    setFolders(updatedFolders);
+                    currentFolder.services.push(service);
                   }}
                   onDelete={deleteFolder}
                 />
