@@ -19,9 +19,9 @@ const TryItOut = ({ path, serviceName, requestTables, responseTables }) => {
   };
   return (
     <div className="try-it-out">
-      <Header as="h3" className="tables-header">
-        Try it out
-      </Header>
+      <div className="tables-header">
+        <Header as="h3">Try it out</Header>
+      </div>
       {isLoggedIn ? (
         <Button secondary onClick={makeRequest}>
           <Icon name="paper plane outline"></Icon>Send request

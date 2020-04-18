@@ -2,6 +2,11 @@
   box-sizing: border-box;
 }
 
+.service-header {
+  display: flex;
+  align-items: center;
+}
+
 .service-modal-inner-container {
   display: flex;
   flex-direction: column;
@@ -19,20 +24,19 @@
   align-items: center;
   i {
     font-size: 1em !important;
-    margin-left: 8px;
+    padding: 8px;
     display: flex !important;
     justify-content: center;
     align-items: center;
+  }
+  h3 {
+    margin: 0 !important;
   }
 }
 
 .table-name-header {
   display: inline;
   padding: 8px;
-}
-
-.ui.fullscreen.scrolling.modal {
-  left: auto !important;
 }
 
 .code {

@@ -36,8 +36,10 @@ const CodeSnippet = ({ path, serviceName, requestTables, responseTables }) => {
 
   return (
     <div className="code-snippet-container">
-      <Header as="h3" className="tables-header">
-        <code>SASjs </code> Code Snippet
+      <div className="tables-header">
+        <Header as="h3">
+          <code>SASjs </code> Code Snippet
+        </Header>
         <PopupIcon
           text="Copy snippet"
           color="blue"
@@ -55,7 +57,7 @@ const CodeSnippet = ({ path, serviceName, requestTables, responseTables }) => {
             });
           }}
         ></PopupIcon>
-      </Header>
+      </div>
       <Highlight language="javascript" className="code-snippet">
         {snippet}
       </Highlight>

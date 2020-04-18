@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Input, Header, Form, Icon, Tab } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
-import "./ServiceModal.scss";
+import "./ServiceDetail.scss";
 import ServiceTable from "./ServiceTable";
 import CodeSnippet from "./CodeSnippet";
 import ContentEditable from "react-contenteditable";
@@ -10,7 +10,7 @@ import produce from "immer";
 import TryItOut from "./TryItOut";
 import { useCallback } from "react";
 
-const ServiceModal = ({ service, path, onClose, onUpdate }) => {
+const ServiceDetail = ({ service, path, onUpdate }) => {
   const [name, setName] = useState(service.name);
   const [currentRequestTable, setCurrentRequestTable] = useState(null);
   const [currentResponseTable, setCurrentResponseTable] = useState(null);
@@ -176,17 +176,22 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
 
   return service ? (
     <>
-      <Header icon="server" content={name} />
+      <Header className="service-header">
+        <Icon name="server" />
+        <ContentEditable
+          html={`<h1 class="table-name-header">${name}</h1>`}
+          onClick={(e) => e.stopPropagation()}
+          disabled={false}
+          onBlur={(e) => {
+            const value = e.target.innerHTML
+              .replace(`<h1 class="table-name-header">`, "")
+              .replace("</h1>", "");
+            setName(value);
+          }}
+        />
+      </Header>
       <div className="service-modal-inner-container">
         <Form className="service-form">
-          <Form.Field
-            control={Input}
-            type="text"
-            label="Service Name"
-            defaultValue={name}
-            placeholder="Service Name"
-            onBlur={(e) => setName(e.target.value)}
-          />
           <Form.Field
             control={Input}
             type="text"
@@ -195,15 +200,15 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
             placeholder="Service Description"
             onBlur={(e) => setDescription(e.target.value)}
           />
-          <Header as="h3" className="tables-header">
-            Request Tables
+          <div className="tables-header">
+            <Header as="h3">Request Tables</Header>
             <PopupIcon
               text="Add request table"
               icon="add circle"
               color="blue"
               onClick={addRequestTable}
             />
-          </Header>
+          </div>
           {!!requestTables.length && (
             <Tab
               menu={{
@@ -263,15 +268,15 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
               })}
             ></Tab>
           )}
-          <Header as="h3" className="tables-header">
-            Response Tables
+          <div className="tables-header">
+            <Header as="h3">Response Tables</Header>
             <PopupIcon
               text="Add response table"
               icon="add circle"
               color="blue"
               onClick={addResponseTable}
             />
-          </Header>
+          </div>
           {!!responseTables.length && (
             <Tab
               menu={{
@@ -355,4 +360,4 @@ const ServiceModal = ({ service, path, onClose, onUpdate }) => {
   );
 };
 
-export default ServiceModal;
+export default ServiceDetail;

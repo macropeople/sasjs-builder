@@ -5,7 +5,14 @@ import PopupIcon from "./PopupIcon";
 import { useEffect } from "react";
 
 const Folder = (props) => {
-  const { folder, selected, onClick, onDelete, onServiceClick } = props;
+  const {
+    folder,
+    selected,
+    onClick,
+    onDelete,
+    onServiceClick,
+    onAddService,
+  } = props;
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isExpanded, setIsExpanded] = useState(selected);
 
@@ -32,17 +39,26 @@ const Folder = (props) => {
           }}
         />
       </div>
-      {isExpanded && (
-        <div className="folder-services">
-          {folder.services.map((service) => {
+      <div className="folder-services">
+        {isExpanded &&
+          folder.services.map((service) => {
             return (
-              <div className="service" onClick={() => onServiceClick(service)}>
+              <div
+                key={service.name}
+                className="service"
+                onClick={() => onServiceClick(service)}
+              >
                 {service.name}
               </div>
             );
           })}
-        </div>
-      )}
+        <PopupIcon
+          icon="add"
+          color="blue"
+          text="Add service"
+          onClick={onAddService}
+        />
+      </div>
       <Confirm
         open={showConfirmDelete}
         header={`Delete Folder ${folder.name}`}

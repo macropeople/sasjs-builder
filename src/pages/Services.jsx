@@ -1,10 +1,10 @@
 import React, { useContext, useState, useCallback, useEffect } from "react";
-import { Segment, Icon, Message, Card, Popup } from "semantic-ui-react";
+import { Segment } from "semantic-ui-react";
 import "./Services.scss";
 import { AppContext } from "../context/AppContext";
 import Folder from "../components/Folder";
 import AddFolderModal from "../components/AddFolderModal";
-import ServiceModal from "../components/ServiceModal";
+import ServiceDetail from "../components/ServiceDetail";
 import PopupIcon from "../components/PopupIcon";
 import { sortByName } from "../utils";
 
@@ -58,7 +58,7 @@ const Services = () => {
   return (
     <div className="services-container">
       <div className="main-content">
-        <Segment raised size="huge" className="folders">
+        <Segment raised size="large" className="folders">
           <h3>Folders</h3>
           <PopupIcon
             text="Add folder"
@@ -78,18 +78,25 @@ const Services = () => {
                     setCurrentFolder(folder);
                     setCurrentService(service);
                   }}
+                  onAddService={() => {
+                    const service = {
+                      name: "myService",
+                      description: "My service",
+                    };
+                    setCurrentService(service);
+                    currentFolder.services.push(service);
+                  }}
                   onDelete={deleteFolder}
                 />
               );
             })}
           </div>
         </Segment>
-        <Segment raised size="huge" className="services">
+        <Segment raised size="large" className="services">
           {currentFolder && currentService && (
-            <ServiceModal
+            <ServiceDetail
               service={currentService}
               path={currentFolder.name}
-              onClose={() => setCurrentService(null)}
               onUpdate={updateFolder}
             />
           )}
