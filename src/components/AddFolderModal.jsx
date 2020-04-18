@@ -43,10 +43,10 @@ const AddFolderModal = ({
           </div>
         </Modal.Content>
         <Modal.Actions>
-          <Button onClick={onCancel}>Cancel</Button>
           <Button type="submit" color="green">
             Add
           </Button>
+          <Button onClick={onCancel}>Cancel</Button>
         </Modal.Actions>
       </Form>
     </Modal>

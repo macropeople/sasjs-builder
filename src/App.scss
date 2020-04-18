@@ -7,18 +7,19 @@
 
 .root {
   display: flex;
+  flex-direction: column;
   width: 100vw;
   height: 100vh;
 
-  .sidebar {
-    width: 10%;
+  .menu-bar {
+    width: 100%;
     .ui.vertical.icon.menu {
       width: 10%;
     }
   }
 
   .main {
-    width: 92%;
+    width: 100%;
     padding: 16px;
   }
 }

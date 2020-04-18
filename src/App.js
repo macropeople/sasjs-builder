@@ -7,15 +7,15 @@ import ImportExport from "./pages/ImportExport";
 import Configuration from "./pages/Configuration";
 import Services from "./pages/Services";
 import { AppProvider } from "./context/AppContext";
-import SideBar from "./components/SideBar";
+import MenuBar from "./components/MenuBar";
 
 const App = () => {
   return (
     <div className="root">
       <AppProvider>
         <HashRouter>
-          <div className="sidebar">
-            <SideBar />
+          <div className="menu-bar">
+            <MenuBar />
           </div>
           <div className="main">
             <Switch>

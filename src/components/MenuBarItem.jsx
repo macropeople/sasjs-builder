@@ -1,14 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Menu, Icon, Label } from "semantic-ui-react";
-import "./SidebarItem.scss";
+import "./MenuBarItem.scss";
 
-const SidebarItem = ({ icon, link, text, showLabel, active }) => {
+const MenuBarItem = ({ icon, link, text, showLabel, active }) => {
   return (
     <Link to={link}>
       <Menu.Item
         as="span"
-        className={active ? "sidebar-item active" : "sidebar-item"}
+        className={active ? "menu-bar-item active" : "menu-bar-item"}
       >
         <Icon name={icon} />
         {text}
@@ -22,4 +22,4 @@ const SidebarItem = ({ icon, link, text, showLabel, active }) => {
   );
 };
 
-export default React.memo(SidebarItem);
+export default React.memo(MenuBarItem);
