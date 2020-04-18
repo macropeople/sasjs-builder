@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ContentEditable from "react-contenteditable";
-import { Table, Checkbox, Icon, Popup } from "semantic-ui-react";
+import { Table } from "semantic-ui-react";
 import "./ServiceTable.scss";
 import PopupIcon from "./PopupIcon";
 import { produce } from "immer";
@@ -183,28 +183,6 @@ const ServiceTable = ({ table, onUpdate }) => {
                           toggleColumnType(index);
                         }}
                       />
-                      {/* <Popup
-                        inverted
-                        content={
-                          column.numeric ? "Numeric field" : "Non-numeric field"
-                        }
-                        trigger={
-                          <Checkbox
-                            toggle
-                            checked={column.numeric}
-                            onChange={() => {
-                              toggleColumnType(index);
-                            }}
-                          />
-                        }
-                      />
-                      <Icon
-                        name="trash alternate outline"
-                        color="red"
-                        onClick={() => {
-                          removeColumn(index);
-                        }}
-                      /> */}
                     </div>
                   </Table.HeaderCell>
                 );
