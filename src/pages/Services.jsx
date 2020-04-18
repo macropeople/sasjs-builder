@@ -1,7 +1,7 @@
 import React, { useContext, useState, useCallback, useEffect } from "react";
 import { Header, Segment, Icon, Message, Card, Popup } from "semantic-ui-react";
 import "./Services.scss";
-import { AppContext } from "../context/appContext";
+import { AppContext } from "../context/AppContext";
 import Folder from "../components/Folder";
 import AddFolderModal from "../components/AddFolderModal";
 import ServiceModal from "../components/ServiceModal";

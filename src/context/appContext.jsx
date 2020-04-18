@@ -1,6 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
 import SASjs from "sasjs";
-import LoginModal from "../pages/LoginModal";
 import { useCallback } from "react";
 
 export const AppContext = createContext({
@@ -12,6 +11,9 @@ export const AppContext = createContext({
     },
   },
   setMasterJson: (json) => {},
+  isLoggedIn: false,
+  login: () => Promise.reject(),
+  adapter: null,
 });
 
 export const AppProvider = ({ children }) => {
@@ -26,16 +28,28 @@ export const AppProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    debugger;
     const sasjs = new SASjs({
       serverUrl: "",
       appLoc: "/common/appInit",
       serverType: "SASVIYA",
     });
     setAdapter(sasjs);
+    const config = sasjs.getSasjsConfig();
+    // SASjs bug: serverUrl is set to location.hostname:<empty> when there is no port specified
+    setMasterJson({
+      ...masterJson,
+      sasJsConfig: {
+        ...masterJson.sasJsConfig,
+        pathSAS9: config.pathSAS9,
+        pathSASViya: config.pathSASViya,
+      },
+    });
     sasjs.checkSession().then((response) => setIsLoggedIn(response.isLoggedIn));
   }, []);
 
   useEffect(() => {
+    debugger;
     if (masterJson && masterJson.sasJsConfig) {
       setAdapter(new SASjs(masterJson.sasJsConfig));
     }
@@ -43,7 +57,7 @@ export const AppProvider = ({ children }) => {
 
   const logIn = useCallback(
     (username, password) => {
-      adapter
+      return adapter
         .logIn(username, password)
         .then((res) => setIsLoggedIn(true))
         .catch(() => setIsLoggedIn(false));
@@ -52,9 +66,10 @@ export const AppProvider = ({ children }) => {
   );
 
   return (
-    <AppContext.Provider value={{ masterJson, setMasterJson, adapter, logIn }}>
+    <AppContext.Provider
+      value={{ masterJson, setMasterJson, adapter, isLoggedIn, logIn }}
+    >
       {children}
-      <LoginModal isOpen={!isLoggedIn} />
     </AppContext.Provider>
   );
 };

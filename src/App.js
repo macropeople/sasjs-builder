@@ -6,7 +6,7 @@ import "./App.scss";
 import ImportExport from "./pages/ImportExport";
 import Configuration from "./pages/Configuration";
 import Services from "./pages/Services";
-import { AppProvider } from "./context/appContext";
+import { AppProvider } from "./context/AppContext";
 import SideBar from "./components/SideBar";
 
 const App = () => {

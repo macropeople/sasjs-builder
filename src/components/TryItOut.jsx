@@ -1,10 +1,12 @@
 import React, { useState, useContext } from "react";
 import { Button, Icon, Header } from "semantic-ui-react";
-import { AppContext } from "../context/appContext";
+import { AppContext } from "../context/AppContext";
 import Highlight from "react-highlight.js";
+import LoginModal from "../pages/LoginModal";
 
 const TryItOut = ({ path, serviceName, requestTables, responseTables }) => {
-  const { adapter } = useContext(AppContext);
+  const { adapter, isLoggedIn, logIn } = useContext(AppContext);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
   const makeRequest = () => {
@@ -20,9 +22,18 @@ const TryItOut = ({ path, serviceName, requestTables, responseTables }) => {
       <Header as="h3" className="tables-header">
         Try it out
       </Header>
-      <Button secondary onClick={makeRequest}>
-        <Icon name="paper plane outline"></Icon>Send request
-      </Button>
+      {isLoggedIn ? (
+        <Button secondary onClick={makeRequest}>
+          <Icon name="paper plane outline"></Icon>Send request
+        </Button>
+      ) : (
+        <Button secondary onClick={() => setIsLoginModalOpen(true)}>
+          <Icon name="sign-in"></Icon>Sign in to send request
+        </Button>
+      )}
+      {isLoginModalOpen && (
+        <LoginModal onLogin={() => setIsLoginModalOpen(false)} />
+      )}
       {!!response ||
         (!!error && (
           <Highlight language="javascript" className="code-snippet">

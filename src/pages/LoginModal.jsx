@@ -1,19 +1,19 @@
 import React, { useState, useCallback, useContext } from "react";
 import { Modal, Input, Form, Header, Button, Icon } from "semantic-ui-react";
-import { AppContext } from "../context/appContext";
+import { AppContext } from "../context/AppContext";
 import "./LoginModal.scss";
 
-const LoginModal = ({ isOpen }) => {
+const LoginModal = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const appContext = useContext(AppContext);
 
   const logIn = useCallback(() => {
-    appContext.logIn(username, password);
+    appContext.logIn(username, password).then(onLogin);
   }, [username, password, appContext]);
 
   return (
-    <Modal open={isOpen} size="mini">
+    <Modal open={true} size="mini">
       <Header icon="sign-in" content="Sign in" />
       <Modal.Content>
         <p>Please sign in with your SAS server credentials.</p>

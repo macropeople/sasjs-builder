@@ -3,7 +3,7 @@ import { Button, Header } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import "./ImportExport.scss";
 import FileUpload from "../components/FileUpload";
-import { AppContext } from "../context/appContext";
+import { AppContext } from "../context/AppContext";
 
 const ImportExport = () => {
   const { setMasterJson, masterJson } = useContext(AppContext);

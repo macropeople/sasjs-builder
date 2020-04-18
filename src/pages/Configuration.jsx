@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Header, Segment, Button, Form, Message } from "semantic-ui-react";
-import { AppContext } from "../context/appContext";
+import { AppContext } from "../context/AppContext";
 import "./Configuration.scss";
 
 const Configuration = () => {
