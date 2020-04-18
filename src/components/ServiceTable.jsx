@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ContentEditable from "react-contenteditable";
-import { Table } from "semantic-ui-react";
+import { Table, Icon } from "semantic-ui-react";
 import "./ServiceTable.scss";
 import PopupIcon from "./PopupIcon";
 import { produce } from "immer";
@@ -57,6 +57,22 @@ const ServiceTable = ({ table, onUpdate }) => {
         tableName: table.tableName,
         columns: newColumns,
         rows,
+      });
+    },
+    [columns, rows, table.tableName, onUpdate]
+  );
+
+  const removeRow = useCallback(
+    (index) => {
+      const newRows = produce(rows, (draft) => {
+        return draft.filter((_, i) => i !== index);
+      });
+
+      setRows(newRows);
+      onUpdate({
+        tableName: table.tableName,
+        columns,
+        rows: newRows,
       });
     },
     [columns, rows, table.tableName, onUpdate]
@@ -192,28 +208,36 @@ const ServiceTable = ({ table, onUpdate }) => {
           <Table.Body>
             {rows.map((row, rowIndex) => {
               return (
-                <Table.Row key={rowIndex}>
-                  {columns
-                    .map((c) => c.name)
-                    .map((columnName) => {
-                      return (
-                        <Table.Cell key={`${columnName}${rowIndex}`}>
-                          <ContentEditable
-                            html={`<div class="editable-cell">${row[columnName]}</div>`}
-                            onClick={(e) => e.stopPropagation()}
-                            disabled={false}
-                            onBlur={(e) => {
-                              const value = e.target.innerHTML
-                                .replace(`<div class="editable-cell">`, "")
-                                .replace("</div>", "");
+                <>
+                  <Table.Row key={rowIndex}>
+                    {columns
+                      .map((c) => c.name)
+                      .map((columnName) => {
+                        return (
+                          <Table.Cell key={`${columnName}${rowIndex}`}>
+                            <ContentEditable
+                              html={`<div class="editable-cell">${row[columnName]}</div>`}
+                              onClick={(e) => e.stopPropagation()}
+                              disabled={false}
+                              onBlur={(e) => {
+                                const value = e.target.innerHTML
+                                  .replace(`<div class="editable-cell">`, "")
+                                  .replace("</div>", "");
 
-                              updateCell(columnName, rowIndex, value);
-                            }}
-                          />
-                        </Table.Cell>
-                      );
-                    })}
-                </Table.Row>
+                                updateCell(columnName, rowIndex, value);
+                              }}
+                            />
+                          </Table.Cell>
+                        );
+                      })}
+                  </Table.Row>
+                  <Icon
+                    name="trash alternate outline"
+                    color="red"
+                    className="icon-button"
+                    onClick={() => removeRow(rowIndex)}
+                  />
+                </>
               );
             })}
           </Table.Body>
