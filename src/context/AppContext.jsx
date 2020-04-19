@@ -14,6 +14,7 @@ export const AppContext = createContext({
   isLoggedIn: false,
   login: () => Promise.reject(),
   adapter: null,
+  isDarkMode: false,
 });
 
 export const AppProvider = ({ children }) => {
@@ -27,6 +28,7 @@ export const AppProvider = ({ children }) => {
   });
   const [adapter, setAdapter] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const sasjs = new SASjs({
@@ -65,9 +67,25 @@ export const AppProvider = ({ children }) => {
     [adapter]
   );
 
+  useEffect(() => {
+    if (isDarkMode) {
+      document.querySelector("body").classList.add("dark-mode");
+    } else {
+      document.querySelector("body").classList.remove("dark-mode");
+    }
+  }, [isDarkMode]);
+
   return (
     <AppContext.Provider
-      value={{ masterJson, setMasterJson, adapter, isLoggedIn, logIn }}
+      value={{
+        masterJson,
+        setMasterJson,
+        adapter,
+        isLoggedIn,
+        logIn,
+        isDarkMode,
+        setIsDarkMode,
+      }}
     >
       {children}
     </AppContext.Provider>

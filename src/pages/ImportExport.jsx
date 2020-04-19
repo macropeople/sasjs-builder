@@ -72,7 +72,7 @@ const ImportExport = (props) => {
       <div className="file-upload">
         <FileUpload text="Upload JSON file" onFileChange={onFileChanged} />
         {!!Object.keys(masterJson).length && (
-          <Button secondary onClick={exportJson}>
+          <Button color="green" onClick={exportJson}>
             Export JSON
           </Button>
         )}

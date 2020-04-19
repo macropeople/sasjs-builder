@@ -21,7 +21,13 @@ const notifyUpdate = (serviceObject, onUpdate) => {
   });
 };
 
-const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
+const ServiceDetail = ({
+  service,
+  path,
+  onUpdate,
+  validateServiceName,
+  isDarkMode,
+}) => {
   const [name, setName] = useState("");
   const [currentRequestTable, setCurrentRequestTable] = useState(null);
   const [currentResponseTable, setCurrentResponseTable] = useState(null);
@@ -239,7 +245,7 @@ const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
 
   return service ? (
     <>
-      <Header className="service-header">
+      <Header className="service-header" inverted={isDarkMode}>
         <Icon name="server" />
         <ContentEditable
           className="table-name-header h1"
@@ -277,7 +283,7 @@ const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
         />
       </Header>
       <div className="service-modal-inner-container">
-        <Form className="service-form">
+        <Form className="service-form" inverted={isDarkMode}>
           <Form.Field
             control={Input}
             type="text"
@@ -298,7 +304,9 @@ const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
             }}
           />
           <div className="tables-header">
-            <Header as="h3">Request Tables</Header>
+            <Header as="h3" inverted={isDarkMode}>
+              Request Tables
+            </Header>
             <PopupIcon
               text="Add request table"
               icon="add circle"
@@ -311,12 +319,14 @@ const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
               menu={{
                 tabular: true,
                 fluid: true,
+                inverted: isDarkMode,
               }}
               panes={requestTables.map((table, index) => {
                 return {
                   menuItem: table.tableName,
                   render: () => (
                     <Tab.Pane
+                      inverted={isDarkMode}
                       key={table.tableName}
                       active={
                         currentRequestTable &&
@@ -325,6 +335,7 @@ const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
                     >
                       <div className="tables-header">
                         <Header
+                          inverted={isDarkMode}
                           as="h3"
                           onClick={() =>
                             currentRequestTable
@@ -353,6 +364,7 @@ const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
                         />
                       </div>
                       <ServiceTable
+                        isDarkMode={isDarkMode}
                         table={table}
                         onUpdate={(updatedTable) => {
                           updateRequestTable(updatedTable, index);
@@ -365,7 +377,9 @@ const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
             ></Tab>
           )}
           <div className="tables-header">
-            <Header as="h3">Response Tables</Header>
+            <Header as="h3" inverted={isDarkMode}>
+              Response Tables
+            </Header>
             <PopupIcon
               text="Add response table"
               icon="add circle"
@@ -378,12 +392,14 @@ const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
               menu={{
                 tabular: true,
                 fluid: true,
+                inverted: isDarkMode,
               }}
               panes={responseTables.map((table, index) => {
                 return {
                   menuItem: table.tableName,
                   render: () => (
                     <Tab.Pane
+                      inverted={isDarkMode}
                       key={index}
                       active={
                         currentResponseTable &&
@@ -393,6 +409,7 @@ const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
                       <div className="tables-header">
                         <Header
                           as="h3"
+                          inverted={isDarkMode}
                           className="tables-header"
                           onClick={() => {
                             currentResponseTable
@@ -421,6 +438,7 @@ const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
                         />
                       </div>
                       <ServiceTable
+                        isDarkMode={isDarkMode}
                         table={table}
                         onUpdate={(updatedTable) => {
                           updateResponseTable(updatedTable, index);
@@ -436,12 +454,14 @@ const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
         {!!service && (
           <div className="code">
             <CodeSnippet
+              isDarkMode={isDarkMode}
               path={path}
               serviceName={service.name}
               requestTables={requestTables}
               responseTables={responseTables}
             />
             <TryItOut
+              isDarkMode={isDarkMode}
               path={path}
               serviceName={service.name}
               requestTables={requestTables}

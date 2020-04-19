@@ -5,7 +5,13 @@ import "./CodeSnippet.scss";
 import { Header } from "semantic-ui-react";
 import PopupIcon from "./PopupIcon";
 
-const CodeSnippet = ({ path, serviceName, requestTables, responseTables }) => {
+const CodeSnippet = ({
+  path,
+  serviceName,
+  requestTables,
+  responseTables,
+  isDarkMode,
+}) => {
   const [snippet, setSnippet] = useState("");
   useEffect(() => {
     let codeSnippet = `const sasJs = new SASjs({/* Your config here */});\n\nsasJs.request("${path}/${serviceName}"`;
@@ -37,7 +43,7 @@ const CodeSnippet = ({ path, serviceName, requestTables, responseTables }) => {
   return (
     <div className="code-snippet-container">
       <div className="tables-header">
-        <Header as="h3">
+        <Header as="h3" inverted={isDarkMode}>
           <code>SASjs </code> Code Snippet
         </Header>
         <PopupIcon

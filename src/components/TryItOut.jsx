@@ -4,7 +4,13 @@ import { AppContext } from "../context/AppContext";
 import Highlight from "react-highlight.js";
 import LoginModal from "../pages/LoginModal";
 
-const TryItOut = ({ path, serviceName, requestTables, responseTables }) => {
+const TryItOut = ({
+  path,
+  serviceName,
+  requestTables,
+  responseTables,
+  isDarkMode,
+}) => {
   const { adapter, isLoggedIn } = useContext(AppContext);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [response, setResponse] = useState(null);
@@ -20,19 +26,24 @@ const TryItOut = ({ path, serviceName, requestTables, responseTables }) => {
   return (
     <div className="try-it-out">
       <div className="tables-header">
-        <Header as="h3">Try it out</Header>
+        <Header as="h3" inverted={isDarkMode}>
+          Try it out
+        </Header>
       </div>
       {isLoggedIn ? (
-        <Button secondary onClick={makeRequest}>
+        <Button color="green" onClick={makeRequest}>
           <Icon name="paper plane outline"></Icon>Send request
         </Button>
       ) : (
-        <Button secondary onClick={() => setIsLoginModalOpen(true)}>
+        <Button color="blue" onClick={() => setIsLoginModalOpen(true)}>
           <Icon name="sign-in"></Icon>Sign in to send request
         </Button>
       )}
       {isLoginModalOpen && (
-        <LoginModal onLogin={() => setIsLoginModalOpen(false)} />
+        <LoginModal
+          isDarkMode={isDarkMode}
+          onLogin={() => setIsLoginModalOpen(false)}
+        />
       )}
       {!!response ||
         (!!error && (

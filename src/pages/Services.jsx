@@ -10,7 +10,7 @@ import { sortByName } from "../utils";
 import produce from "immer";
 
 const Services = () => {
-  const { masterJson, setMasterJson } = useContext(AppContext);
+  const { masterJson, setMasterJson, isDarkMode } = useContext(AppContext);
   const [folders, setFolders] = useState([]);
   const [currentFolderIndex, setCurrentFolderIndex] = useState(-1);
   const [currentServiceIndex, setCurrentServiceIndex] = useState(-1);
@@ -53,7 +53,7 @@ const Services = () => {
   return (
     <div className="services-container">
       <div className="main-content">
-        <Segment raised size="large" className="folders">
+        <Segment raised size="large" className="folders" inverted={isDarkMode}>
           <h3>Folders</h3>
           <PopupIcon
             text="Add folder"
@@ -123,15 +123,21 @@ const Services = () => {
                 />
               );
             })}
+            {!folders.length && (
+              <div className="info-message">
+                There are no folders to display. Create one using the + icon
+              </div>
+            )}
           </div>
         </Segment>
-        <Segment raised size="large" className="services">
+        <Segment raised size="large" className="services" inverted={isDarkMode}>
           {!!folders.length &&
             currentFolderIndex >= 0 &&
             currentServiceIndex >= 0 &&
             !!folders[currentFolderIndex].services.length &&
             !!folders[currentFolderIndex].services[currentServiceIndex] && (
               <ServiceDetail
+                isDarkMode={isDarkMode}
                 service={
                   folders[currentFolderIndex].services[currentServiceIndex]
                 }
@@ -152,6 +158,12 @@ const Services = () => {
                 }}
               />
             )}
+          {currentServiceIndex < 0 && (
+            <div className="info-message">
+              There is no service currently selected. Select or create one from
+              the sidebar on the left.
+            </div>
+          )}
         </Segment>
       </div>
     </div>

@@ -7,7 +7,7 @@ import ContextMenu from "./ContextMenu";
 import { useReducer } from "react";
 import { serviceTableReducer } from "./ServiceTableReducer";
 
-const ServiceTable = ({ table, onUpdate }) => {
+const ServiceTable = ({ table, onUpdate, isDarkMode }) => {
   const [state, dispatch] = useReducer(serviceTableReducer, {
     tableName: "",
     rows: [],
@@ -28,7 +28,7 @@ const ServiceTable = ({ table, onUpdate }) => {
   return (
     <div className="service-table-container">
       <div className="table-inner-container">
-        <Table celled>
+        <Table celled inverted={isDarkMode}>
           <Table.Header>
             <Table.Row>
               {state.columns.map((column, index) => {

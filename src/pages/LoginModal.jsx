@@ -3,7 +3,7 @@ import { Modal, Input, Form, Header, Button, Icon } from "semantic-ui-react";
 import { AppContext } from "../context/AppContext";
 import "./LoginModal.scss";
 
-const LoginModal = ({ onLogin }) => {
+const LoginModal = ({ onLogin, isDarkMode }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const appContext = useContext(AppContext);
@@ -14,10 +14,10 @@ const LoginModal = ({ onLogin }) => {
 
   return (
     <Modal open={true} size="mini">
-      <Header icon="sign-in" content="Sign in" />
+      <Header icon="sign-in" content="Sign in" inverted={isDarkMode} />
       <Modal.Content>
         <p>Please sign in with your SAS server credentials.</p>
-        <Form onSubmit={logIn}>
+        <Form onSubmit={logIn} inverted={isDarkMode}>
           <Form.Field>
             <label>Username</label>
             <Input

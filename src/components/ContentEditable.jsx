@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import ContentEditable from "react-contenteditable";
 import { toast } from "react-semantic-toasts";
+import { AppContext } from "../context/AppContext";
+import "./ContentEditable.scss";
 
 const CustomContentEditable = (props) => {
+  const { isDarkMode } = useContext(AppContext);
   const disableNewlines = (event) => {
     const keyCode = event.keyCode || event.which;
     const value = event.target.innerText;
@@ -49,7 +52,15 @@ const CustomContentEditable = (props) => {
     }
   };
 
-  return <ContentEditable {...props} onKeyPress={disableNewlines} />;
+  return (
+    <ContentEditable
+      {...props}
+      onKeyPress={disableNewlines}
+      className={`${props.className ? props.className : ""} ${
+        isDarkMode ? "dark-mode" : ""
+      }`}
+    />
+  );
 };
 
 export default CustomContentEditable;

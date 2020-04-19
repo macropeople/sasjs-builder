@@ -11,7 +11,7 @@ import { AppContext } from "../context/AppContext";
 import "./Configuration.scss";
 
 const Configuration = () => {
-  const { masterJson, setMasterJson } = useContext(AppContext);
+  const { masterJson, setMasterJson, isDarkMode } = useContext(AppContext);
   const [serverType, setServerType] = useState(
     masterJson && masterJson.sasJsConfig
       ? masterJson.sasJsConfig.serverType
@@ -61,8 +61,8 @@ const Configuration = () => {
           </p>
         </Message>
       )}
-      <Form className="config-form" onSubmit={saveForm}>
-        <Segment size="huge" raised>
+      <Form className="config-form" onSubmit={saveForm} inverted={isDarkMode}>
+        <Segment size="huge" raised inverted={isDarkMode}>
           <Header as="h3">App Configuration</Header>
           <Form.Group widths="equal">
             <Form.Field>
