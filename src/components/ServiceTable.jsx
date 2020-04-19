@@ -59,6 +59,7 @@ const ServiceTable = ({ table, onUpdate, isDarkMode }) => {
                           />
                         </Label>
                         <ContextMenu
+                          isDarkMode={isDarkMode}
                           numeric={column.numeric}
                           onRemove={() => {
                             dispatch({

@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from "react";
 import { Button, Menu, Popup, Ref, Icon, Label } from "semantic-ui-react";
 import "./ContextMenu.scss";
 
-const ContextMenu = ({ onRemove, onChangeType, numeric }) => {
+const ContextMenu = ({ onRemove, onChangeType, numeric, isDarkMode }) => {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef(null);
 
@@ -27,14 +27,15 @@ const ContextMenu = ({ onRemove, onChangeType, numeric }) => {
         />
       </Ref>
       <Popup
+        inverted={isDarkMode}
         className="context-menu"
         context={buttonRef}
         onClose={handlePopupClose}
         open={open}
         flowing
-        position="bottom center"
+        position="top center"
       >
-        <Menu secondary vertical>
+        <Menu secondary vertical inverted={isDarkMode}>
           <Menu.Item onClick={onRemove}>
             <Icon name="trash alternate outline" />
             Remove column

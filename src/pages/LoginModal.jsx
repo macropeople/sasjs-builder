@@ -13,7 +13,7 @@ const LoginModal = ({ onLogin, isDarkMode }) => {
   }, [username, password, appContext, onLogin]);
 
   return (
-    <Modal open={true} size="mini">
+    <Modal open={true} size="mini" basic>
       <Header icon="sign-in" content="Sign in" inverted={isDarkMode} />
       <Modal.Content>
         <p>Please sign in with your SAS server credentials.</p>
