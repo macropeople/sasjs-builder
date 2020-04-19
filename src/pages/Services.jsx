@@ -1,9 +1,9 @@
 import React, { useContext, useState, useCallback, useEffect } from "react";
 import { Segment } from "semantic-ui-react";
+import { toast } from "react-semantic-toasts";
 import "./Services.scss";
 import { AppContext } from "../context/AppContext";
 import Folder from "../components/Folder";
-import AddFolderModal from "../components/AddFolderModal";
 import ServiceDetail from "../components/ServiceDetail";
 import PopupIcon from "../components/PopupIcon";
 import { sortByName } from "../utils";
@@ -14,8 +14,6 @@ const Services = () => {
   const [folders, setFolders] = useState([]);
   const [currentFolderIndex, setCurrentFolderIndex] = useState(-1);
   const [currentServiceIndex, setCurrentServiceIndex] = useState(-1);
-  const [addFolderModalOpen, setaddFolderModalOpen] = useState(false);
-  const [showFolderNameError, setShowFolderNameError] = useState(false);
 
   const deleteFolder = (folder) => {
     const newFolders = folders.filter((f) => f.name !== folder.name);
@@ -61,10 +59,18 @@ const Services = () => {
             text="Add folder"
             icon="add"
             color="blue"
-            onClick={() => setaddFolderModalOpen(true)}
+            onClick={() => {
+              const newFolderName = `newFolder${folders.length + 1}`;
+              const newFolder = { name: newFolderName, services: [] };
+              const newFolders = produce(folders, (draft) => {
+                draft.push(newFolder);
+              });
+              setFolders(newFolders);
+              setCurrentFolderIndex(newFolders.length - 1);
+            }}
           />
           <div className="folder-list">
-            {folders.sort(sortByName).map((folder, index) => {
+            {[...folders].sort(sortByName).map((folder, index) => {
               return (
                 <Folder
                   key={index}
@@ -72,6 +78,20 @@ const Services = () => {
                   selected={currentFolderIndex === index}
                   selectedServiceIndex={currentServiceIndex}
                   onClick={() => setCurrentFolderIndex(index)}
+                  onFolderRename={(newFolderName) => {
+                    const folderExists = folders.some(
+                      (f) => f.name === newFolderName
+                    );
+                    if (folderExists) {
+                      toast({
+                        type: "error",
+                        icon: "folder",
+                        title: "A folder with that name already exists",
+                        description: `Please try again with a different name`,
+                        time: 2000,
+                      });
+                    }
+                  }}
                   onServiceClick={(serviceIndex) => {
                     setCurrentFolderIndex(index);
                     setCurrentServiceIndex(serviceIndex);
@@ -123,25 +143,6 @@ const Services = () => {
             )}
         </Segment>
       </div>
-      <AddFolderModal
-        isOpen={addFolderModalOpen}
-        showFolderNameError={showFolderNameError}
-        onCancel={() => setaddFolderModalOpen(false)}
-        onAddFolder={(newFolderName) => {
-          const folderExists = folders.some((f) => f.name === newFolderName);
-          if (!folderExists) {
-            const newFolder = { name: newFolderName, services: [] };
-            const newFolders = produce(folders, (draft) => {
-              draft.push(newFolder);
-            });
-            setCurrentFolderIndex(newFolders.length - 1);
-            setFolders(newFolders);
-            setaddFolderModalOpen(false);
-          } else {
-            setShowFolderNameError(true);
-          }
-        }}
-      />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Icon, Confirm } from "semantic-ui-react";
+import ContentEditable from "./ContentEditable";
 import "./Folder.scss";
 import PopupIcon from "./PopupIcon";
 import { useEffect } from "react";
@@ -12,14 +13,17 @@ const Folder = (props) => {
     onDelete,
     onServiceClick,
     onAddService,
+    onFolderRename,
     selectedServiceIndex,
   } = props;
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isExpanded, setIsExpanded] = useState(selected);
+  const [folderName, setFolderName] = useState(folder.name);
 
   useEffect(() => {
     setIsExpanded(selected);
   }, [selected]);
+
   return (
     <>
       <div className="folder-container">
@@ -29,7 +33,16 @@ const Folder = (props) => {
             onClick(folder);
           }}
         >
-          <Icon name="folder"></Icon> {folder.name}
+          <Icon name="folder"></Icon>
+          <ContentEditable
+            className="folder-name"
+            html={`${folderName}`}
+            onBlur={(e) => {
+              const value = e.target.innerHTML;
+              setFolderName(value);
+              onFolderRename(value);
+            }}
+          />
         </div>
         <PopupIcon
           text="Delete folder"

@@ -4,7 +4,7 @@ import { toast } from "react-semantic-toasts";
 import "./ServiceDetail.scss";
 import ServiceTable from "./ServiceTable";
 import CodeSnippet from "./CodeSnippet";
-import ContentEditable from "react-contenteditable";
+import ContentEditable from "./ContentEditable";
 import PopupIcon from "./PopupIcon";
 import produce from "immer";
 import TryItOut from "./TryItOut";
@@ -242,13 +242,12 @@ const ServiceDetail = ({ service, path, onUpdate, serviceIndex }) => {
       <Header className="service-header">
         <Icon name="server" />
         <ContentEditable
-          html={`<h1 class="table-name-header">${name}</h1>`}
+          className="table-name-header h1"
+          html={`${name}`}
           onClick={(e) => e.stopPropagation()}
           disabled={false}
           onBlur={(e) => {
-            const value = e.target.innerHTML
-              .replace(`<h1 class="table-name-header">`, "")
-              .replace("</h1>", "");
+            const value = e.target.innerHTML;
             setName(value);
             notifyUpdate(
               {
@@ -319,13 +318,12 @@ const ServiceDetail = ({ service, path, onUpdate, serviceIndex }) => {
                           }
                         >
                           <ContentEditable
-                            html={`<h3 class="table-name-header">${table.tableName}</h3>`}
+                            className="table-name-header h3"
+                            html={`${table.tableName}`}
                             onClick={(e) => e.stopPropagation()}
                             disabled={false}
                             onBlur={(e) => {
-                              const value = e.target.innerHTML
-                                .replace(`<h3 class="table-name-header">`, "")
-                                .replace("</h3>", "");
+                              const value = e.target.innerHTML;
                               updateRequestTableName(value, index);
                             }}
                           />
@@ -388,14 +386,12 @@ const ServiceDetail = ({ service, path, onUpdate, serviceIndex }) => {
                           }}
                         >
                           <ContentEditable
-                            className="table-name-header"
-                            html={`<h3 class="table-name-header">${table.tableName}</h3>`}
+                            className="table-name-header h3"
+                            html={`${table.tableName}`}
                             onClick={(e) => e.stopPropagation()}
                             disabled={false}
                             onBlur={(e) => {
-                              const value = e.target.innerHTML
-                                .replace(`<h3 class="table-name-header">`, "")
-                                .replace("</h3>", "");
+                              const value = e.target.innerHTML;
                               updateResponseTableName(value, index);
                             }}
                           />

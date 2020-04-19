@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import ContentEditable from "react-contenteditable";
+import ContentEditable from "./ContentEditable";
 import { Table, Icon, Label } from "semantic-ui-react";
 import "./ServiceTable.scss";
 import PopupIcon from "./PopupIcon";
@@ -36,14 +36,12 @@ const ServiceTable = ({ table, onUpdate }) => {
                   <Table.HeaderCell key={index}>
                     <div className="service-header-cell">
                       <ContentEditable
-                        className="full-width"
-                        html={`<div class="editable-cell">${column.name}</div>`}
+                        className="full-width editable-cell"
+                        html={`${column.name}`}
                         onClick={(e) => e.stopPropagation()}
                         disabled={false}
                         onBlur={(e) => {
-                          const newColumnName = e.target.innerHTML
-                            .replace(`<div class="editable-cell">`, "")
-                            .replace("</div>", "");
+                          const newColumnName = e.target.innerHTML;
                           dispatch({
                             type: "updateColumnName",
                             columnIndex: index,
@@ -93,15 +91,12 @@ const ServiceTable = ({ table, onUpdate }) => {
                       return (
                         <Table.Cell key={`${column.name}${rowIndex}`}>
                           <ContentEditable
-                            html={`<div class="editable-cell">${
-                              row[column.name]
-                            }</div>`}
+                            className="editable=cell"
+                            html={`${row[column.name]}`}
                             onClick={(e) => e.stopPropagation()}
                             disabled={false}
                             onBlur={(e) => {
-                              const value = e.target.innerHTML
-                                .replace(`<div class="editable-cell">`, "")
-                                .replace("</div>", "");
+                              const value = e.target.innerHTML;
 
                               dispatch({
                                 type: "updateCell",
