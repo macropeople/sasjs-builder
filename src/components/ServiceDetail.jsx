@@ -10,11 +10,22 @@ import produce from "immer";
 import TryItOut from "./TryItOut";
 import { useCallback } from "react";
 
-const ServiceDetail = ({ service, path, onUpdate }) => {
-  const [name, setName] = useState(service.name);
+const notifyUpdate = (serviceObject, onUpdate) => {
+  onUpdate(serviceObject);
+  toast({
+    type: "info",
+    icon: "save",
+    title: "Service updated",
+    description: `Service ${serviceObject.name} has now been updated.`,
+    time: 2000,
+  });
+};
+
+const ServiceDetail = ({ service, path, onUpdate, serviceIndex }) => {
+  const [name, setName] = useState("");
   const [currentRequestTable, setCurrentRequestTable] = useState(null);
   const [currentResponseTable, setCurrentResponseTable] = useState(null);
-  const [description, setDescription] = useState(service.description);
+  const [description, setDescription] = useState("");
   const [requestTables, setRequestTables] = useState([]);
   const [responseTables, setResponseTables] = useState([]);
 
@@ -28,7 +39,14 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
     });
     setRequestTables(newRequestTables);
     setCurrentRequestTable(newRequestTables[newRequestTables.length - 1]);
-  }, [requestTables]);
+    const serviceObject = {
+      name,
+      description,
+      requestTables: newRequestTables,
+      responseTables,
+    };
+    notifyUpdate(serviceObject, onUpdate);
+  }, [requestTables, responseTables, name, description, onUpdate]);
 
   const addResponseTable = useCallback(() => {
     const newResponseTables = produce(responseTables, (draft) => {
@@ -40,7 +58,14 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
     });
     setResponseTables(newResponseTables);
     setCurrentResponseTable(newResponseTables[newResponseTables.length - 1]);
-  }, [responseTables]);
+    const serviceObject = {
+      name,
+      description,
+      requestTables,
+      responseTables: newResponseTables,
+    };
+    notifyUpdate(serviceObject, onUpdate);
+  }, [requestTables, responseTables, name, description, onUpdate]);
 
   const removeRequestTable = useCallback(
     (table) => {
@@ -62,8 +87,15 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
         description: `Table ${table.tableName} has now been removed.`,
         time: 2000,
       });
+      const serviceObject = {
+        name,
+        description,
+        requestTables: newRequestTables,
+        responseTables,
+      };
+      notifyUpdate(serviceObject, onUpdate);
     },
-    [requestTables]
+    [requestTables, responseTables, name, description, onUpdate]
   );
 
   const removeResponseTable = useCallback(
@@ -86,8 +118,15 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
         description: `Table ${table.tableName} has now been removed.`,
         time: 2000,
       });
+      const serviceObject = {
+        name,
+        description,
+        requestTables,
+        responseTables: newResponseTables,
+      };
+      notifyUpdate(serviceObject, onUpdate);
     },
-    [responseTables]
+    [requestTables, responseTables, name, description, onUpdate]
   );
 
   const updateResponseTableName = useCallback(
@@ -96,8 +135,15 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
         draft[index].tableName = value;
       });
       setResponseTables(newResponseTables);
+      const serviceObject = {
+        name,
+        description,
+        requestTables,
+        responseTables: newResponseTables,
+      };
+      notifyUpdate(serviceObject, onUpdate);
     },
-    [responseTables]
+    [requestTables, responseTables, name, description, onUpdate]
   );
 
   const updateRequestTableName = useCallback(
@@ -106,8 +152,15 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
         draft[index].tableName = value;
       });
       setRequestTables(newRequestTables);
+      const serviceObject = {
+        name,
+        description,
+        requestTables: newRequestTables,
+        responseTables,
+      };
+      notifyUpdate(serviceObject, onUpdate);
     },
-    [requestTables]
+    [requestTables, responseTables, name, description, onUpdate]
   );
 
   const updateRequestTable = useCallback(
@@ -122,8 +175,22 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
       ) {
         setCurrentRequestTable(updatedTable);
       }
+      const serviceObject = {
+        name,
+        description,
+        requestTables: newRequestTables,
+        responseTables,
+      };
+      notifyUpdate(serviceObject, onUpdate);
     },
-    [requestTables, currentRequestTable]
+    [
+      currentRequestTable,
+      requestTables,
+      responseTables,
+      name,
+      description,
+      onUpdate,
+    ]
   );
 
   const updateResponseTable = useCallback(
@@ -138,8 +205,22 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
       ) {
         setCurrentResponseTable(updatedTable);
       }
+      const serviceObject = {
+        name,
+        description,
+        requestTables,
+        responseTables: newResponseTables,
+      };
+      notifyUpdate(serviceObject, onUpdate);
     },
-    [responseTables, currentResponseTable]
+    [
+      requestTables,
+      responseTables,
+      currentResponseTable,
+      name,
+      description,
+      onUpdate,
+    ]
   );
 
   useEffect(() => {
@@ -156,24 +237,6 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
     }
   }, [service]);
 
-  useEffect(() => {
-    const serviceObject = {
-      name,
-      description,
-      requestTables,
-      responseTables,
-    };
-    onUpdate(serviceObject);
-    toast({
-      type: "info",
-      icon: "save",
-      title: "Service updated",
-      description: `Service ${name} has now been updated.`,
-      time: 2000,
-    });
-    // eslint-disable-next-line
-  }, [requestTables, responseTables, description, name]);
-
   return service ? (
     <>
       <Header className="service-header">
@@ -187,6 +250,15 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
               .replace(`<h1 class="table-name-header">`, "")
               .replace("</h1>", "");
             setName(value);
+            notifyUpdate(
+              {
+                name: value,
+                description,
+                requestTables,
+                responseTables,
+              },
+              onUpdate
+            );
           }}
         />
       </Header>
@@ -198,7 +270,18 @@ const ServiceDetail = ({ service, path, onUpdate }) => {
             defaultValue={description}
             label="Service Description"
             placeholder="Service Description"
-            onBlur={(e) => setDescription(e.target.value)}
+            onBlur={(e) => {
+              setDescription(e.target.value);
+              notifyUpdate(
+                {
+                  name,
+                  description: e.target.value,
+                  requestTables,
+                  responseTables,
+                },
+                onUpdate
+              );
+            }}
           />
           <div className="tables-header">
             <Header as="h3">Request Tables</Header>

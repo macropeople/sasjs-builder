@@ -12,15 +12,15 @@ import produce from "immer";
 const Services = () => {
   const { masterJson, setMasterJson } = useContext(AppContext);
   const [folders, setFolders] = useState([]);
-  const [currentFolder, setCurrentFolder] = useState(null);
-  const [currentService, setCurrentService] = useState(null);
+  const [currentFolderIndex, setCurrentFolderIndex] = useState(-1);
+  const [currentServiceIndex, setCurrentServiceIndex] = useState(-1);
   const [addFolderModalOpen, setaddFolderModalOpen] = useState(false);
   const [showFolderNameError, setShowFolderNameError] = useState(false);
 
   const deleteFolder = (folder) => {
     const newFolders = folders.filter((f) => f.name !== folder.name);
     setFolders(newFolders);
-    setCurrentFolder(null);
+    setCurrentFolderIndex(-1);
   };
 
   useEffect(() => {
@@ -35,26 +35,21 @@ const Services = () => {
 
   const updateFolder = useCallback(
     (updatedService) => {
-      const folderIndex = folders.indexOf(currentFolder);
-      const serviceIndex = currentFolder.services.findIndex(
-        (s) => s.name === currentService.name || s.name === updatedService.name
-      );
-      const updatedFolder = produce(currentFolder, (draft) => {
-        if (serviceIndex >= 0) {
-          draft.services[serviceIndex] = updatedService;
+      const updatedFolder = produce(folders[currentFolderIndex], (draft) => {
+        if (currentServiceIndex >= 0) {
+          draft.services[currentServiceIndex] = updatedService;
         } else {
           draft.services.push(updatedService);
         }
       });
 
-      setCurrentFolder(updatedFolder);
       const updatedFolders = produce(folders, (draft) => {
-        draft[folderIndex] = updatedFolder;
+        draft[currentFolderIndex] = updatedFolder;
       });
 
       setFolders(updatedFolders);
     },
-    [currentService, currentFolder, folders]
+    [currentServiceIndex, currentFolderIndex, folders]
   );
 
   return (
@@ -74,27 +69,35 @@ const Services = () => {
                 <Folder
                   key={index}
                   folder={folder}
-                  selected={currentFolder === folder}
-                  onClick={() => setCurrentFolder(folder)}
-                  onServiceClick={(service) => {
-                    setCurrentFolder(folder);
-                    setCurrentService(service);
+                  selected={currentFolderIndex === index}
+                  selectedServiceIndex={currentServiceIndex}
+                  onClick={() => setCurrentFolderIndex(index)}
+                  onServiceClick={(serviceIndex) => {
+                    setCurrentFolderIndex(index);
+                    setCurrentServiceIndex(serviceIndex);
                   }}
                   onAddService={() => {
                     const service = {
                       name: `myService${
-                        currentFolder.services
-                          ? currentFolder.services.length + 1
+                        currentFolderIndex >= 0 &&
+                        folders[currentFolderIndex].services
+                          ? folders[currentFolderIndex].services.length + 1
                           : 1
                       }`,
                       description: `My service ${
-                        currentFolder.services
-                          ? currentFolder.services.length + 1
+                        currentFolderIndex >= 0 &&
+                        folders[currentFolderIndex].services
+                          ? folders[currentFolderIndex].services.length + 1
                           : 1
                       }`,
                     };
-                    setCurrentService(service);
-                    currentFolder.services.push(service);
+                    setCurrentServiceIndex(
+                      folders[currentFolderIndex].services.length
+                    );
+                    const newFolders = produce(folders, (draft) => {
+                      draft[currentFolderIndex].services.push(service);
+                    });
+                    setFolders(newFolders);
                   }}
                   onDelete={deleteFolder}
                 />
@@ -103,15 +106,21 @@ const Services = () => {
           </div>
         </Segment>
         <Segment raised size="large" className="services">
-          {currentFolder && currentService && (
-            <ServiceDetail
-              service={currentService}
-              path={currentFolder.name}
-              onUpdate={(updatedService) => {
-                updateFolder(updatedService);
-              }}
-            />
-          )}
+          {!!folders.length &&
+            currentFolderIndex >= 0 &&
+            currentServiceIndex >= 0 &&
+            !!folders[currentFolderIndex].services.length &&
+            !!folders[currentFolderIndex].services[currentServiceIndex] && (
+              <ServiceDetail
+                service={
+                  folders[currentFolderIndex].services[currentServiceIndex]
+                }
+                path={folders[currentFolderIndex].name}
+                onUpdate={(updatedService) => {
+                  updateFolder(updatedService);
+                }}
+              />
+            )}
         </Segment>
       </div>
       <AddFolderModal
@@ -122,8 +131,11 @@ const Services = () => {
           const folderExists = folders.some((f) => f.name === newFolderName);
           if (!folderExists) {
             const newFolder = { name: newFolderName, services: [] };
-            setFolders([...folders, newFolder]);
-            setCurrentFolder(newFolder);
+            const newFolders = produce(folders, (draft) => {
+              draft.push(newFolder);
+            });
+            setCurrentFolderIndex(newFolders.length - 1);
+            setFolders(newFolders);
             setaddFolderModalOpen(false);
           } else {
             setShowFolderNameError(true);

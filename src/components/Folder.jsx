@@ -12,6 +12,7 @@ const Folder = (props) => {
     onDelete,
     onServiceClick,
     onAddService,
+    selectedServiceIndex,
   } = props;
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isExpanded, setIsExpanded] = useState(selected);
@@ -41,12 +42,14 @@ const Folder = (props) => {
       </div>
       <div className="folder-services">
         {isExpanded &&
-          folder.services.map((service) => {
+          folder.services.map((service, index) => {
             return (
               <div
                 key={service.name}
-                className="service"
-                onClick={() => onServiceClick(service)}
+                className={
+                  selectedServiceIndex === index ? "service active" : "service"
+                }
+                onClick={() => onServiceClick(index)}
               >
                 {service.name}
               </div>
@@ -56,7 +59,7 @@ const Folder = (props) => {
           icon="add"
           color="blue"
           text="Add service"
-          onClick={onAddService}
+          onClick={() => onAddService()}
         />
       </div>
       <Confirm
