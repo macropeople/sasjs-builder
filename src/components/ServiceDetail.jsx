@@ -33,7 +33,7 @@ const ServiceDetail = ({ service, path, onUpdate, serviceIndex }) => {
     const newRequestTables = produce(requestTables, (draft) => {
       draft.push({
         tableName: `NewRequestTable${draft.length + 1}`,
-        columns: [{ name: "column1", numeric: false }],
+        columns: [{ name: "column1", numeric: true }],
         rows: [{ column1: "" }],
       });
     });
@@ -52,7 +52,7 @@ const ServiceDetail = ({ service, path, onUpdate, serviceIndex }) => {
     const newResponseTables = produce(responseTables, (draft) => {
       draft.push({
         tableName: `NewResponseTable${draft.length + 1}`,
-        columns: [{ name: "column1", numeric: false }],
+        columns: [{ name: "column1", numeric: true }],
         rows: [{ column1: "" }],
       });
     });

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from "react";
-import { Button, Menu, Popup, Ref, Icon } from "semantic-ui-react";
+import { Button, Menu, Popup, Ref, Icon, Label } from "semantic-ui-react";
 import "./ContextMenu.scss";
 
 const ContextMenu = ({ onRemove, onChangeType, numeric }) => {
@@ -18,7 +18,13 @@ const ContextMenu = ({ onRemove, onChangeType, numeric }) => {
   return (
     <>
       <Ref innerRef={buttonRef}>
-        <Button circular icon="options" onClick={handleContextMenu} />
+        <Button
+          className="context-menu-button"
+          circular
+          size="mini"
+          icon="options"
+          onClick={handleContextMenu}
+        />
       </Ref>
       <Popup
         className="context-menu"
@@ -34,7 +40,13 @@ const ContextMenu = ({ onRemove, onChangeType, numeric }) => {
             Remove column
           </Menu.Item>
           <Menu.Item onClick={onChangeType}>
-            <Icon name={numeric ? "numbered list" : "sort alphabet up"} />
+            <Label circular color="teal" size="mini">
+              <img
+                className="type-label"
+                src={numeric ? "abc.png" : "123.png"}
+                alt="type"
+              />
+            </Label>
             {numeric ? "Change to non-numeric" : "Change to numeric"}
           </Menu.Item>
         </Menu>
