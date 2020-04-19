@@ -179,7 +179,7 @@ const ServiceTable = ({ table, onUpdate }) => {
                   <Table.HeaderCell key={index}>
                     <div className="service-header-cell">
                       <ContentEditable
-                        className="semi-width"
+                        className="full-width"
                         html={`<div class="editable-cell">${column.name}</div>`}
                         onClick={(e) => e.stopPropagation()}
                         disabled={false}
