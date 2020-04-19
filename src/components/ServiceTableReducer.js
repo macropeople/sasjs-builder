@@ -77,7 +77,6 @@ export const serviceTableReducer = (state, action) => {
 };
 
 const updateCell = (state, { value, columnIndex, rowIndex, numeric }) => {
-  debugger;
   let newRows = [...state.rows],
     newColumns = [...state.columns];
   if (numeric) {

@@ -82,7 +82,7 @@ const Services = () => {
                     const folderExists = folders.some(
                       (f) => f.name === newFolderName
                     );
-                    if (folderExists) {
+                    if (folderExists && !folder.name === newFolderName) {
                       toast({
                         type: "error",
                         icon: "folder",
@@ -135,6 +135,17 @@ const Services = () => {
                 service={
                   folders[currentFolderIndex].services[currentServiceIndex]
                 }
+                validateServiceName={(name) => {
+                  debugger;
+                  return (
+                    !folders[currentFolderIndex].services
+                      .map((s) => s.name)
+                      .includes(name) ||
+                    name ===
+                      folders[currentFolderIndex].services[currentServiceIndex]
+                        .name
+                  );
+                }}
                 path={folders[currentFolderIndex].name}
                 onUpdate={(updatedService) => {
                   updateFolder(updatedService);

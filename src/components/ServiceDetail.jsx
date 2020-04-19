@@ -21,7 +21,7 @@ const notifyUpdate = (serviceObject, onUpdate) => {
   });
 };
 
-const ServiceDetail = ({ service, path, onUpdate, serviceIndex }) => {
+const ServiceDetail = ({ service, path, onUpdate, validateServiceName }) => {
   const [name, setName] = useState("");
   const [currentRequestTable, setCurrentRequestTable] = useState(null);
   const [currentResponseTable, setCurrentResponseTable] = useState(null);
@@ -247,17 +247,32 @@ const ServiceDetail = ({ service, path, onUpdate, serviceIndex }) => {
           onClick={(e) => e.stopPropagation()}
           disabled={false}
           onBlur={(e) => {
+            e.stopPropagation();
             const value = e.target.innerHTML;
-            setName(value);
-            notifyUpdate(
-              {
-                name: value,
-                description,
-                requestTables,
-                responseTables,
-              },
-              onUpdate
-            );
+            if (validateServiceName(value)) {
+              setName(value);
+              notifyUpdate(
+                {
+                  name: value,
+                  description,
+                  requestTables,
+                  responseTables,
+                },
+                onUpdate
+              );
+            } else {
+              e.preventDefault();
+              e.returnValue = false;
+              setName(name);
+              e.target.innerHTML = name;
+              toast({
+                type: "error",
+                icon: "server",
+                title: "A service with that name already exists",
+                description: `Please try again with a different name`,
+                time: 2000,
+              });
+            }
           }}
         />
       </Header>

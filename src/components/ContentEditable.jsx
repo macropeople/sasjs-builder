@@ -23,8 +23,6 @@ const CustomContentEditable = (props) => {
       isValid = false;
       toastMessage = "The maximum length of this field is 32 characters";
     }
-    console.log(value);
-    debugger;
     if (!/^[_a-zA-Z]+[_a-zA-Z0-9]*/.test(value)) {
       isValid = false;
       toastMessage = (
@@ -40,7 +38,7 @@ const CustomContentEditable = (props) => {
     }
     if (!isValid) {
       event.returnValue = false;
-      if (event.preventDefault) event.preventDefault();
+      event.preventDefault();
       toast({
         type: "error",
         icon: "warning sign",
@@ -51,7 +49,7 @@ const CustomContentEditable = (props) => {
     }
   };
 
-  return <ContentEditable {...props} onKeyUp={disableNewlines} />;
+  return <ContentEditable {...props} onKeyPress={disableNewlines} />;
 };
 
 export default CustomContentEditable;
