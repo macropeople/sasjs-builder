@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 import ContentEditable from "./ContentEditable";
-import { Table, Icon, Label } from "semantic-ui-react";
+import { Table, Icon, Label, Popup } from "semantic-ui-react";
 import "./ServiceTable.scss";
 import PopupIcon from "./PopupIcon";
-import ContextMenu from "./ContextMenu";
 import { useReducer } from "react";
 import { serviceTableReducer } from "./ServiceTableReducer";
 
@@ -52,25 +51,37 @@ const ServiceTable = ({ table, onUpdate, isDarkMode }) => {
                       />
                       <div>
                         <Label circular color="teal" size="mini">
-                          <img
-                            className="type-label"
-                            src={column.numeric ? "123.png" : "abc.png"}
-                            alt="type"
+                          <Popup
+                            inverted
+                            content={
+                              column.numeric
+                                ? "Change to non-numeric"
+                                : "Change to numeric"
+                            }
+                            trigger={
+                              <img
+                                className="type-label"
+                                src={column.numeric ? "123.png" : "abc.png"}
+                                alt="type"
+                                onClick={() => {
+                                  dispatch({
+                                    type: "toggleColumnType",
+                                    columnIndex: index,
+                                    onUpdate,
+                                  });
+                                }}
+                              />
+                            }
                           />
                         </Label>
-                        <ContextMenu
-                          isDarkMode={isDarkMode}
-                          numeric={column.numeric}
-                          onRemove={() => {
+                        <PopupIcon
+                          text="Remove column"
+                          icon="trash alternate outline"
+                          color="red"
+                          onClick={(e) => {
+                            e.stopPropagation();
                             dispatch({
                               type: "removeColumn",
-                              columnIndex: index,
-                              onUpdate,
-                            });
-                          }}
-                          onChangeType={() => {
-                            dispatch({
-                              type: "toggleColumnType",
                               columnIndex: index,
                               onUpdate,
                             });
