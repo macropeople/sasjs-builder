@@ -1,14 +1,10 @@
 import React, { useContext, useState } from "react";
-import {
-  Header,
-  Segment,
-  Button,
-  Form,
-  Message,
-  Checkbox,
-} from "semantic-ui-react";
+import { Header, Segment, Form, Checkbox } from "semantic-ui-react";
+import { toast } from "react-semantic-toasts";
 import { AppContext } from "../context/AppContext";
 import "./Configuration.scss";
+import { useEffect } from "react";
+import { useRef } from "react";
 
 const Configuration = () => {
   const { masterJson, setMasterJson, isDarkMode } = useContext(AppContext);
@@ -17,51 +13,42 @@ const Configuration = () => {
       ? masterJson.sasJsConfig.serverType
       : null
   );
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [appConfig, setAppConfig] = useState({});
+  const [sasJsConfig, setSasJsConfig] = useState({});
+  const formRef = useRef();
 
-  const appConfig =
-    masterJson && masterJson.appConfig ? masterJson.appConfig : {};
-  const sasJsConfig =
-    masterJson && masterJson.sasJsConfig ? masterJson.sasJsConfig : {};
-
-  const saveForm = (event) => {
-    event.preventDefault();
-    const appConfigFields = ["name", "description"];
-    const sasJsConfigFields = [
-      "serverUrl",
-      "appLoc",
-      "pathSAS9",
-      "pathSASViya",
-    ];
-
-    const appConfig = {};
-    const sasJsConfig = {};
-    appConfigFields.forEach((field) => {
-      appConfig[field] = event.target.elements[field].value;
-    });
-    sasJsConfigFields.forEach((field) => {
-      sasJsConfig[field] = event.target.elements[field].value;
-    });
-    sasJsConfig.serverType = serverType;
-    sasJsConfig.debug = event.target.elements["debug"].checked;
-    setMasterJson({ ...masterJson, appConfig, sasJsConfig });
-    setShowSuccessMessage(true);
-  };
+  useEffect(() => {
+    setAppConfig(
+      masterJson && masterJson.appConfig ? masterJson.appConfig : {}
+    );
+    setSasJsConfig(
+      masterJson && masterJson.sasJsConfig ? masterJson.sasJsConfig : {}
+    );
+    setServerType(
+      masterJson && masterJson.sasJsConfig
+        ? masterJson.sasJsConfig.serverType
+        : null
+    );
+    if (masterJson) {
+      toast({
+        type: "success",
+        icon: "code",
+        title: "Configuration updated",
+        description: (
+          <>
+            The configuration has now been saved.
+            <br />
+            You can export it as JSON from the Import/Export page
+          </>
+        ),
+        time: 2000,
+      });
+    }
+  }, [masterJson]);
 
   return (
     <div className="configuration-container">
-      {showSuccessMessage && (
-        <Message positive>
-          <Message.Header>
-            Success! Your configuration has now been updated.
-          </Message.Header>
-          <p>
-            You can export it as a JSON file from the{" "}
-            <strong>Import / Export</strong> tab.
-          </p>
-        </Message>
-      )}
-      <Form className="config-form" onSubmit={saveForm} inverted={isDarkMode}>
+      <Form ref={formRef} className="config-form" inverted={isDarkMode}>
         <Segment size="huge" raised inverted={isDarkMode}>
           <Header as="h3">App Configuration</Header>
           <Form.Group widths="equal">
@@ -69,8 +56,24 @@ const Configuration = () => {
               <label>Name</label>
               <input
                 name="name"
+                required
+                pattern="[a-zA-Z0-9_]+"
                 placeholder="Name"
                 defaultValue={appConfig.name}
+                onChange={(e) => {
+                  e.target.setCustomValidity("");
+                  if (e.target.checkValidity()) {
+                    setMasterJson({
+                      ...masterJson,
+                      appConfig: { ...appConfig, name: e.target.value },
+                    });
+                  } else {
+                    e.target.setCustomValidity(
+                      "Name can only contain letters, numbers and underscores."
+                    );
+                    e.target.reportValidity();
+                  }
+                }}
               />
             </Form.Field>
             <Form.Field>
@@ -79,6 +82,16 @@ const Configuration = () => {
                 name="description"
                 placeholder="Description"
                 defaultValue={appConfig.description}
+                onChange={(e) => {
+                  if (e.target.checkValidity()) {
+                    setMasterJson({
+                      ...masterJson,
+                      appConfig: { ...appConfig, description: e.target.value },
+                    });
+                  } else {
+                    e.target.reportValidity();
+                  }
+                }}
               />
             </Form.Field>
           </Form.Group>
@@ -89,16 +102,47 @@ const Configuration = () => {
             <label>Server URL</label>
             <input
               name="serverUrl"
+              type="url"
               placeholder="Server URL"
               defaultValue={sasJsConfig.serverUrl}
+              onChange={(e) => {
+                e.target.setCustomValidity("");
+                if (e.target.checkValidity()) {
+                  setMasterJson({
+                    ...masterJson,
+                    sasJsConfig: { ...sasJsConfig, serverUrl: e.target.value },
+                  });
+                } else {
+                  e.target.setCustomValidity(
+                    "Server URL needs to be a valid URL"
+                  );
+                  e.target.reportValidity();
+                }
+              }}
             />
           </Form.Field>
           <Form.Field>
             <label>App Location</label>
             <input
               name="appLoc"
+              required
+              pattern="[a-zA-Z0-9_/-]+"
               placeholder="App Location"
               defaultValue={sasJsConfig.appLoc}
+              onChange={(e) => {
+                e.target.setCustomValidity("");
+                if (e.target.checkValidity()) {
+                  setMasterJson({
+                    ...masterJson,
+                    sasJsConfig: { ...sasJsConfig, appLoc: e.target.value },
+                  });
+                } else {
+                  e.target.setCustomValidity(
+                    "App Location can only contain letters, numbers, slashes, dashes and underscores."
+                  );
+                  e.target.reportValidity();
+                }
+              }}
             />
           </Form.Field>
           <Form.Field>
@@ -107,9 +151,12 @@ const Configuration = () => {
               name="serverType"
               placeholder="Server type"
               onChange={(_, { value }) => {
-                setServerType(value);
+                setMasterJson({
+                  ...masterJson,
+                  sasJsConfig: { ...sasJsConfig, serverType: value },
+                });
               }}
-              defaultValue={sasJsConfig.serverType}
+              defaultValue={serverType}
               options={[
                 {
                   key: "SAS9",
@@ -132,22 +179,55 @@ const Configuration = () => {
             <label>SAS9 Path</label>
             <input
               name="pathSAS9"
+              required
+              pattern="[a-zA-Z0-9_/-]+"
               placeholder="SAS9 Path"
               defaultValue={sasJsConfig.pathSAS9}
+              onChange={(e) => {
+                e.target.setCustomValidity("");
+                if (e.target.checkValidity()) {
+                  setMasterJson({
+                    ...masterJson,
+                    sasJsConfig: { ...sasJsConfig, pathSAS9: e.target.value },
+                  });
+                } else {
+                  e.target.setCustomValidity(
+                    "This field can only contain letters, numbers, slashes, dashes and underscores."
+                  );
+                  e.target.reportValidity();
+                }
+              }}
             />
           </Form.Field>
           <Form.Field>
             <label>SAS Viya Path</label>
             <input
               name="pathSASViya"
+              required
+              pattern="[a-zA-Z0-9_/-]+"
               placeholder="SAS Viya Path"
               defaultValue={sasJsConfig.pathSASViya}
+              onChange={(e) => {
+                e.target.setCustomValidity("");
+                e.target.setCustomValidity("");
+                if (e.target.checkValidity()) {
+                  setMasterJson({
+                    ...masterJson,
+                    sasJsConfig: {
+                      ...sasJsConfig,
+                      pathSASViya: e.target.value,
+                    },
+                  });
+                } else {
+                  e.target.setCustomValidity(
+                    "This field can only contain letters, numbers, slashes, dashes and underscores."
+                  );
+                  e.target.reportValidity();
+                }
+              }}
             />
           </Form.Field>
         </Segment>
-        <Button primary type="submit">
-          Save configuration
-        </Button>
       </Form>
     </div>
   );

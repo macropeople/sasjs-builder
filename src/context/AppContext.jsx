@@ -2,14 +2,34 @@ import React, { createContext, useState, useEffect } from "react";
 import SASjs from "sasjs";
 import { useCallback } from "react";
 
-export const AppContext = createContext({
-  masterJson: {
-    sasJsConfig: {
-      serverUrl: "http://sas.analytium.co.uk",
-      appLoc: "/common/appInit",
-      serverType: "SASVIYA",
-    },
+const defaultConfig = {
+  appConfig: {
+    name: "My SASjs App",
+    description: "My SASjs App",
   },
+  sasJsConfig: {
+    serverUrl: "",
+    appLoc: "/Public/apps",
+    serverType: "SASVIYA",
+    debug: true,
+  },
+  folders: [
+    {
+      name: "common",
+      services: [
+        {
+          name: "appInit",
+          description: "Intialise app",
+          requestTables: [],
+          responseTables: [],
+        },
+      ],
+    },
+  ],
+};
+
+export const AppContext = createContext({
+  masterJson: defaultConfig,
   setMasterJson: (json) => {},
   isLoggedIn: false,
   login: () => Promise.reject(),
@@ -18,14 +38,7 @@ export const AppContext = createContext({
 });
 
 export const AppProvider = ({ children }) => {
-  const [masterJson, setMasterJson] = useState({
-    sasJsConfig: {
-      serverUrl: "",
-      appLoc: "/common/appInit",
-      serverType: "SASVIYA",
-      debug: true,
-    },
-  });
+  const [masterJson, setMasterJson] = useState(defaultConfig);
   const [adapter, setAdapter] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -38,18 +51,15 @@ export const AppProvider = ({ children }) => {
     }
 
     if (parsedJson && parsedJson.sasJsConfig) {
+      debugger;
       sasjs = new SASjs(parsedJson.sasJsConfig);
     } else {
-      sasjs = new SASjs({
-        serverUrl: "",
-        appLoc: "/common/appInit",
-        serverType: "SASVIYA",
-        debug: true,
-      });
+      debugger;
+      sasjs = new SASjs(defaultConfig.sasJsConfig);
     }
     setAdapter(sasjs);
     const config = sasjs.getSasjsConfig();
-
+    debugger;
     if (parsedJson) {
       setMasterJson({ ...parsedJson, sasJsConfig: config });
     } else {
@@ -64,6 +74,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     if (masterJson) {
       if (masterJson.sasJsConfig) {
+        debugger;
         setAdapter(new SASjs(masterJson.sasJsConfig));
       }
       localStorage.setItem("sasJsBuilderJson", JSON.stringify(masterJson));
