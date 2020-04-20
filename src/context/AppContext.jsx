@@ -31,29 +31,42 @@ export const AppProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    const sasjs = new SASjs({
-      serverUrl: "",
-      appLoc: "/common/appInit",
-      serverType: "SASVIYA",
-      debug: true,
-    });
+    const storedJson = localStorage.getItem("sasJsBuilderJson");
+    let parsedJson, sasjs;
+    if (storedJson) {
+      parsedJson = JSON.parse(storedJson);
+    }
+
+    if (parsedJson && parsedJson.sasJsConfig) {
+      sasjs = new SASjs(parsedJson.sasJsConfig);
+    } else {
+      sasjs = new SASjs({
+        serverUrl: "",
+        appLoc: "/common/appInit",
+        serverType: "SASVIYA",
+        debug: true,
+      });
+    }
     setAdapter(sasjs);
     const config = sasjs.getSasjsConfig();
-    // SASjs bug: serverUrl is set to location.hostname:<empty> when there is no port specified
-    setMasterJson((m) => ({
-      ...m,
-      sasJsConfig: {
-        ...m.sasJsConfig,
-        pathSAS9: config.pathSAS9,
-        pathSASViya: config.pathSASViya,
-      },
-    }));
+
+    if (parsedJson) {
+      setMasterJson({ ...parsedJson, sasJsConfig: config });
+    } else {
+      setMasterJson((m) => ({
+        ...m,
+        sasJsConfig: config,
+      }));
+    }
     sasjs.checkSession().then((response) => setIsLoggedIn(response.isLoggedIn));
   }, []);
 
   useEffect(() => {
-    if (masterJson && masterJson.sasJsConfig) {
-      setAdapter(new SASjs(masterJson.sasJsConfig));
+    if (masterJson) {
+      if (masterJson.sasJsConfig) {
+        setAdapter(new SASjs(masterJson.sasJsConfig));
+      }
+      localStorage.setItem("sasJsBuilderJson", JSON.stringify(masterJson));
     }
   }, [masterJson]);
 

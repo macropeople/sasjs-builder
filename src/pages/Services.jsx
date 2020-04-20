@@ -90,6 +90,11 @@ const Services = () => {
                         description: `Please try again with a different name`,
                         time: 2000,
                       });
+                    } else {
+                      const updatedFolders = produce(folders, (draft) => {
+                        draft[index].name = newFolderName;
+                      });
+                      setFolders(updatedFolders);
                     }
                   }}
                   onServiceClick={(serviceIndex) => {
