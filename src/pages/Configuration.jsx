@@ -51,8 +51,8 @@ const Configuration = () => {
       <Form ref={formRef} className="config-form" inverted={isDarkMode}>
         <Segment size="huge" raised inverted={isDarkMode}>
           <Header as="h3">App Configuration</Header>
-          <Form.Group widths="equal">
-            <Form.Field>
+          <Form.Group>
+            <Form.Field width={4}>
               <label>Name</label>
               <input
                 name="name"
@@ -61,6 +61,7 @@ const Configuration = () => {
                 placeholder="Name"
                 defaultValue={appConfig.name}
                 onChange={(e) => {
+                  e.target.classList.remove("invalid");
                   e.target.setCustomValidity("");
                   if (e.target.checkValidity()) {
                     setMasterJson({
@@ -71,24 +72,27 @@ const Configuration = () => {
                     e.target.setCustomValidity(
                       "Name can only contain letters, numbers and underscores."
                     );
+                    e.target.classList.add("invalid");
                     e.target.reportValidity();
                   }
                 }}
               />
             </Form.Field>
-            <Form.Field>
+            <Form.Field width={12}>
               <label>Description</label>
               <input
                 name="description"
                 placeholder="Description"
                 defaultValue={appConfig.description}
                 onChange={(e) => {
+                  e.target.classList.remove("invalid");
                   if (e.target.checkValidity()) {
                     setMasterJson({
                       ...masterJson,
                       appConfig: { ...appConfig, description: e.target.value },
                     });
                   } else {
+                    e.target.classList.add("invalid");
                     e.target.reportValidity();
                   }
                 }}
@@ -107,6 +111,7 @@ const Configuration = () => {
               defaultValue={sasJsConfig.serverUrl}
               onChange={(e) => {
                 e.target.setCustomValidity("");
+                e.target.classList.remove("invalid");
                 if (e.target.checkValidity()) {
                   setMasterJson({
                     ...masterJson,
@@ -116,6 +121,7 @@ const Configuration = () => {
                   e.target.setCustomValidity(
                     "Server URL needs to be a valid URL"
                   );
+                  e.target.classList.add("invalid");
                   e.target.reportValidity();
                 }
               }}
@@ -130,6 +136,7 @@ const Configuration = () => {
               placeholder="App Location"
               defaultValue={sasJsConfig.appLoc}
               onChange={(e) => {
+                e.target.classList.remove("invalid");
                 e.target.setCustomValidity("");
                 if (e.target.checkValidity()) {
                   setMasterJson({
@@ -140,6 +147,7 @@ const Configuration = () => {
                   e.target.setCustomValidity(
                     "App Location can only contain letters, numbers, slashes, dashes and underscores."
                   );
+                  e.target.classList.add("invalid");
                   e.target.reportValidity();
                 }
               }}
@@ -184,6 +192,7 @@ const Configuration = () => {
               placeholder="SAS9 Path"
               defaultValue={sasJsConfig.pathSAS9}
               onChange={(e) => {
+                e.target.classList.remove("invalid");
                 e.target.setCustomValidity("");
                 if (e.target.checkValidity()) {
                   setMasterJson({
@@ -194,6 +203,7 @@ const Configuration = () => {
                   e.target.setCustomValidity(
                     "This field can only contain letters, numbers, slashes, dashes and underscores."
                   );
+                  e.target.classList.add("invalid");
                   e.target.reportValidity();
                 }
               }}
@@ -208,7 +218,7 @@ const Configuration = () => {
               placeholder="SAS Viya Path"
               defaultValue={sasJsConfig.pathSASViya}
               onChange={(e) => {
-                e.target.setCustomValidity("");
+                e.target.classList.remove("invalid");
                 e.target.setCustomValidity("");
                 if (e.target.checkValidity()) {
                   setMasterJson({
@@ -222,6 +232,7 @@ const Configuration = () => {
                   e.target.setCustomValidity(
                     "This field can only contain letters, numbers, slashes, dashes and underscores."
                   );
+                  e.target.classList.add("invalid");
                   e.target.reportValidity();
                 }
               }}

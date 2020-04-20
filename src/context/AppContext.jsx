@@ -4,7 +4,7 @@ import { useCallback } from "react";
 
 const defaultConfig = {
   appConfig: {
-    name: "My SASjs App",
+    name: "MySASjsApp",
     description: "My SASjs App",
   },
   sasJsConfig: {

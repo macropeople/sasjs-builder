@@ -249,7 +249,7 @@ const ServiceDetail = ({
     if (serviceNameRef.current) {
       serviceNameRef.current.focus();
     }
-  }, [serviceNameRef.current]);
+  }, [serviceNameRef]);
 
   return service ? (
     <>
