@@ -41,7 +41,7 @@ const ServiceTable = ({ table, onUpdate, isDarkMode }) => {
                         onClick={(e) => e.stopPropagation()}
                         disabled={false}
                         onBlur={(e) => {
-                          const newColumnName = e.target.innerHTML;
+                          const newColumnName = e.target.innerText;
                           dispatch({
                             type: "updateColumnName",
                             columnIndex: index,
@@ -97,7 +97,7 @@ const ServiceTable = ({ table, onUpdate, isDarkMode }) => {
                             onClick={(e) => e.stopPropagation()}
                             disabled={false}
                             onBlur={(e) => {
-                              const value = e.target.innerHTML;
+                              const value = e.target.innerText;
 
                               dispatch({
                                 type: "updateCell",

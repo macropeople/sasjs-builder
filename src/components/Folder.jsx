@@ -38,7 +38,7 @@ const Folder = (props) => {
             className="folder-name"
             html={`${folderName}`}
             onBlur={(e) => {
-              const value = e.target.innerHTML;
+              const value = e.target.innerText;
               setFolderName(value);
               onFolderRename(value);
             }}

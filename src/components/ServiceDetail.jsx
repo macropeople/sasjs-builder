@@ -254,7 +254,7 @@ const ServiceDetail = ({
           disabled={false}
           onBlur={(e) => {
             e.stopPropagation();
-            const value = e.target.innerHTML;
+            const value = e.target.innerText;
             if (validateServiceName(value)) {
               setName(value);
               notifyUpdate(
@@ -270,7 +270,7 @@ const ServiceDetail = ({
               e.preventDefault();
               e.returnValue = false;
               setName(name);
-              e.target.innerHTML = name;
+              e.target.innerText = name;
               toast({
                 type: "error",
                 icon: "server",
@@ -349,7 +349,7 @@ const ServiceDetail = ({
                             onClick={(e) => e.stopPropagation()}
                             disabled={false}
                             onBlur={(e) => {
-                              const value = e.target.innerHTML;
+                              const value = e.target.innerText;
                               updateRequestTableName(value, index);
                             }}
                           />
@@ -423,7 +423,7 @@ const ServiceDetail = ({
                             onClick={(e) => e.stopPropagation()}
                             disabled={false}
                             onBlur={(e) => {
-                              const value = e.target.innerHTML;
+                              const value = e.target.innerText;
                               updateResponseTableName(value, index);
                             }}
                           />

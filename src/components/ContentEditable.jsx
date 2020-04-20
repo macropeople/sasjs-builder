@@ -13,13 +13,16 @@ const CustomContentEditable = (props) => {
     let toastMessage = "";
 
     if (keyCode === 13) {
-      isValid = false;
-      toastMessage = "Spaces are not allowed in this field.";
+      event.returnValue = false;
+      event.preventDefault();
+      if (document.activeElement) {
+        document.activeElement.blur();
+      }
     }
 
     if (keyCode === 32) {
       isValid = false;
-      toastMessage = "Newline characters are not allowed in this field.";
+      toastMessage = "Spaces are not allowed in this field.";
     }
 
     if (value.length > 32) {
