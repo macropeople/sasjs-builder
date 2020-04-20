@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, Header, Form, Icon, Tab } from "semantic-ui-react";
+import { Header, Form, Icon, Tab } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import "./ServiceDetail.scss";
 import ServiceTable from "./ServiceTable";
@@ -9,6 +9,7 @@ import PopupIcon from "./PopupIcon";
 import produce from "immer";
 import TryItOut from "./TryItOut";
 import { useCallback } from "react";
+import { useRef } from "react";
 
 const notifyUpdate = (serviceObject, onUpdate) => {
   onUpdate(serviceObject);
@@ -34,6 +35,7 @@ const ServiceDetail = ({
   const [description, setDescription] = useState("");
   const [requestTables, setRequestTables] = useState([]);
   const [responseTables, setResponseTables] = useState([]);
+  const serviceNameRef = useRef();
 
   const addRequestTable = useCallback(() => {
     const newRequestTables = produce(requestTables, (draft) => {
@@ -243,59 +245,65 @@ const ServiceDetail = ({
     }
   }, [service]);
 
+  useEffect(() => {
+    if (serviceNameRef.current) {
+      serviceNameRef.current.focus();
+    }
+  }, [serviceNameRef, service]);
+
   return service ? (
     <>
       <Header className="service-header" inverted={isDarkMode}>
         <Icon name="server" />
-        <ContentEditable
-          className="table-name-header h1"
-          html={`${name}`}
-          onClick={(e) => e.stopPropagation()}
-          disabled={false}
-          onBlur={(e) => {
-            e.stopPropagation();
-            const value = e.target.innerText;
-            if (validateServiceName(value)) {
-              setName(value);
-              notifyUpdate(
-                {
-                  name: value,
-                  description,
-                  requestTables,
-                  responseTables,
-                },
-                onUpdate
-              );
-            } else {
-              e.preventDefault();
-              e.returnValue = false;
-              setName(name);
-              e.target.innerText = name;
-              toast({
-                type: "error",
-                icon: "server",
-                title: "A service with that name already exists",
-                description: `Please try again with a different name`,
-                time: 2000,
-              });
-            }
-          }}
-        />
-      </Header>
-      <div className="service-modal-inner-container">
-        <Form className="service-form" inverted={isDarkMode}>
-          <Form.Field
-            control={Input}
-            type="text"
-            defaultValue={description}
-            label="Service Description"
-            placeholder="Service Description"
+        <div className="fields">
+          <ContentEditable
+            className="service-name-field"
+            html={`${name}`}
+            innerRef={serviceNameRef}
+            onClick={(e) => e.stopPropagation()}
+            disabled={false}
             onBlur={(e) => {
-              setDescription(e.target.value);
+              e.stopPropagation();
+              const value = e.target.innerText;
+              if (validateServiceName(value)) {
+                setName(value);
+                notifyUpdate(
+                  {
+                    name: value,
+                    description,
+                    requestTables,
+                    responseTables,
+                  },
+                  onUpdate
+                );
+              } else {
+                e.preventDefault();
+                e.returnValue = false;
+                setName(name);
+                e.target.innerText = name;
+                toast({
+                  type: "error",
+                  icon: "server",
+                  title: "A service with that name already exists",
+                  description: `Please try again with a different name`,
+                  time: 2000,
+                });
+              }
+            }}
+          />
+          <ContentEditable
+            className="service-description-field"
+            maxLength={255}
+            html={`${description}`}
+            onClick={(e) => e.stopPropagation()}
+            disabled={false}
+            onBlur={(e) => {
+              const value = e.target.innerText;
+              setDescription(value);
               notifyUpdate(
                 {
                   name,
-                  description: e.target.value,
+                  description: value,
                   requestTables,
                   responseTables,
                 },
@@ -303,6 +311,10 @@ const ServiceDetail = ({
               );
             }}
           />
+        </div>
+      </Header>
+      <div className="service-modal-inner-container">
+        <Form className="service-form" inverted={isDarkMode}>
           <div className="tables-header">
             <Header as="h3" inverted={isDarkMode}>
               Request Tables

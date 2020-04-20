@@ -4,6 +4,7 @@ import ContentEditable from "./ContentEditable";
 import "./Folder.scss";
 import PopupIcon from "./PopupIcon";
 import { useEffect } from "react";
+import { useRef } from "react";
 
 const Folder = (props) => {
   const {
@@ -19,10 +20,17 @@ const Folder = (props) => {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isExpanded, setIsExpanded] = useState(selected);
   const [folderName, setFolderName] = useState(folder.name);
+  const folderNameRef = useRef();
 
   useEffect(() => {
     setIsExpanded(selected);
   }, [selected]);
+
+  useEffect(() => {
+    if (folderNameRef.current) {
+      folderNameRef.current.focus();
+    }
+  }, [folderNameRef]);
 
   return (
     <>
@@ -37,6 +45,7 @@ const Folder = (props) => {
           <ContentEditable
             className="folder-name"
             html={`${folderName}`}
+            innerRef={folderNameRef}
             onBlur={(e) => {
               const value = e.target.innerText;
               setFolderName(value);

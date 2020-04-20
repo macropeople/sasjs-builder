@@ -19,7 +19,8 @@ const defaultConfig = {
       services: [
         {
           name: "appInit",
-          description: "Intialise app",
+          description:
+            "This is my SASjs service description. Click me to edit!",
           requestTables: [],
           responseTables: [],
         },

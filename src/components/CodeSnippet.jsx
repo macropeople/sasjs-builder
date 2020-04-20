@@ -4,6 +4,8 @@ import { toast } from "react-semantic-toasts";
 import "./CodeSnippet.scss";
 import { Header } from "semantic-ui-react";
 import PopupIcon from "./PopupIcon";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
 
 const CodeSnippet = ({
   path,
@@ -13,8 +15,15 @@ const CodeSnippet = ({
   isDarkMode,
 }) => {
   const [snippet, setSnippet] = useState("");
+  const { masterJson } = useContext(AppContext);
+  const { sasJsConfig } = masterJson;
+
   useEffect(() => {
-    let codeSnippet = `const sasJs = new SASjs({/* Your config here */});\n\nsasJs.request("${path}/${serviceName}"`;
+    let codeSnippet = `const sasJs = new SASjs(${JSON.stringify(
+      sasJsConfig,
+      null,
+      1
+    )});\n\nsasJs.request("${path}/${serviceName}"`;
     if (requestTables.length) {
       codeSnippet += `,\n${JSON.stringify(
         [...requestTables.map((r) => r.rows)],
@@ -38,7 +47,7 @@ const CodeSnippet = ({
     }
 
     setSnippet(codeSnippet);
-  }, [path, requestTables, responseTables, serviceName]);
+  }, [path, requestTables, responseTables, serviceName, sasJsConfig]);
 
   return (
     <div className="code-snippet-container">
