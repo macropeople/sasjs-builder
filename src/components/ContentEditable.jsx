@@ -12,6 +12,7 @@ const CustomContentEditable = (props) => {
     let isValid = true;
     let toastMessage = "";
     const maxLength = props.maxLength ? props.maxLength : 32;
+    const allowSpaces = !!props.allowSpaces;
 
     if (keyCode === 13) {
       event.returnValue = false;
@@ -21,7 +22,7 @@ const CustomContentEditable = (props) => {
       }
     }
 
-    if (keyCode === 32) {
+    if (keyCode === 32 && !allowSpaces) {
       isValid = false;
       toastMessage = "Spaces are not allowed in this field.";
     }

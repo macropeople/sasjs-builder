@@ -249,7 +249,7 @@ const ServiceDetail = ({
     if (serviceNameRef.current) {
       serviceNameRef.current.focus();
     }
-  }, [serviceNameRef, service]);
+  }, [serviceNameRef.current]);
 
   return service ? (
     <>
@@ -294,6 +294,7 @@ const ServiceDetail = ({
           <ContentEditable
             className="service-description-field"
             maxLength={255}
+            allowSpaces={true}
             html={`${description}`}
             onClick={(e) => e.stopPropagation()}
             disabled={false}
