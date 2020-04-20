@@ -31,19 +31,7 @@ const CustomContentEditable = (props) => {
       isValid = false;
       toastMessage = "The maximum length of this field is 32 characters";
     }
-    if (!/^[_a-zA-Z]+[_a-zA-Z0-9]*/.test(value)) {
-      isValid = false;
-      toastMessage = (
-        <>
-          Please make sure to follow the SAS naming convention for names:
-          <ul>
-            <li>Starts with a letter or an underscore.</li>
-            <li>Contains only letters, numbers and underscores.</li>
-            <li>Has a maximum length of 32.</li>
-          </ul>
-        </>
-      );
-    }
+
     if (!isValid) {
       event.returnValue = false;
       event.preventDefault();
