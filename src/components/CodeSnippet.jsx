@@ -19,10 +19,23 @@ const CodeSnippet = ({
   const { sasJsConfig } = masterJson;
 
   useEffect(() => {
+    const config = {
+      appLoc: sasJsConfig.appLoc,
+      serverUrl: sasJsConfig.serverUrl,
+      serverType: sasJsConfig.serverType,
+    };
+    if (sasJsConfig.serverType === "SAS9") {
+      config.pathSAS9 = sasJsConfig.pathSAS9;
+    } else {
+      config.pathSASViya = sasJsConfig.pathSASViya;
+    }
     let codeSnippet = `const sasJs = new SASjs(${JSON.stringify(
-      sasJsConfig,
+      config,
       null,
       1
+    ).replace(
+      /"([^(")"]+)":/g,
+      "$1:"
     )});\n\nsasJs.request("${path}/${serviceName}"`;
     if (requestTables.length) {
       codeSnippet += `,\n${JSON.stringify(
