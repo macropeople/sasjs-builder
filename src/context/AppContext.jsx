@@ -52,15 +52,12 @@ export const AppProvider = ({ children }) => {
     }
 
     if (parsedJson && parsedJson.sasJsConfig) {
-      debugger;
       sasjs = new SASjs(parsedJson.sasJsConfig);
     } else {
-      debugger;
       sasjs = new SASjs(defaultConfig.sasJsConfig);
     }
     setAdapter(sasjs);
     const config = sasjs.getSasjsConfig();
-    debugger;
     if (parsedJson) {
       setMasterJson({ ...parsedJson, sasJsConfig: config });
     } else {
@@ -75,7 +72,6 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     if (masterJson) {
       if (masterJson.sasJsConfig) {
-        debugger;
         setAdapter(new SASjs(masterJson.sasJsConfig));
       }
       localStorage.setItem("sasJsBuilderJson", JSON.stringify(masterJson));

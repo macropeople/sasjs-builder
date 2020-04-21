@@ -29,6 +29,7 @@ const Folder = (props) => {
   useEffect(() => {
     if (folderNameRef.current) {
       folderNameRef.current.focus();
+      document.execCommand("selectAll", false, null);
     }
   }, [folderNameRef]);
 

@@ -4,9 +4,17 @@ import { toast } from "react-semantic-toasts";
 import { AppContext } from "../context/AppContext";
 import "./ContentEditable.scss";
 
+const clearSelection = () => {
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+};
+
 const CustomContentEditable = (props) => {
   const { isDarkMode } = useContext(AppContext);
-  const disableNewlines = (event) => {
+  const onKeyPress = (event) => {
     const keyCode = event.keyCode || event.which;
     const value = event.target.innerText;
     let isValid = true;
@@ -45,10 +53,25 @@ const CustomContentEditable = (props) => {
     }
   };
 
+  const onKeyUp = (event) => {
+    const keyCode = event.keyCode || event.which;
+
+    if (keyCode === 27) {
+      event.returnValue = false;
+      event.preventDefault();
+      if (props.innerRef && props.innerRef.current) {
+        props.innerRef.current.blur();
+        clearSelection();
+      }
+      return;
+    }
+  };
+
   return (
     <ContentEditable
       {...props}
-      onKeyPress={disableNewlines}
+      onKeyPress={onKeyPress}
+      onKeyUp={onKeyUp}
       className={`${props.className ? props.className : ""} ${
         isDarkMode ? "dark-mode" : ""
       }`}
