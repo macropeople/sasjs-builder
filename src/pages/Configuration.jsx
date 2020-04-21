@@ -49,15 +49,43 @@ const Configuration = () => {
   return (
     <div className="configuration-container">
       <Form ref={formRef} className="config-form" inverted={isDarkMode}>
-        <Segment size="huge" raised inverted={isDarkMode}>
+        <Segment size="large" raised inverted={isDarkMode}>
           <Header as="h3">App Configuration</Header>
           <Form.Group>
-            <Form.Field width={4}>
+            <Form.Field width={6}>
+              <label>ID</label>
+              <input
+                name="id"
+                required
+                pattern="[a-zA-Z0-9_]+"
+                maxLength="16"
+                placeholder="ID"
+                defaultValue={appConfig.id}
+                onChange={(e) => {
+                  e.target.classList.remove("invalid");
+                  e.target.setCustomValidity("");
+                  if (e.target.checkValidity()) {
+                    setMasterJson({
+                      ...masterJson,
+                      appConfig: { ...appConfig, id: e.target.value },
+                    });
+                  } else {
+                    e.target.setCustomValidity(
+                      "ID can only contain letters, numbers and underscores."
+                    );
+                    e.target.classList.add("invalid");
+                    e.target.reportValidity();
+                  }
+                }}
+              />
+            </Form.Field>
+            <Form.Field width={12}>
               <label>Name</label>
               <input
                 name="name"
                 required
                 pattern="[a-zA-Z0-9_]+"
+                maxLength="32"
                 placeholder="Name"
                 defaultValue={appConfig.name}
                 onChange={(e) => {
@@ -78,27 +106,28 @@ const Configuration = () => {
                 }}
               />
             </Form.Field>
-            <Form.Field width={12}>
-              <label>Description</label>
-              <input
-                name="description"
-                placeholder="Description"
-                defaultValue={appConfig.description}
-                onChange={(e) => {
-                  e.target.classList.remove("invalid");
-                  if (e.target.checkValidity()) {
-                    setMasterJson({
-                      ...masterJson,
-                      appConfig: { ...appConfig, description: e.target.value },
-                    });
-                  } else {
-                    e.target.classList.add("invalid");
-                    e.target.reportValidity();
-                  }
-                }}
-              />
-            </Form.Field>
           </Form.Group>
+          <Form.Field>
+            <label>Description</label>
+            <input
+              name="description"
+              placeholder="Description"
+              maxLength="128"
+              defaultValue={appConfig.description}
+              onChange={(e) => {
+                e.target.classList.remove("invalid");
+                if (e.target.checkValidity()) {
+                  setMasterJson({
+                    ...masterJson,
+                    appConfig: { ...appConfig, description: e.target.value },
+                  });
+                } else {
+                  e.target.classList.add("invalid");
+                  e.target.reportValidity();
+                }
+              }}
+            />
+          </Form.Field>
           <Header as="h3">
             <code>SASjs</code> Configuration
           </Header>
