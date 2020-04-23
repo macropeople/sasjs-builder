@@ -88,9 +88,44 @@ const HotServiceTable = (props) => {
             },
             row_below: {
               name: "Add row",
+              callback: () => {
+                setTimeout(() => {
+                  const newData = produce(data, (draft) => {
+                    const newRow = [];
+                    tableColumns.forEach(() => newRow.push(null));
+                    draft.push(newRow);
+                  });
+                  setTableData(newData);
+                  onUpdate({
+                    tableName: table.tableName,
+                    columns: tableColumns.map((t) => ({
+                      name: t.title,
+                      numeric: t.type === "numeric",
+                    })),
+                    data: newData,
+                  });
+                });
+              },
             },
             remove_row: {
               name: "Remove row",
+              callback: (_, options) => {
+                setTimeout(() => {
+                  const rowIndex = options[0].end.row;
+                  const newData = produce(data, (draft) => {
+                    return draft.filter((_, index) => index !== rowIndex);
+                  });
+                  setTableData(newData);
+                  onUpdate({
+                    tableName: table.tableName,
+                    columns: tableColumns.map((t) => ({
+                      name: t.title,
+                      numeric: t.type === "numeric",
+                    })),
+                    data: newData,
+                  });
+                });
+              },
             },
             removeColumn: {
               name: "Remove column",
