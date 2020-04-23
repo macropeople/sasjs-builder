@@ -57,7 +57,7 @@ const EditColumnModal = ({ column, onEdit }) => {
         </Modal.Content>
         <Modal.Actions>
           <Button type="submit" color="green">
-            Add
+            Save
           </Button>
           <Button onClick={() => setIsOpen(false)}>Cancel</Button>
         </Modal.Actions>
