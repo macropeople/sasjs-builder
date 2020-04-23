@@ -11,7 +11,7 @@ const defaultConfig = {
     serverUrl: "",
     appLoc: "/Public/apps",
     serverType: "SASVIYA",
-    debug: true,
+    debug: false,
   },
   folders: [
     {

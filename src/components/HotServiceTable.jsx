@@ -141,6 +141,7 @@ const HotServiceTable = (props) => {
               draft[columnIndexToEdit].type = newColumn.type;
             });
             setTableColumns(newColumns);
+            setColumnIndexToEdit(-1);
             onUpdate({
               tableName: table.tableName,
               columns: newColumns.map((t) => ({
