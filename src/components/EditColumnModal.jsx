@@ -7,10 +7,17 @@ import {
   Button,
   Checkbox,
 } from "semantic-ui-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const EditColumnModal = ({ column, onEdit }) => {
   const [isOpen, setIsOpen] = useState(true);
+  const inputRef = useRef();
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [inputRef]);
   return (
     <Modal open={isOpen} size="tiny">
       <Header icon="edit" content="Edit column" />
@@ -28,6 +35,7 @@ const EditColumnModal = ({ column, onEdit }) => {
           <Form.Field>
             <h4>Column Name</h4>
             <Input
+              ref={inputRef}
               type="text"
               name="columnName"
               placeholder="Column Name"
