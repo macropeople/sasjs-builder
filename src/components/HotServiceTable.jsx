@@ -6,7 +6,7 @@ import { useRef } from "react";
 import "./HotServiceTable.scss";
 import produce from "immer";
 import cloneDeep from "lodash.clonedeep";
-import RenameColumnModal from "./RenameColumnModal";
+import EditColumnModal from "./EditColumnModal";
 
 const HotServiceTable = (props) => {
   const { table, onUpdate } = props;
@@ -14,7 +14,7 @@ const HotServiceTable = (props) => {
 
   const [tableData, setTableData] = useState([]);
   const [tableColumns, setTableColumns] = useState([]);
-  const [columnIndexToRename, setColumnIndexToRename] = useState(-1);
+  const [columnIndexToEdit, setColumnIndexToEdit] = useState(-1);
   const tableRef = useRef();
 
   useEffect(() => {
@@ -121,23 +121,24 @@ const HotServiceTable = (props) => {
               },
             },
             renameColumn: {
-              name: "Rename column",
+              name: "Edit column",
               callback: (key, options) => {
                 setTimeout(() => {
                   const columnIndex = options[0].end.col;
-                  setColumnIndexToRename(columnIndex);
+                  setColumnIndexToEdit(columnIndex);
                 });
               },
             },
           },
         }}
       ></HotTable>
-      {columnIndexToRename > -1 && (
-        <RenameColumnModal
-          columnName={tableColumns[columnIndexToRename].title}
-          onRename={(newColumnName) => {
+      {columnIndexToEdit > -1 && (
+        <EditColumnModal
+          column={tableColumns[columnIndexToEdit]}
+          onEdit={(newColumn) => {
             const newColumns = produce(tableColumns, (draft) => {
-              draft[columnIndexToRename].title = newColumnName;
+              draft[columnIndexToEdit].title = newColumn.title;
+              draft[columnIndexToEdit].type = newColumn.type;
             });
             setTableColumns(newColumns);
             onUpdate({
