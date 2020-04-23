@@ -1,0 +1,10 @@
+.table-container {
+  overflow: auto;
+  width: 100%;
+  display: inline-flex;
+  height: 200px;
+
+  .handsontable {
+    display: inline-block;
+  }
+}

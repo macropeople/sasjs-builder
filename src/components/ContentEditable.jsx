@@ -3,6 +3,7 @@ import ContentEditable from "react-contenteditable";
 import { toast } from "react-semantic-toasts";
 import { AppContext } from "../context/AppContext";
 import "./ContentEditable.scss";
+import produce from "immer";
 
 const clearSelection = () => {
   if (window.getSelection) {
@@ -14,6 +15,9 @@ const clearSelection = () => {
 
 const CustomContentEditable = (props) => {
   const { isDarkMode } = useContext(AppContext);
+  const newProps = produce(props, (draft) => {
+    delete draft.allowSpaces;
+  });
   const onKeyPress = (event) => {
     const keyCode = event.keyCode || event.which;
     const value = event.target.innerText;
@@ -69,7 +73,7 @@ const CustomContentEditable = (props) => {
 
   return (
     <ContentEditable
-      {...props}
+      {...newProps}
       onKeyPress={onKeyPress}
       onKeyUp={onKeyUp}
       className={`${props.className ? props.className : ""} ${

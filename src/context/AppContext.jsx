@@ -21,7 +21,19 @@ const defaultConfig = {
           name: "appInit",
           description:
             "This is my SASjs service description. Click me to edit!",
-          requestTables: [],
+          requestTables: [
+            {
+              tableName: "test",
+              columns: [
+                { name: "Person", numeric: false },
+                { name: "Value", numeric: true },
+              ],
+              data: [
+                ["Krishna", 42],
+                ["Allan", 64],
+              ],
+            },
+          ],
           responseTables: [],
         },
       ],

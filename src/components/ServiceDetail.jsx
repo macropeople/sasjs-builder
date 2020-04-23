@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Header, Form, Icon, Tab } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import "./ServiceDetail.scss";
-import ServiceTable from "./ServiceTable";
 import CodeSnippet from "./CodeSnippet";
 import ContentEditable from "./ContentEditable";
 import PopupIcon from "./PopupIcon";
@@ -10,6 +9,7 @@ import produce from "immer";
 import TryItOut from "./TryItOut";
 import { useCallback } from "react";
 import { useRef } from "react";
+import HotServiceTable from "./HotServiceTable";
 
 const notifyUpdate = (serviceObject, onUpdate) => {
   onUpdate(serviceObject);
@@ -248,6 +248,10 @@ const ServiceDetail = ({
   useEffect(() => {
     if (serviceNameRef.current) {
       serviceNameRef.current.focus();
+      const timeout = setTimeout(() => {
+        document.execCommand("selectAll", false, null);
+        clearTimeout(timeout);
+      });
     }
   }, [serviceNameRef]);
 
@@ -265,29 +269,31 @@ const ServiceDetail = ({
             onBlur={(e) => {
               e.stopPropagation();
               const value = e.target.innerText;
-              if (validateServiceName(value)) {
-                setName(value);
-                notifyUpdate(
-                  {
-                    name: value,
-                    description,
-                    requestTables,
-                    responseTables,
-                  },
-                  onUpdate
-                );
-              } else {
-                e.preventDefault();
-                e.returnValue = false;
-                setName(name);
-                e.target.innerText = name;
-                toast({
-                  type: "error",
-                  icon: "server",
-                  title: "A service with that name already exists",
-                  description: `Please try again with a different name`,
-                  time: 2000,
-                });
+              if (value !== name) {
+                if (validateServiceName(value)) {
+                  setName(value);
+                  notifyUpdate(
+                    {
+                      name: value,
+                      description,
+                      requestTables,
+                      responseTables,
+                    },
+                    onUpdate
+                  );
+                } else {
+                  e.preventDefault();
+                  e.returnValue = false;
+                  setName(name);
+                  e.target.innerText = name;
+                  toast({
+                    type: "error",
+                    icon: "server",
+                    title: "A service with that name already exists",
+                    description: `Please try again with a different name`,
+                    time: 2000,
+                  });
+                }
               }
             }}
           />
@@ -300,16 +306,18 @@ const ServiceDetail = ({
             disabled={false}
             onBlur={(e) => {
               const value = e.target.innerText;
-              setDescription(value);
-              notifyUpdate(
-                {
-                  name,
-                  description: value,
-                  requestTables,
-                  responseTables,
-                },
-                onUpdate
-              );
+              if (description !== value) {
+                setDescription(value);
+                notifyUpdate(
+                  {
+                    name,
+                    description: value,
+                    requestTables,
+                    responseTables,
+                  },
+                  onUpdate
+                );
+              }
             }}
           />
         </div>
@@ -376,11 +384,14 @@ const ServiceDetail = ({
                           }}
                         />
                       </div>
-                      <ServiceTable
+                      <HotServiceTable
                         isDarkMode={isDarkMode}
                         table={table}
                         onUpdate={(updatedTable) => {
-                          updateRequestTable(updatedTable, index);
+                          updateRequestTable(
+                            { ...updatedTable, tableName: table.tableName },
+                            index
+                          );
                         }}
                       />
                     </Tab.Pane>
@@ -450,11 +461,14 @@ const ServiceDetail = ({
                           }}
                         />
                       </div>
-                      <ServiceTable
+                      <HotServiceTable
                         isDarkMode={isDarkMode}
                         table={table}
                         onUpdate={(updatedTable) => {
-                          updateResponseTable(updatedTable, index);
+                          updateResponseTable(
+                            { ...updatedTable, tableName: table.tableName },
+                            index
+                          );
                         }}
                       />
                     </Tab.Pane>

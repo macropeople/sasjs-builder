@@ -6,7 +6,6 @@ import { AppContext } from "../context/AppContext";
 import Folder from "../components/Folder";
 import ServiceDetail from "../components/ServiceDetail";
 import PopupIcon from "../components/PopupIcon";
-import { sortByName } from "../utils";
 import produce from "immer";
 
 const Services = () => {
@@ -23,6 +22,9 @@ const Services = () => {
 
   useEffect(() => {
     setFolders(masterJson.folders ? masterJson.folders : []);
+    setCurrentFolderIndex(
+      masterJson.folders && masterJson.folders.length ? 0 : -1
+    );
     // eslint-disable-next-line
   }, []);
 
@@ -44,7 +46,6 @@ const Services = () => {
       const updatedFolders = produce(folders, (draft) => {
         draft[currentFolderIndex] = updatedFolder;
       });
-
       setFolders(updatedFolders);
     },
     [currentServiceIndex, currentFolderIndex, folders]
@@ -70,7 +71,7 @@ const Services = () => {
             }}
           />
           <div className="folder-list">
-            {[...folders].sort(sortByName).map((folder, index) => {
+            {folders.map((folder, index) => {
               return (
                 <Folder
                   key={index}
@@ -90,10 +91,12 @@ const Services = () => {
                         description: `Please try again with a different name`,
                         time: 2000,
                       });
-                    } else {
+                    }
+                    if (!folder.name === newFolderName) {
                       const updatedFolders = produce(folders, (draft) => {
                         draft[index].name = newFolderName;
                       });
+                      debugger;
                       setFolders(updatedFolders);
                     }
                   }}
@@ -147,7 +150,6 @@ const Services = () => {
                   folders[currentFolderIndex].services[currentServiceIndex]
                 }
                 validateServiceName={(name) => {
-                  debugger;
                   return (
                     !folders[currentFolderIndex].services
                       .map((s) => s.name)

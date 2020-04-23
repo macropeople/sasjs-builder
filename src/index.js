@@ -4,6 +4,7 @@ import "./index.scss";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { SemanticToastContainer } from "react-semantic-toasts";
+import "handsontable/dist/handsontable.full.css";
 
 ReactDOM.render(
   <>
