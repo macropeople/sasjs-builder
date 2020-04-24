@@ -9,7 +9,7 @@ import cloneDeep from "lodash.clonedeep";
 import EditColumnModal from "./EditColumnModal";
 
 const HotServiceTable = (props) => {
-  const { table, onUpdate } = props;
+  const { table, onUpdate, isDarkMode } = props;
   const { data, columns } = table;
 
   const [tableData, setTableData] = useState([]);
@@ -31,12 +31,15 @@ const HotServiceTable = (props) => {
   }, [columns]);
 
   return (
-    <div className="table-container">
+    <div
+      className={isDarkMode ? "table-container inverted" : "table-container"}
+    >
       <HotTable
         ref={tableRef}
         licenseKey="non-commercial-and-evaluation"
         data={tableData}
         autoRowSize={true}
+        stretchH="all"
         afterChange={(e) => {
           if (!!e) {
             onUpdate({
