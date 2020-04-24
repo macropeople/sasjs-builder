@@ -39,6 +39,11 @@ const HotServiceTable = (props) => {
         licenseKey="non-commercial-and-evaluation"
         data={tableData}
         autoRowSize={true}
+        beforeKeyDown={(event) => {
+          if (!event.target.closest(".handsontableInput")) {
+            event.stopImmediatePropagation();
+          }
+        }}
         stretchH="all"
         afterChange={(e) => {
           if (!!e) {
@@ -163,6 +168,11 @@ const HotServiceTable = (props) => {
               callback: (key, options) => {
                 setTimeout(() => {
                   const columnIndex = options[0].end.col;
+                  if (window.getSelection) {
+                    window.getSelection().removeAllRanges();
+                  } else if (document.selection) {
+                    document.selection.empty();
+                  }
                   setColumnIndexToEdit(columnIndex);
                 });
               },
@@ -189,6 +199,7 @@ const HotServiceTable = (props) => {
               data: tableData,
             });
           }}
+          onCancel={() => setColumnIndexToEdit(-1)}
         />
       )}
     </div>

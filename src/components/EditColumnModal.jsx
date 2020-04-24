@@ -9,7 +9,7 @@ import {
 } from "semantic-ui-react";
 import { useState, useEffect, useRef } from "react";
 
-const EditColumnModal = ({ column, onEdit }) => {
+const EditColumnModal = ({ column, onEdit, onCancel }) => {
   const [isOpen, setIsOpen] = useState(true);
   const inputRef = useRef();
 
@@ -67,7 +67,14 @@ const EditColumnModal = ({ column, onEdit }) => {
           <Button type="submit" color="green">
             Save
           </Button>
-          <Button onClick={() => setIsOpen(false)}>Cancel</Button>
+          <Button
+            onClick={() => {
+              setIsOpen(false);
+              onCancel();
+            }}
+          >
+            Cancel
+          </Button>
         </Modal.Actions>
       </Form>
     </Modal>
