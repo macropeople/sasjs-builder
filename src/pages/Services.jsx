@@ -96,7 +96,6 @@ const Services = () => {
                       const updatedFolders = produce(folders, (draft) => {
                         draft[index].name = newFolderName;
                       });
-                      debugger;
                       setFolders(updatedFolders);
                     }
                   }}
