@@ -66,7 +66,7 @@ const Configuration = () => {
                 maxLength="16"
                 placeholder="ID"
                 defaultValue={appConfig.id}
-                onChange={(e) => {
+                onBlur={(e) => {
                   e.target.classList.remove("invalid");
                   e.target.setCustomValidity("");
                   if (e.target.checkValidity()) {
@@ -93,7 +93,7 @@ const Configuration = () => {
                 maxLength="32"
                 placeholder="Name"
                 defaultValue={appConfig.name}
-                onChange={(e) => {
+                onBlur={(e) => {
                   e.target.classList.remove("invalid");
                   e.target.setCustomValidity("");
                   if (e.target.checkValidity()) {
@@ -119,7 +119,7 @@ const Configuration = () => {
               placeholder="Description"
               maxLength="128"
               defaultValue={appConfig.description}
-              onChange={(e) => {
+              onBlur={(e) => {
                 e.target.classList.remove("invalid");
                 if (e.target.checkValidity()) {
                   setMasterJson({
@@ -143,7 +143,7 @@ const Configuration = () => {
               type="url"
               placeholder="Server URL"
               defaultValue={sasJsConfig.serverUrl}
-              onChange={(e) => {
+              onBlur={(e) => {
                 e.target.setCustomValidity("");
                 e.target.classList.remove("invalid");
                 if (e.target.checkValidity()) {
@@ -169,7 +169,7 @@ const Configuration = () => {
               pattern="[a-zA-Z0-9_/-]+"
               placeholder="App Location"
               defaultValue={sasJsConfig.appLoc}
-              onChange={(e) => {
+              onBlur={(e) => {
                 e.target.classList.remove("invalid");
                 e.target.setCustomValidity("");
                 if (e.target.checkValidity()) {
@@ -192,7 +192,7 @@ const Configuration = () => {
             <Form.Select
               name="serverType"
               placeholder="Server type"
-              onChange={(_, { value }) => {
+              onBlur={(_, { value }) => {
                 setMasterJson({
                   ...masterJson,
                   sasJsConfig: { ...sasJsConfig, serverType: value },
@@ -221,7 +221,7 @@ const Configuration = () => {
               pattern="[a-zA-Z0-9_/-]+"
               placeholder="SAS9 Path"
               defaultValue={sasJsConfig.pathSAS9}
-              onChange={(e) => {
+              onBlur={(e) => {
                 e.target.classList.remove("invalid");
                 e.target.setCustomValidity("");
                 if (e.target.checkValidity()) {
@@ -247,7 +247,7 @@ const Configuration = () => {
               pattern="[a-zA-Z0-9_/-]+"
               placeholder="SAS Viya Path"
               defaultValue={sasJsConfig.pathSASViya}
-              onChange={(e) => {
+              onBlur={(e) => {
                 e.target.classList.remove("invalid");
                 e.target.setCustomValidity("");
                 if (e.target.checkValidity()) {
