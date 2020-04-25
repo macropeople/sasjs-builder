@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Button, Icon, Header } from "semantic-ui-react";
+import { Button, Icon, Header, Loader } from "semantic-ui-react";
 import { AppContext } from "../context/AppContext";
 import Highlight from "react-highlight.js";
 import LoginModal from "../pages/LoginModal";
@@ -8,25 +8,28 @@ import { transformToObject } from "../utils";
 const TryItOut = ({ path, serviceName, requestTables, isDarkMode }) => {
   const { adapter, isLoggedIn } = useContext(AppContext);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
   const makeRequest = () => {
     setError(null);
     setResponse(null);
+    setIsLoading(true);
     const mappedTables = requestTables.map((r) => r.data);
     const inputTables = mappedTables.length
       ? transformToObject(mappedTables)
       : {};
-    debugger;
     adapter
       .request(`${path}/${serviceName}`, inputTables)
       .then((res) => {
         setResponse(res);
         console.log(res);
+        setIsLoading(false);
       })
       .catch((e) => {
         setError(e);
         console.error(e);
+        setIsLoading(false);
       });
   };
   return (
@@ -38,7 +41,12 @@ const TryItOut = ({ path, serviceName, requestTables, isDarkMode }) => {
       </div>
       {isLoggedIn ? (
         <Button color="green" onClick={makeRequest}>
-          <Icon name="paper plane outline"></Icon>Send request
+          {isLoading ? (
+            <Loader inline active size="tiny" inverted />
+          ) : (
+            <Icon name="paper plane outline"></Icon>
+          )}
+          {isLoading ? "  Loading..." : "Send request"}
         </Button>
       ) : (
         <Button color="blue" onClick={() => setIsLoginModalOpen(true)}>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Modal,
   Header,
@@ -6,11 +6,14 @@ import {
   Input,
   Button,
   Checkbox,
+  Message,
+  Icon,
 } from "semantic-ui-react";
-import { useState, useEffect, useRef } from "react";
+import "./EditColumnModal.scss";
 
-const EditColumnModal = ({ column, onEdit, onCancel }) => {
+const EditColumnModal = ({ columns, columnIndexToEdit, onEdit, onCancel }) => {
   const [isOpen, setIsOpen] = useState(true);
+  const [isError, setIsError] = useState(false);
   const inputRef = useRef();
 
   useEffect(() => {
@@ -19,16 +22,31 @@ const EditColumnModal = ({ column, onEdit, onCancel }) => {
     }
   }, [inputRef]);
   return (
-    <Modal open={isOpen} size="tiny">
+    <Modal open={isOpen} size="tiny" className="edit-column-modal">
       <Header icon="edit" content="Edit column" />
+      {isError && (
+        <Message error>
+          <Icon name="warning" />A column with that name already exists. Please
+          try again with a different name
+        </Message>
+      )}
       <Form
         className="new-folder-form"
         onSubmit={(e) => {
-          onEdit({
-            title: e.target.elements.columnName.value,
-            type: e.target.elements.numeric.checked ? "numeric" : "text",
-          });
-          setIsOpen(false);
+          const newColumnName = e.target.elements.columnName.value;
+          const columnTitles = columns.map((c) => c.title);
+          if (
+            columnTitles.includes(newColumnName) &&
+            columnTitles.indexOf(newColumnName) !== columnIndexToEdit
+          ) {
+            setIsError(true);
+          } else {
+            onEdit({
+              title: newColumnName,
+              type: e.target.elements.numeric.checked ? "numeric" : "text",
+            });
+            setIsOpen(false);
+          }
         }}
       >
         <Modal.Content>
@@ -40,7 +58,7 @@ const EditColumnModal = ({ column, onEdit, onCancel }) => {
               name="columnName"
               placeholder="Column Name"
               maxLength="32"
-              defaultValue={column.title}
+              defaultValue={columns[columnIndexToEdit].title}
               pattern="[_a-zA-Z][_a-zA-Z0-9]*"
               required
               autoFocus
@@ -51,7 +69,7 @@ const EditColumnModal = ({ column, onEdit, onCancel }) => {
             <Checkbox
               name="numeric"
               toggle
-              defaultChecked={column.type === "numeric"}
+              defaultChecked={columns[columnIndexToEdit].type === "numeric"}
             ></Checkbox>
           </Form.Field>
           <div className="naming-conventions">

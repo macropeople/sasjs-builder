@@ -193,7 +193,8 @@ const HotServiceTable = (props) => {
       ></HotTable>
       {columnIndexToEdit > -1 && (
         <EditColumnModal
-          column={tableColumns[columnIndexToEdit]}
+          columns={tableColumns}
+          columnIndexToEdit={columnIndexToEdit}
           onEdit={(newColumn) => {
             const newColumns = produce(tableColumns, (draft) => {
               draft[columnIndexToEdit].title = newColumn.title;
