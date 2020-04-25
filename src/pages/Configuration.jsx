@@ -209,21 +209,6 @@ const Configuration = () => {
             />
           </Form.Field>
           <Form.Field>
-            <label>Debug</label>
-            <Checkbox
-              toggle
-              name="debug"
-              defaultChecked={sasJsConfig.debug}
-              onChange={(_, event) => {
-                const newDebugValue = event.checked;
-                setMasterJson({
-                  ...masterJson,
-                  sasJsConfig: { ...sasJsConfig, debug: newDebugValue },
-                });
-              }}
-            />
-          </Form.Field>
-          <Form.Field>
             <label>SAS9 Path</label>
             <input
               name="pathSAS9"
