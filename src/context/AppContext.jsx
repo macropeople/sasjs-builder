@@ -110,6 +110,18 @@ export const AppProvider = ({ children }) => {
     return adapter.logOut().then((res) => setIsLoggedIn(false));
   }, [adapter]);
 
+  const clearStoredData = useCallback(() => {
+    const storedJson = localStorage.getItem("sasJsBuilderJson");
+    let parsedJson;
+    if (storedJson) {
+      parsedJson = JSON.parse(storedJson);
+    }
+    parsedJson.folders = [];
+    setMasterJson({ ...masterJson, folders: [] });
+
+    localStorage.setItem("sasJsBuilderJson", JSON.stringify(parsedJson));
+  }, [masterJson]);
+
   useEffect(() => {
     localStorage.setItem("sasJsBuilderDarkMode", isDarkMode);
     if (isDarkMode) {
@@ -130,6 +142,7 @@ export const AppProvider = ({ children }) => {
         logOut,
         isDarkMode,
         setIsDarkMode,
+        clearStoredData,
       }}
     >
       {children}

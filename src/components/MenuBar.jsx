@@ -1,9 +1,10 @@
 import React, { useState, useContext } from "react";
-import { Menu, Popup, Header, Checkbox, Button } from "semantic-ui-react";
+import { Menu, Popup, Header, Checkbox, Button, Icon } from "semantic-ui-react";
 import MenuBarItem from "./MenuBarItem";
 import { useLocation } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import LoginModal from "../pages/LoginModal";
+import "./MenuBar.scss";
 
 const MenuBar = () => {
   const location = useLocation();
@@ -14,6 +15,7 @@ const MenuBar = () => {
     setIsDarkMode,
     masterJson,
     setMasterJson,
+    clearStoredData,
   } = useContext(AppContext);
   const { sasJsConfig } = masterJson;
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -68,6 +70,18 @@ const MenuBar = () => {
                     });
                   }}
                 />
+              }
+            />
+          </Menu.Item>
+          <Menu.Item>
+            <Popup
+              inverted={isDarkMode}
+              position="left center"
+              content="Clear stored data"
+              trigger={
+                <Header as="h4" onClick={clearStoredData}>
+                  <Icon name="trash alternate outline" inverted={isDarkMode} />
+                </Header>
               }
             />
           </Menu.Item>
