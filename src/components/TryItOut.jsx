@@ -4,13 +4,23 @@ import { AppContext } from "../context/AppContext";
 import Highlight from "react-highlight.js";
 import LoginModal from "../pages/LoginModal";
 
-const TryItOut = ({
-  path,
-  serviceName,
-  requestTables,
-  responseTables,
-  isDarkMode,
-}) => {
+const convertToSasJsFormat = (tables) => {
+  const mappedTables = {};
+  tables.forEach((table) => {
+    const data = table.data.map((row) => {
+      const mappedRow = {};
+      row.forEach((cell, index) => {
+        const columnName = table.columns[index].name;
+        mappedRow[columnName] = cell;
+      });
+      return mappedRow;
+    });
+    mappedTables[table.tableName] = data;
+  });
+  return mappedTables;
+};
+
+const TryItOut = ({ path, serviceName, requestTables, isDarkMode }) => {
   const { adapter, isLoggedIn } = useContext(AppContext);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [response, setResponse] = useState(null);
@@ -19,9 +29,20 @@ const TryItOut = ({
     setError(null);
     setResponse(null);
     adapter
-      .request(`${path}/${serviceName}`, requestTables)
-      .then((res) => setResponse(res))
-      .catch((e) => setError(e));
+      .request(
+        `${path}/${serviceName}`,
+        requestTables && requestTables.length
+          ? convertToSasJsFormat(requestTables)
+          : {}
+      )
+      .then((res) => {
+        setResponse(res);
+        console.log(res);
+      })
+      .catch((e) => {
+        setError(e);
+        console.error(e);
+      });
   };
   return (
     <div className="try-it-out">
@@ -43,6 +64,7 @@ const TryItOut = ({
         <LoginModal
           isDarkMode={isDarkMode}
           onLogin={() => setIsLoginModalOpen(false)}
+          onClose={() => setIsLoginModalOpen(false)}
         />
       )}
       {!!response ||

@@ -100,6 +100,10 @@ export const AppProvider = ({ children }) => {
     [adapter]
   );
 
+  const logOut = useCallback(() => {
+    return adapter.logOut().then((res) => setIsLoggedIn(false));
+  }, [adapter]);
+
   useEffect(() => {
     if (isDarkMode) {
       document.querySelector("body").classList.add("dark-mode");
@@ -116,6 +120,7 @@ export const AppProvider = ({ children }) => {
         adapter,
         isLoggedIn,
         logIn,
+        logOut,
         isDarkMode,
         setIsDarkMode,
       }}
