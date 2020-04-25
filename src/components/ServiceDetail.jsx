@@ -46,7 +46,7 @@ const ServiceDetail = ({
       draft.push({
         tableName: `NewRequestTable${draft.length + 1}`,
         columns: [{ title: "column1", type: "numeric" }],
-        rows: [{ column1: "" }],
+        data: { [`NewRequestTable${draft.length + 1}`]: [{ column1: "" }] },
       });
     });
     setRequestTables(newRequestTables);
@@ -68,7 +68,7 @@ const ServiceDetail = ({
       draft.push({
         tableName: `NewResponseTable${draft.length + 1}`,
         columns: [{ title: "column1", type: "numeric" }],
-        rows: [{ column1: "" }],
+        data: { [`NewResponseTable${draft.length + 1}`]: [{ column1: "" }] },
       });
     });
     setResponseTables(newResponseTables);

@@ -92,7 +92,7 @@ const Services = () => {
                         time: 2000,
                       });
                     }
-                    if (!folder.name === newFolderName) {
+                    if (folder.name !== newFolderName) {
                       const updatedFolders = produce(folders, (draft) => {
                         draft[index].name = newFolderName;
                       });
@@ -106,23 +106,19 @@ const Services = () => {
                   onAddService={() => {
                     const service = {
                       name: `myService${
-                        currentFolderIndex >= 0 &&
-                        folders[currentFolderIndex].services
-                          ? folders[currentFolderIndex].services.length + 1
+                        index >= 0 && folders[index].services
+                          ? folders[index].services.length + 1
                           : 1
                       }`,
                       description: `My service ${
-                        currentFolderIndex >= 0 &&
-                        folders[currentFolderIndex].services
-                          ? folders[currentFolderIndex].services.length + 1
+                        index >= 0 && folders[index].services
+                          ? folders[index].services.length + 1
                           : 1
                       }`,
                     };
-                    setCurrentServiceIndex(
-                      folders[currentFolderIndex].services.length
-                    );
+                    setCurrentServiceIndex(folders[index].services.length);
                     const newFolders = produce(folders, (draft) => {
-                      draft[currentFolderIndex].services.push(service);
+                      draft[index].services.push(service);
                     });
                     setFolders(newFolders);
                   }}

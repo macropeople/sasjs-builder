@@ -6,6 +6,7 @@ import { Header } from "semantic-ui-react";
 import PopupIcon from "./PopupIcon";
 import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
+import { transformToObject } from "../utils";
 
 const CodeSnippet = ({
   path,
@@ -32,12 +33,12 @@ const CodeSnippet = ({
       /"([^(")"]+)":/g,
       "$1:"
     )});\n\nsasJs.request("${path}/${serviceName}"`;
-    if (requestTables.length) {
-      codeSnippet += `,\n${JSON.stringify(
-        [...requestTables.map((r) => r.rows)],
-        null,
-        1
-      )})`;
+    const mappedTables = requestTables.map((r) => r.data);
+    const inputTables = mappedTables.length
+      ? transformToObject(mappedTables)
+      : {};
+    if (Object.keys(inputTables).length) {
+      codeSnippet += `,\n${JSON.stringify(inputTables, null, 1)})`;
     } else {
       codeSnippet += ")";
     }

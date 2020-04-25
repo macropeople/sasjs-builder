@@ -73,7 +73,7 @@ const HotServiceTable = (props) => {
                 setTimeout(() => {
                   const newColumns = produce(tableColumns, (draft) => {
                     draft.push({
-                      title: `column${tableColumns.length}`,
+                      title: `column${tableColumns.length + 1}`,
                       type: "numeric",
                     });
                   });

@@ -9,7 +9,7 @@ import { serviceTableReducer } from "./ServiceTableReducer";
 const ServiceTable = ({ table, onUpdate, isDarkMode }) => {
   const [state, dispatch] = useReducer(serviceTableReducer, {
     tableName: "",
-    rows: [],
+    data: {},
     columns: [],
   });
 
@@ -18,7 +18,7 @@ const ServiceTable = ({ table, onUpdate, isDarkMode }) => {
       dispatch({
         type: "setInitialState",
         tableName: table.tableName,
-        rows: table.rows,
+        data: table.data,
         columns: table.columns,
       });
     }
