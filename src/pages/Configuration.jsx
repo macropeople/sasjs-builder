@@ -5,6 +5,7 @@ import { AppContext } from "../context/AppContext";
 import "./Configuration.scss";
 import { useEffect } from "react";
 import { useRef } from "react";
+import { clearAllSelections } from "../utils";
 
 const Configuration = () => {
   const { masterJson, setMasterJson, isDarkMode } = useContext(AppContext);
@@ -45,6 +46,10 @@ const Configuration = () => {
       });
     }
   }, [masterJson]);
+
+  useEffect(() => {
+    clearAllSelections();
+  }, []);
 
   return (
     <div className="configuration-container">

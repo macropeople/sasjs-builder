@@ -7,6 +7,7 @@ import "./HotServiceTable.scss";
 import produce from "immer";
 import cloneDeep from "lodash.clonedeep";
 import EditColumnModal from "./EditColumnModal";
+import { clearAllSelections } from "../utils";
 
 const HotServiceTable = (props) => {
   const { table, onUpdate, isDarkMode } = props;
@@ -45,6 +46,7 @@ const HotServiceTable = (props) => {
           }
         }}
         stretchH="all"
+        minSpareRows={5}
         afterChange={(e) => {
           if (!!e) {
             onUpdate({
@@ -165,14 +167,10 @@ const HotServiceTable = (props) => {
             },
             renameColumn: {
               name: "Edit column",
-              callback: (key, options) => {
+              callback: (_, options) => {
                 setTimeout(() => {
                   const columnIndex = options[0].end.col;
-                  if (window.getSelection) {
-                    window.getSelection().removeAllRanges();
-                  } else if (document.selection) {
-                    document.selection.empty();
-                  }
+                  clearAllSelections();
                   setColumnIndexToEdit(columnIndex);
                 });
               },

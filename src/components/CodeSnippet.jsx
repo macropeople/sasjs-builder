@@ -24,11 +24,6 @@ const CodeSnippet = ({
       serverUrl: sasJsConfig.serverUrl,
       serverType: sasJsConfig.serverType,
     };
-    if (sasJsConfig.serverType === "SAS9") {
-      config.pathSAS9 = sasJsConfig.pathSAS9;
-    } else {
-      config.pathSASViya = sasJsConfig.pathSASViya;
-    }
     let codeSnippet = `const sasJs = new SASjs(${JSON.stringify(
       config,
       null,

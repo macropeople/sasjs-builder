@@ -7,3 +7,11 @@ export const sortByName = (a, b) => {
   }
   return 0;
 };
+
+export const clearAllSelections = () => {
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges();
+  } else if (document.selection) {
+    document.selection.empty();
+  }
+};
