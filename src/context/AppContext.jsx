@@ -25,13 +25,15 @@ const defaultConfig = {
             {
               tableName: "test",
               columns: [
-                { name: "Person", numeric: false },
-                { name: "Value", numeric: true },
+                { title: "Person", type: "text" },
+                { title: "Value", type: "numeric" },
               ],
-              data: [
-                ["Krishna", 42],
-                ["Allan", 64],
-              ],
+              data: {
+                test: [
+                  { Person: "Krishna", Value: 42 },
+                  { Person: "Allan", Value: 64 },
+                ],
+              },
             },
           ],
           responseTables: [],

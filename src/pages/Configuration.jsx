@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Header, Segment, Form, Checkbox } from "semantic-ui-react";
+import { Header, Segment, Form } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import { AppContext } from "../context/AppContext";
 import "./Configuration.scss";

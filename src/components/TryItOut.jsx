@@ -3,22 +3,7 @@ import { Button, Icon, Header } from "semantic-ui-react";
 import { AppContext } from "../context/AppContext";
 import Highlight from "react-highlight.js";
 import LoginModal from "../pages/LoginModal";
-
-const convertToSasJsFormat = (tables) => {
-  const mappedTables = {};
-  tables.forEach((table) => {
-    const data = table.data.map((row) => {
-      const mappedRow = {};
-      row.forEach((cell, index) => {
-        const columnName = table.columns[index].name;
-        mappedRow[columnName] = cell;
-      });
-      return mappedRow;
-    });
-    mappedTables[table.tableName] = data;
-  });
-  return mappedTables;
-};
+import { transformToObject } from "../utils";
 
 const TryItOut = ({ path, serviceName, requestTables, isDarkMode }) => {
   const { adapter, isLoggedIn } = useContext(AppContext);
@@ -28,13 +13,13 @@ const TryItOut = ({ path, serviceName, requestTables, isDarkMode }) => {
   const makeRequest = () => {
     setError(null);
     setResponse(null);
+    const mappedTables = requestTables.map((r) => r.data);
+    const inputTables = mappedTables.length
+      ? transformToObject(mappedTables)
+      : {};
+    debugger;
     adapter
-      .request(
-        `${path}/${serviceName}`,
-        requestTables && requestTables.length
-          ? convertToSasJsFormat(requestTables)
-          : {}
-      )
+      .request(`${path}/${serviceName}`, inputTables)
       .then((res) => {
         setResponse(res);
         console.log(res);

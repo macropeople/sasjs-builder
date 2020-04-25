@@ -15,3 +15,41 @@ export const clearAllSelections = () => {
     document.selection.empty();
   }
 };
+
+export const convertToSasJsFormat = (tables) => {
+  const mappedTables = {};
+  tables.forEach((table) => {
+    const data = table.data.map((row) => {
+      const mappedRow = {};
+      row.forEach((cell, index) => {
+        const columnName = table.columns[index].title;
+        mappedRow[columnName] = cell;
+      });
+      return mappedRow;
+    });
+    mappedTables[table.tableName] = data;
+  });
+  return mappedTables;
+};
+
+export const convertToHotTableFormat = (table) => {
+  const mappedTable = [];
+  const tableData = table.data[Object.keys(table.data)[0]];
+  tableData.forEach((row) => {
+    const mappedRow = new Array(table.columns.length);
+    Object.keys(row).forEach((property, index) => {
+      const columnIndex = table.columns.findIndex((c) => c.title === property);
+      mappedRow[columnIndex] = row[property];
+    });
+    mappedTable.push(mappedRow);
+  });
+  return mappedTable;
+};
+
+export const transformToObject = (array) => {
+  const result = {};
+  for (let i = 0; i < array.length; i++) {
+    result[Object.keys(array[i])[0]] = array[i][Object.keys(array[i])[0]];
+  }
+  return result;
+};

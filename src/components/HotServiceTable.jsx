@@ -5,9 +5,12 @@ import { useEffect } from "react";
 import { useRef } from "react";
 import "./HotServiceTable.scss";
 import produce from "immer";
-import cloneDeep from "lodash.clonedeep";
 import EditColumnModal from "./EditColumnModal";
-import { clearAllSelections } from "../utils";
+import {
+  clearAllSelections,
+  convertToHotTableFormat,
+  convertToSasJsFormat,
+} from "../utils";
 
 const HotServiceTable = (props) => {
   const { table, onUpdate, isDarkMode } = props;
@@ -19,16 +22,11 @@ const HotServiceTable = (props) => {
   const tableRef = useRef();
 
   useEffect(() => {
-    setTableData(cloneDeep(data));
-  }, [data]);
+    setTableData(convertToHotTableFormat(table));
+  }, [table]);
 
   useEffect(() => {
-    setTableColumns(
-      columns.map((c) => ({
-        title: c.name,
-        type: c.numeric ? "numeric" : "text",
-      }))
-    );
+    setTableColumns(columns);
   }, [columns]);
 
   return (
@@ -51,11 +49,14 @@ const HotServiceTable = (props) => {
           if (!!e) {
             onUpdate({
               tableName: table.tableName,
-              columns: tableColumns.map((t) => ({
-                name: t.title,
-                numeric: t.type === "numeric",
-              })),
-              data: tableData,
+              columns: tableColumns,
+              data: convertToSasJsFormat([
+                {
+                  columns: tableColumns,
+                  data: tableData,
+                  tableName: table.tableName,
+                },
+              ]),
             });
           }
         }}
@@ -87,11 +88,14 @@ const HotServiceTable = (props) => {
                   });
                   onUpdate({
                     tableName: table.tableName,
-                    columns: newColumns.map((t) => ({
-                      name: t.title,
-                      numeric: t.type === "numeric",
-                    })),
-                    data: newData,
+                    columns: newColumns,
+                    data: convertToSasJsFormat([
+                      {
+                        columns: newColumns,
+                        data: newData,
+                        tableName: table.tableName,
+                      },
+                    ]),
                   });
                 });
               },
@@ -108,11 +112,14 @@ const HotServiceTable = (props) => {
                   setTableData(newData);
                   onUpdate({
                     tableName: table.tableName,
-                    columns: tableColumns.map((t) => ({
-                      name: t.title,
-                      numeric: t.type === "numeric",
-                    })),
-                    data: newData,
+                    columns: tableColumns,
+                    data: convertToSasJsFormat([
+                      {
+                        columns: tableColumns,
+                        data: newData,
+                        tableName: table.tableName,
+                      },
+                    ]),
                   });
                 });
               },
@@ -128,11 +135,14 @@ const HotServiceTable = (props) => {
                   setTableData(newData);
                   onUpdate({
                     tableName: table.tableName,
-                    columns: tableColumns.map((t) => ({
-                      name: t.title,
-                      numeric: t.type === "numeric",
-                    })),
-                    data: newData,
+                    columns: tableColumns,
+                    data: convertToSasJsFormat([
+                      {
+                        columns: tableColumns,
+                        data: newData,
+                        tableName: table.tableName,
+                      },
+                    ]),
                   });
                 });
               },
@@ -156,11 +166,14 @@ const HotServiceTable = (props) => {
                   });
                   onUpdate({
                     tableName: table.tableName,
-                    columns: newColumns.map((t) => ({
-                      name: t.title,
-                      numeric: t.type === "numeric",
-                    })),
-                    data: newData,
+                    columns: newColumns,
+                    data: convertToSasJsFormat([
+                      {
+                        columns: newColumns,
+                        data: newData,
+                        tableName: table.tableName,
+                      },
+                    ]),
                   });
                 });
               },
@@ -190,11 +203,14 @@ const HotServiceTable = (props) => {
             setColumnIndexToEdit(-1);
             onUpdate({
               tableName: table.tableName,
-              columns: newColumns.map((t) => ({
-                name: t.title,
-                numeric: t.type === "numeric",
-              })),
-              data: tableData,
+              columns: newColumns,
+              data: convertToSasJsFormat([
+                {
+                  columns: newColumns,
+                  data: tableData,
+                  tableName: table.tableName,
+                },
+              ]),
             });
           }}
           onCancel={() => setColumnIndexToEdit(-1)}
