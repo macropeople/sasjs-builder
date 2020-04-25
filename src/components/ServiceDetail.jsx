@@ -30,23 +30,30 @@ const ServiceDetail = ({
   isDarkMode,
 }) => {
   const [name, setName] = useState("");
-  const [currentRequestTable, setCurrentRequestTable] = useState(null);
-  const [currentResponseTable, setCurrentResponseTable] = useState(null);
+  const [currentRequestTableIndex, setCurrentRequestTableIndex] = useState(-1);
+  const [currentResponseTableIndex, setCurrentResponseTableIndex] = useState(
+    -1
+  );
   const [description, setDescription] = useState("");
   const [requestTables, setRequestTables] = useState([]);
   const [responseTables, setResponseTables] = useState([]);
   const serviceNameRef = useRef();
+  const requestTabRef = useRef();
+  const responseTabRef = useRef();
 
   const addRequestTable = useCallback(() => {
     const newRequestTables = produce(requestTables, (draft) => {
       draft.push({
         tableName: `NewRequestTable${draft.length + 1}`,
-        columns: [{ name: "column1", numeric: true }],
+        columns: [{ title: "column1", type: "numeric" }],
         rows: [{ column1: "" }],
       });
     });
     setRequestTables(newRequestTables);
-    setCurrentRequestTable(newRequestTables[newRequestTables.length - 1]);
+    setCurrentRequestTableIndex(newRequestTables.length - 1);
+    if (requestTabRef.current) {
+      requestTabRef.current.render();
+    }
     const serviceObject = {
       name,
       description,
@@ -60,12 +67,12 @@ const ServiceDetail = ({
     const newResponseTables = produce(responseTables, (draft) => {
       draft.push({
         tableName: `NewResponseTable${draft.length + 1}`,
-        columns: [{ name: "column1", numeric: true }],
+        columns: [{ title: "column1", type: "numeric" }],
         rows: [{ column1: "" }],
       });
     });
     setResponseTables(newResponseTables);
-    setCurrentResponseTable(newResponseTables[newResponseTables.length - 1]);
+    setCurrentResponseTableIndex(newResponseTables.length - 1);
     const serviceObject = {
       name,
       description,
@@ -83,9 +90,9 @@ const ServiceDetail = ({
 
       setRequestTables(newRequestTables);
       if (newRequestTables.length) {
-        setCurrentRequestTable(newRequestTables[0]);
+        setCurrentRequestTableIndex(0);
       } else {
-        setCurrentRequestTable(null);
+        setCurrentRequestTableIndex(-1);
       }
 
       toast({
@@ -114,9 +121,9 @@ const ServiceDetail = ({
 
       setResponseTables(newResponseTables);
       if (newResponseTables.length) {
-        setCurrentResponseTable(newResponseTables[0]);
+        setCurrentResponseTableIndex(0);
       } else {
-        setCurrentResponseTable(null);
+        setCurrentResponseTableIndex(-1);
       }
 
       toast({
@@ -177,12 +184,6 @@ const ServiceDetail = ({
         draft[index] = updatedTable;
       });
       setRequestTables(newRequestTables);
-      if (
-        currentRequestTable &&
-        currentRequestTable.name === updatedTable.name
-      ) {
-        setCurrentRequestTable(updatedTable);
-      }
       const serviceObject = {
         name,
         description,
@@ -191,14 +192,7 @@ const ServiceDetail = ({
       };
       notifyUpdate(serviceObject, onUpdate);
     },
-    [
-      currentRequestTable,
-      requestTables,
-      responseTables,
-      name,
-      description,
-      onUpdate,
-    ]
+    [requestTables, responseTables, name, description, onUpdate]
   );
 
   const updateResponseTable = useCallback(
@@ -207,12 +201,6 @@ const ServiceDetail = ({
         draft[index] = updatedTable;
       });
       setResponseTables(newResponseTables);
-      if (
-        currentResponseTable &&
-        currentResponseTable.name === updatedTable.name
-      ) {
-        setCurrentResponseTable(updatedTable);
-      }
       const serviceObject = {
         name,
         description,
@@ -221,14 +209,7 @@ const ServiceDetail = ({
       };
       notifyUpdate(serviceObject, onUpdate);
     },
-    [
-      requestTables,
-      responseTables,
-      currentResponseTable,
-      name,
-      description,
-      onUpdate,
-    ]
+    [requestTables, responseTables, name, description, onUpdate]
   );
 
   useEffect(() => {
@@ -238,9 +219,10 @@ const ServiceDetail = ({
       setRequestTables(service.requestTables || []);
       setResponseTables(service.responseTables || []);
       if (service.requestTables && service.requestTables.length) {
-        setCurrentRequestTable(service.requestTables[0]);
-      } else if (service.responseTables && service.responseTables.length) {
-        setCurrentResponseTable(service.responseTables[0]);
+        setCurrentRequestTableIndex(0);
+      }
+      if (service.responseTables && service.responseTables.length) {
+        setCurrentResponseTableIndex(0);
       }
     }
   }, [service]);
@@ -342,6 +324,11 @@ const ServiceDetail = ({
                 fluid: true,
                 inverted: isDarkMode,
               }}
+              ref={requestTabRef}
+              activeIndex={currentRequestTableIndex}
+              onTabChange={(_, data) =>
+                setCurrentRequestTableIndex(data.activeIndex)
+              }
               panes={requestTables.map((table, index) => {
                 return {
                   menuItem: table.tableName,
@@ -349,21 +336,13 @@ const ServiceDetail = ({
                     <Tab.Pane
                       inverted={isDarkMode}
                       key={table.tableName}
-                      active={
-                        currentRequestTable &&
-                        currentRequestTable.name === table.name
-                      }
+                      // active={
+                      //   currentRequestTable &&
+                      //   currentRequestTable.tableName === table.tableName
+                      // }
                     >
                       <div className="tables-header">
-                        <Header
-                          inverted={isDarkMode}
-                          as="h3"
-                          onClick={() =>
-                            currentRequestTable
-                              ? setCurrentRequestTable(null)
-                              : setCurrentRequestTable(table)
-                          }
-                        >
+                        <Header inverted={isDarkMode} as="h3">
                           <ContentEditable
                             className="table-name-header h3"
                             html={`${table.tableName}`}
@@ -371,11 +350,46 @@ const ServiceDetail = ({
                             disabled={false}
                             onBlur={(e) => {
                               const value = e.target.innerText;
-                              updateRequestTableName(value, index);
+                              const tableNames = requestTables.map(
+                                (t) => t.tableName
+                              );
+                              if (
+                                tableNames.includes(value) &&
+                                tableNames.indexOf(value) !== index
+                              ) {
+                                toast({
+                                  type: "error",
+                                  icon: "warning",
+                                  title: "Table already exists",
+                                  description: (
+                                    <>
+                                      A table with the name <b>{value}</b>{" "}
+                                      already exists.
+                                      <br />
+                                      Please try again with a different table
+                                      name.
+                                    </>
+                                  ),
+                                  time: 2000,
+                                });
+                                e.target.innerText = table.tableName;
+                                e.target.focus();
+                                const timeout = setTimeout(() => {
+                                  document.execCommand(
+                                    "selectAll",
+                                    false,
+                                    null
+                                  );
+                                  clearTimeout(timeout);
+                                });
+                              } else {
+                                updateRequestTableName(value, index);
+                              }
                             }}
                           />
                         </Header>
                         <Icon
+                          className="icon-button"
                           name="trash alternate outline"
                           color="red"
                           onClick={(e) => {
@@ -418,29 +432,25 @@ const ServiceDetail = ({
                 fluid: true,
                 inverted: isDarkMode,
               }}
+              ref={responseTabRef}
+              activeIndex={currentResponseTableIndex}
+              onTabChange={(_, data) =>
+                setCurrentResponseTableIndex(data.activeIndex)
+              }
               panes={responseTables.map((table, index) => {
                 return {
                   menuItem: table.tableName,
                   render: () => (
                     <Tab.Pane
                       inverted={isDarkMode}
-                      key={index}
-                      active={
-                        currentResponseTable &&
-                        currentResponseTable.name === table.name
-                      }
+                      key={table.tableName}
+                      // active={
+                      //   currentResponseTable &&
+                      //   currentResponseTable.tableName === table.tableName
+                      // }
                     >
                       <div className="tables-header">
-                        <Header
-                          as="h3"
-                          inverted={isDarkMode}
-                          className="tables-header"
-                          onClick={() => {
-                            currentResponseTable
-                              ? setCurrentResponseTable(null)
-                              : setCurrentResponseTable(table);
-                          }}
-                        >
+                        <Header inverted={isDarkMode} as="h3">
                           <ContentEditable
                             className="table-name-header h3"
                             html={`${table.tableName}`}
@@ -448,11 +458,46 @@ const ServiceDetail = ({
                             disabled={false}
                             onBlur={(e) => {
                               const value = e.target.innerText;
-                              updateResponseTableName(value, index);
+                              const tableNames = responseTables.map(
+                                (t) => t.tableName
+                              );
+                              if (
+                                tableNames.includes(value) &&
+                                tableNames.indexOf(value) !== index
+                              ) {
+                                toast({
+                                  type: "error",
+                                  icon: "warning",
+                                  title: "Table already exists",
+                                  description: (
+                                    <>
+                                      A table with the name <b>{value}</b>{" "}
+                                      already exists.
+                                      <br />
+                                      Please try again with a different table
+                                      name.
+                                    </>
+                                  ),
+                                  time: 2000,
+                                });
+                                e.target.innerText = table.tableName;
+                                e.target.focus();
+                                const timeout = setTimeout(() => {
+                                  document.execCommand(
+                                    "selectAll",
+                                    false,
+                                    null
+                                  );
+                                  clearTimeout(timeout);
+                                });
+                              } else {
+                                updateResponseTableName(value, index);
+                              }
                             }}
                           />
                         </Header>
                         <Icon
+                          className="icon-button"
                           name="trash alternate outline"
                           color="red"
                           onClick={(e) => {

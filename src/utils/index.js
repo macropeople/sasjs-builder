@@ -34,6 +34,9 @@ export const convertToSasJsFormat = (tables) => {
 
 export const convertToHotTableFormat = (table) => {
   const mappedTable = [];
+  if (!table.data || !Object.keys(table.data).length) {
+    return mappedTable;
+  }
   const tableData = table.data[Object.keys(table.data)[0]];
   tableData.forEach((row) => {
     const mappedRow = new Array(table.columns.length);
