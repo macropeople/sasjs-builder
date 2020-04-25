@@ -59,6 +59,10 @@ export const AppProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
+    const darkModeEnabled = JSON.parse(
+      localStorage.getItem("sasJsBuilderDarkMode") || "false"
+    );
+    setIsDarkMode(darkModeEnabled);
     const storedJson = localStorage.getItem("sasJsBuilderJson");
     let parsedJson, sasjs;
     if (storedJson) {
@@ -107,6 +111,7 @@ export const AppProvider = ({ children }) => {
   }, [adapter]);
 
   useEffect(() => {
+    localStorage.setItem("sasJsBuilderDarkMode", isDarkMode);
     if (isDarkMode) {
       document.querySelector("body").classList.add("dark-mode");
     } else {
