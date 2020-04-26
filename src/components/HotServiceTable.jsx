@@ -7,7 +7,6 @@ import "./HotServiceTable.scss";
 import produce from "immer";
 import EditColumnModal from "./EditColumnModal";
 import {
-  clearAllSelections,
   convertToHotTableFormat,
   convertToSasJsFormat,
   isNonEmpty,
@@ -115,42 +114,6 @@ const HotServiceTable = (props) => {
                     columns={tableColumns}
                     contextMenu={{
                       items: {
-                        addColumn: {
-                          name: "Add column",
-                          callback: () => {
-                            setTimeout(() => {
-                              const newColumns = produce(
-                                tableColumns,
-                                (draft) => {
-                                  draft.push({
-                                    title: `column${tableColumns.length + 1}`,
-                                    type: "numeric",
-                                  });
-                                }
-                              );
-                              const newData = produce(tableData, (draft) => {
-                                draft.forEach((row) => row.push(null));
-                              });
-                              setTableColumns(newColumns);
-                              setTableData(newData);
-                              tableRef.current.hotInstance.updateSettings({
-                                columns: newColumns,
-                                data: newData,
-                              });
-                              onUpdate({
-                                tableName: table.tableName,
-                                columns: newColumns,
-                                data: convertToSasJsFormat([
-                                  {
-                                    columns: newColumns,
-                                    data: newData.filter(isNonEmpty),
-                                    tableName: table.tableName,
-                                  },
-                                ]),
-                              });
-                            });
-                          },
-                        },
                         row_below: {
                           name: "Add row",
                           callback: () => {
@@ -197,54 +160,6 @@ const HotServiceTable = (props) => {
                                   },
                                 ]),
                               });
-                            });
-                          },
-                        },
-                        removeColumn: {
-                          name: "Remove column",
-                          callback: (_, options) => {
-                            setTimeout(() => {
-                              const columnIndex = options[0].end.col;
-                              const newColumns = produce(
-                                tableColumns,
-                                (draft) => {
-                                  return draft.filter(
-                                    (_, index) => index !== columnIndex
-                                  );
-                                }
-                              );
-                              const newData = produce(tableData, (draft) => {
-                                draft.forEach((row) =>
-                                  row.splice(columnIndex, 1)
-                                );
-                              });
-                              setTableColumns(newColumns);
-                              setTableData(newData);
-                              tableRef.current.hotInstance.updateSettings({
-                                columns: newColumns,
-                                data: newData,
-                              });
-                              onUpdate({
-                                tableName: table.tableName,
-                                columns: newColumns,
-                                data: convertToSasJsFormat([
-                                  {
-                                    columns: newColumns,
-                                    data: newData.filter(isNonEmpty),
-                                    tableName: table.tableName,
-                                  },
-                                ]),
-                              });
-                            });
-                          },
-                        },
-                        renameColumn: {
-                          name: "Edit column",
-                          callback: (_, options) => {
-                            setTimeout(() => {
-                              const columnIndex = options[0].end.col;
-                              clearAllSelections();
-                              setColumnIndexToEdit(columnIndex);
                             });
                           },
                         },

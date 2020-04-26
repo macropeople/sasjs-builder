@@ -110,11 +110,8 @@ const Services = () => {
                           ? folders[index].services.length + 1
                           : 1
                       }`,
-                      description: `My service ${
-                        index >= 0 && folders[index].services
-                          ? folders[index].services.length + 1
-                          : 1
-                      }`,
+                      description:
+                        "This is my SASjs service description. Click me to edit!",
                     };
                     setCurrentServiceIndex(folders[index].services.length);
                     const newFolders = produce(folders, (draft) => {
