@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { HotTable } from "@handsontable/react";
 import { isNonEmpty } from "../utils";
 
@@ -17,13 +17,6 @@ const mapColumns = (schema, data) => {
 const HotTableDefinition = ({ columns, onUpdate }) => {
   const [data, setData] = useState([]);
   const tableRef = useRef();
-  const columnNamevalidator = useCallback(
-    (value, callback) => {
-      const columnNames = columns.map((c) => c.title);
-      callback(!columnNames.includes(value));
-    },
-    [columns]
-  );
 
   useEffect(() => {
     const mappedColumns = columns.map((c) => Object.values(c));
@@ -34,14 +27,11 @@ const HotTableDefinition = ({ columns, onUpdate }) => {
     {
       title: "title",
       type: "text",
-      validator: columnNamevalidator,
-      allowEmpty: false,
     },
     {
       title: "type",
       type: "dropdown",
       source: ["numeric", "text"],
-      allowEmpty: false,
     },
     { title: "label", type: "text" },
   ];
@@ -51,35 +41,44 @@ const HotTableDefinition = ({ columns, onUpdate }) => {
       licenseKey="non-commercial-and-evaluation"
       ref={tableRef}
       columns={tableDefinitionSchema}
+      comments={true}
       stretchH="none"
       rowHeaders={true}
       colWidths={395}
       minSpareRows={5}
       data={data}
-      afterValidate={(_, value, row, prop) => {
-        if (prop === 0) {
-          debugger;
-          const columnNames = columns.map((c) => c.title);
-          if (
-            columnNames.includes(value) &&
-            columnNames.indexOf(value) !== row
-          ) {
-            const cellMeta = tableRef.current.hotInstance.getCellMeta(
-              row,
-              prop
-            );
-            cellMeta.instance.setDataAtCell(row, prop, null);
-            tableRef.current.hotInstance.render();
-          }
-        }
-      }}
       afterChange={(e) => {
         if (!!e) {
-          const mappedColumns = mapColumns(
-            tableDefinitionSchema,
-            data.filter(isNonEmpty)
-          );
-          onUpdate(mappedColumns);
+          var instance = tableRef.current.hotInstance;
+          var column = instance.getDataAtCol(0);
+          let valid = true;
+          column.forEach(function (value, row) {
+            let data = [...column];
+            const index = data.indexOf(value);
+            data.splice(index, 1);
+            const secondIndex = data.indexOf(value);
+            const cell = instance.getCellMeta(row, 0);
+            if (
+              index > -1 &&
+              secondIndex > -1 &&
+              !(value == null || value === "")
+            ) {
+              cell.valid = false;
+              cell.comment = { value: "Error: No Duplicate Values allowed." };
+              valid = false;
+            } else {
+              cell.valid = true;
+              cell.comment = "";
+            }
+          });
+          instance.render();
+          if (valid) {
+            const mappedColumns = mapColumns(
+              tableDefinitionSchema,
+              data.filter(isNonEmpty)
+            );
+            onUpdate(mappedColumns);
+          }
         }
       }}
     />
