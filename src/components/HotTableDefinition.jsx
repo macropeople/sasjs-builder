@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HotTable } from "@handsontable/react";
 import { isNonEmpty } from "../utils";
+import { produce } from "immer";
 
 const mapColumns = (schema, data) => {
   const mappedColumns = data.map((row) => {
     let mappedRow = {};
     row.forEach((cell, index) => {
-      const columnName = schema[index].title;
+      const columnName = schema[index].name;
       mappedRow[columnName] = cell;
     });
     return mappedRow;
@@ -25,17 +26,19 @@ const HotTableDefinition = ({ columns, onUpdate }) => {
 
   const tableDefinitionSchema = [
     {
-      title: "title",
+      title: "Name",
+      name: "title",
       type: "text",
       width: 200,
     },
     {
-      title: "type",
+      title: "Type",
+      name: "type",
       type: "dropdown",
       source: ["numeric", "text"],
       width: 200,
     },
-    { title: "label", type: "text" },
+    { title: "Label", name: "label", type: "text" },
   ];
 
   return (
@@ -48,6 +51,25 @@ const HotTableDefinition = ({ columns, onUpdate }) => {
       rowHeaders={true}
       minSpareRows={1}
       data={data}
+      contextMenu={{
+        remove_row: {
+          name: "Remove row",
+          callback: (_, options) => {
+            setTimeout(() => {
+              const rowIndex = options[0].end.row;
+              const newData = produce(data, (draft) => {
+                return draft.filter((_, index) => index !== rowIndex);
+              });
+              setData(newData);
+              const mappedColumns = mapColumns(
+                tableDefinitionSchema,
+                data.filter(isNonEmpty)
+              );
+              onUpdate(mappedColumns);
+            });
+          },
+        },
+      }}
       afterChange={(e) => {
         if (!!e) {
           var instance = tableRef.current.hotInstance;
@@ -72,12 +94,6 @@ const HotTableDefinition = ({ columns, onUpdate }) => {
               cell.comment = {
                 value:
                   "Error: Column names must match SAS format - i.e. start with a letter or underscore, and contain only letters, numbers and underscores.",
-              };
-              valid = false;
-            } else if (!value) {
-              cell.valid = false;
-              cell.comment = {
-                value: "Error: Column names must not be blank.",
               };
               valid = false;
             } else {
