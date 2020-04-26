@@ -4,7 +4,12 @@
   margin: 10px;
   display: inline-flex;
   justify-content: center;
-  height: 200px;
+  align-items: center;
+  height: 300px;
+
+  .handsontable {
+    display: flex;
+  }
 
   &.inverted {
     .ht_master tr td {

@@ -333,14 +333,7 @@ const ServiceDetail = ({
                 return {
                   menuItem: table.tableName,
                   render: () => (
-                    <Tab.Pane
-                      inverted={isDarkMode}
-                      key={table.tableName}
-                      // active={
-                      //   currentRequestTable &&
-                      //   currentRequestTable.tableName === table.tableName
-                      // }
-                    >
+                    <Tab.Pane inverted={isDarkMode} key={table.tableName}>
                       <div className="tables-header">
                         <Header inverted={isDarkMode} as="h3">
                           <ContentEditable
@@ -350,6 +343,9 @@ const ServiceDetail = ({
                             disabled={false}
                             onBlur={(e) => {
                               const value = e.target.innerText;
+                              if (value === table.tableName) {
+                                return;
+                              }
                               const tableNames = requestTables.map(
                                 (t) => t.tableName
                               );

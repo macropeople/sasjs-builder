@@ -4,7 +4,7 @@ import "./PopupIcon.scss";
 import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 
-const PopupIcon = ({ text, icon, color, onClick }) => {
+const PopupIcon = ({ text, icon, color, onClick, className = "" }) => {
   const { isDarkMode } = useContext(AppContext);
   return (
     <Popup
@@ -13,7 +13,7 @@ const PopupIcon = ({ text, icon, color, onClick }) => {
       trigger={
         <Icon
           name={icon}
-          className="icon-button"
+          className={`icon-button ${className}`}
           color={color}
           onClick={onClick}
         />

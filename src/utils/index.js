@@ -56,3 +56,7 @@ export const transformToObject = (array) => {
   }
   return result;
 };
+
+export const isNonEmpty = (row) => {
+  return row.some((cell) => !!cell);
+};

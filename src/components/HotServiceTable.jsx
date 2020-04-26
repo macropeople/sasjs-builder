@@ -10,7 +10,10 @@ import {
   clearAllSelections,
   convertToHotTableFormat,
   convertToSasJsFormat,
+  isNonEmpty,
 } from "../utils";
+import { Tab } from "semantic-ui-react";
+import HotTableDefinition from "./HotTableDefinition";
 
 const HotServiceTable = (props) => {
   const { table, onUpdate, isDarkMode } = props;
@@ -30,167 +33,231 @@ const HotServiceTable = (props) => {
   }, [columns]);
 
   return (
-    <div
-      className={isDarkMode ? "table-container inverted" : "table-container"}
-    >
-      <HotTable
-        ref={tableRef}
-        licenseKey="non-commercial-and-evaluation"
-        data={tableData}
-        autoRowSize={true}
-        beforeKeyDown={(event) => {
-          if (!event.target.closest(".handsontableInput")) {
-            event.stopImmediatePropagation();
-          }
+    <>
+      <Tab
+        style={{ width: "100%" }}
+        menu={{
+          fluid: true,
+          secondary: true,
+          inverted: isDarkMode,
         }}
-        stretchH="all"
-        minSpareRows={5}
-        afterChange={(e) => {
-          if (!!e) {
-            onUpdate({
-              tableName: table.tableName,
-              columns: tableColumns,
-              data: convertToSasJsFormat([
-                {
-                  columns: tableColumns,
-                  data: tableData,
-                  tableName: table.tableName,
-                },
-              ]),
-            });
-          }
-        }}
-        autoColumnSize={true}
-        manualColumnResize={true}
-        manualRowResize={true}
-        rowHeaders={true}
-        columns={tableColumns}
-        contextMenu={{
-          items: {
-            addColumn: {
-              name: "Add column",
-              callback: () => {
-                setTimeout(() => {
-                  const newColumns = produce(tableColumns, (draft) => {
-                    draft.push({
-                      title: `column${tableColumns.length + 1}`,
-                      type: "numeric",
-                    });
-                  });
-                  const newData = produce(tableData, (draft) => {
-                    draft.forEach((row) => row.push(null));
-                  });
-                  setTableColumns(newColumns);
-                  setTableData(newData);
-                  tableRef.current.hotInstance.updateSettings({
-                    columns: newColumns,
-                    data: newData,
-                  });
-                  onUpdate({
-                    tableName: table.tableName,
-                    columns: newColumns,
-                    data: convertToSasJsFormat([
-                      {
+        panes={[
+          {
+            menuItem: "Table Definition",
+            render: () => (
+              <Tab.Pane inverted={isDarkMode}>
+                <div
+                  className={
+                    isDarkMode ? "table-container inverted" : "table-container"
+                  }
+                >
+                  <HotTableDefinition
+                    columns={tableColumns}
+                    onUpdate={(newColumns) => {
+                      setTableColumns(newColumns);
+                      onUpdate({
+                        tableName: table.tableName,
                         columns: newColumns,
-                        data: newData,
-                        tableName: table.tableName,
-                      },
-                    ]),
-                  });
-                });
-              },
-            },
-            row_below: {
-              name: "Add row",
-              callback: () => {
-                setTimeout(() => {
-                  const newData = produce(data, (draft) => {
-                    const newRow = [];
-                    tableColumns.forEach(() => newRow.push(null));
-                    draft.push(newRow);
-                  });
-                  setTableData(newData);
-                  onUpdate({
-                    tableName: table.tableName,
-                    columns: tableColumns,
-                    data: convertToSasJsFormat([
-                      {
-                        columns: tableColumns,
-                        data: newData,
-                        tableName: table.tableName,
-                      },
-                    ]),
-                  });
-                });
-              },
-            },
-            remove_row: {
-              name: "Remove row",
-              callback: (_, options) => {
-                setTimeout(() => {
-                  const rowIndex = options[0].end.row;
-                  const newData = produce(data, (draft) => {
-                    return draft.filter((_, index) => index !== rowIndex);
-                  });
-                  setTableData(newData);
-                  onUpdate({
-                    tableName: table.tableName,
-                    columns: tableColumns,
-                    data: convertToSasJsFormat([
-                      {
-                        columns: tableColumns,
-                        data: newData,
-                        tableName: table.tableName,
-                      },
-                    ]),
-                  });
-                });
-              },
-            },
-            removeColumn: {
-              name: "Remove column",
-              callback: (_, options) => {
-                setTimeout(() => {
-                  const columnIndex = options[0].end.col;
-                  const newColumns = produce(tableColumns, (draft) => {
-                    return draft.filter((_, index) => index !== columnIndex);
-                  });
-                  const newData = produce(tableData, (draft) => {
-                    draft.forEach((row) => row.splice(columnIndex, 1));
-                  });
-                  setTableColumns(newColumns);
-                  setTableData(newData);
-                  tableRef.current.hotInstance.updateSettings({
-                    columns: newColumns,
-                    data: newData,
-                  });
-                  onUpdate({
-                    tableName: table.tableName,
-                    columns: newColumns,
-                    data: convertToSasJsFormat([
-                      {
-                        columns: newColumns,
-                        data: newData,
-                        tableName: table.tableName,
-                      },
-                    ]),
-                  });
-                });
-              },
-            },
-            renameColumn: {
-              name: "Edit column",
-              callback: (_, options) => {
-                setTimeout(() => {
-                  const columnIndex = options[0].end.col;
-                  clearAllSelections();
-                  setColumnIndexToEdit(columnIndex);
-                });
-              },
-            },
+                        data: convertToSasJsFormat([
+                          {
+                            columns: newColumns,
+                            data: tableData.filter(isNonEmpty),
+                            tableName: table.tableName,
+                          },
+                        ]),
+                      });
+                    }}
+                  />
+                </div>
+              </Tab.Pane>
+            ),
           },
-        }}
-      ></HotTable>
+          {
+            menuItem: "Table Data",
+            render: () => (
+              <Tab.Pane inverted={isDarkMode}>
+                <div
+                  className={
+                    isDarkMode ? "table-container inverted" : "table-container"
+                  }
+                >
+                  <HotTable
+                    ref={tableRef}
+                    licenseKey="non-commercial-and-evaluation"
+                    data={tableData}
+                    autoRowSize={true}
+                    beforeKeyDown={(event) => {
+                      if (!event.target.closest(".handsontableInput")) {
+                        event.stopImmediatePropagation();
+                      }
+                    }}
+                    stretchH="all"
+                    minSpareRows={5}
+                    afterChange={(e) => {
+                      if (!!e) {
+                        onUpdate({
+                          tableName: table.tableName,
+                          columns: tableColumns,
+                          data: convertToSasJsFormat([
+                            {
+                              columns: tableColumns,
+                              data: tableData.filter(isNonEmpty),
+                              tableName: table.tableName,
+                            },
+                          ]),
+                        });
+                      }
+                    }}
+                    autoColumnSize={true}
+                    manualColumnResize={true}
+                    manualRowResize={true}
+                    rowHeaders={true}
+                    columns={tableColumns}
+                    contextMenu={{
+                      items: {
+                        addColumn: {
+                          name: "Add column",
+                          callback: () => {
+                            setTimeout(() => {
+                              const newColumns = produce(
+                                tableColumns,
+                                (draft) => {
+                                  draft.push({
+                                    title: `column${tableColumns.length + 1}`,
+                                    type: "numeric",
+                                  });
+                                }
+                              );
+                              const newData = produce(tableData, (draft) => {
+                                draft.forEach((row) => row.push(null));
+                              });
+                              setTableColumns(newColumns);
+                              setTableData(newData);
+                              tableRef.current.hotInstance.updateSettings({
+                                columns: newColumns,
+                                data: newData,
+                              });
+                              onUpdate({
+                                tableName: table.tableName,
+                                columns: newColumns,
+                                data: convertToSasJsFormat([
+                                  {
+                                    columns: newColumns,
+                                    data: newData.filter(isNonEmpty),
+                                    tableName: table.tableName,
+                                  },
+                                ]),
+                              });
+                            });
+                          },
+                        },
+                        row_below: {
+                          name: "Add row",
+                          callback: () => {
+                            setTimeout(() => {
+                              const newData = produce(data, (draft) => {
+                                const newRow = [];
+                                tableColumns.forEach(() => newRow.push(null));
+                                draft.push(newRow);
+                              });
+                              setTableData(newData);
+                              onUpdate({
+                                tableName: table.tableName,
+                                columns: tableColumns,
+                                data: convertToSasJsFormat([
+                                  {
+                                    columns: tableColumns,
+                                    data: newData.filter(isNonEmpty),
+                                    tableName: table.tableName,
+                                  },
+                                ]),
+                              });
+                            });
+                          },
+                        },
+                        remove_row: {
+                          name: "Remove row",
+                          callback: (_, options) => {
+                            setTimeout(() => {
+                              const rowIndex = options[0].end.row;
+                              const newData = produce(data, (draft) => {
+                                return draft.filter(
+                                  (_, index) => index !== rowIndex
+                                );
+                              });
+                              setTableData(newData);
+                              onUpdate({
+                                tableName: table.tableName,
+                                columns: tableColumns,
+                                data: convertToSasJsFormat([
+                                  {
+                                    columns: tableColumns,
+                                    data: newData.filter(isNonEmpty),
+                                    tableName: table.tableName,
+                                  },
+                                ]),
+                              });
+                            });
+                          },
+                        },
+                        removeColumn: {
+                          name: "Remove column",
+                          callback: (_, options) => {
+                            setTimeout(() => {
+                              const columnIndex = options[0].end.col;
+                              const newColumns = produce(
+                                tableColumns,
+                                (draft) => {
+                                  return draft.filter(
+                                    (_, index) => index !== columnIndex
+                                  );
+                                }
+                              );
+                              const newData = produce(tableData, (draft) => {
+                                draft.forEach((row) =>
+                                  row.splice(columnIndex, 1)
+                                );
+                              });
+                              setTableColumns(newColumns);
+                              setTableData(newData);
+                              tableRef.current.hotInstance.updateSettings({
+                                columns: newColumns,
+                                data: newData,
+                              });
+                              onUpdate({
+                                tableName: table.tableName,
+                                columns: newColumns,
+                                data: convertToSasJsFormat([
+                                  {
+                                    columns: newColumns,
+                                    data: newData.filter(isNonEmpty),
+                                    tableName: table.tableName,
+                                  },
+                                ]),
+                              });
+                            });
+                          },
+                        },
+                        renameColumn: {
+                          name: "Edit column",
+                          callback: (_, options) => {
+                            setTimeout(() => {
+                              const columnIndex = options[0].end.col;
+                              clearAllSelections();
+                              setColumnIndexToEdit(columnIndex);
+                            });
+                          },
+                        },
+                      },
+                    }}
+                  ></HotTable>
+                </div>
+              </Tab.Pane>
+            ),
+          },
+        ]}
+      ></Tab>
+
       {columnIndexToEdit > -1 && (
         <EditColumnModal
           columns={tableColumns}
@@ -208,7 +275,7 @@ const HotServiceTable = (props) => {
               data: convertToSasJsFormat([
                 {
                   columns: newColumns,
-                  data: tableData,
+                  data: tableData.filter(isNonEmpty),
                   tableName: table.tableName,
                 },
               ]),
@@ -217,7 +284,7 @@ const HotServiceTable = (props) => {
           onCancel={() => setColumnIndexToEdit(-1)}
         />
       )}
-    </div>
+    </>
   );
 };
 

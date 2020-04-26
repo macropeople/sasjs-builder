@@ -82,6 +82,7 @@ const Folder = (props) => {
           icon="add"
           color="blue"
           text="Add service"
+          className="add-service-icon"
           onClick={() => onAddService()}
         />
       </div>
