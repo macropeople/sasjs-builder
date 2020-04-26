@@ -57,6 +57,7 @@ export const AppProvider = ({ children }) => {
   const [adapter, setAdapter] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDataCleared, setIsDataCleared] = useState(false);
 
   useEffect(() => {
     const darkModeEnabled = JSON.parse(
@@ -118,6 +119,7 @@ export const AppProvider = ({ children }) => {
     }
     parsedJson.folders = [];
     setMasterJson({ ...masterJson, folders: [] });
+    setIsDataCleared(true);
 
     localStorage.setItem("sasJsBuilderJson", JSON.stringify(parsedJson));
   }, [masterJson]);
@@ -143,6 +145,7 @@ export const AppProvider = ({ children }) => {
         isDarkMode,
         setIsDarkMode,
         clearStoredData,
+        isDataCleared,
       }}
     >
       {children}

@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import { Menu, Popup, Header, Checkbox, Button, Icon } from "semantic-ui-react";
+import { toast } from "react-semantic-toasts";
 import MenuBarItem from "./MenuBarItem";
 import { useLocation } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
@@ -79,7 +80,19 @@ const MenuBar = () => {
               position="left center"
               content="Clear stored data"
               trigger={
-                <Header as="h4" onClick={clearStoredData}>
+                <Header
+                  as="h4"
+                  onClick={() => {
+                    clearStoredData();
+                    toast({
+                      type: "info",
+                      icon: "trash alternate outline",
+                      title: "Stored data cleared",
+                      description: `All stored folders and services have now been removed.`,
+                      time: 2000,
+                    });
+                  }}
+                >
                   <Icon name="trash alternate outline" inverted={isDarkMode} />
                 </Header>
               }

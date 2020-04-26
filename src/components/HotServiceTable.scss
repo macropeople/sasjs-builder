@@ -21,3 +21,7 @@
 .htContextMenu {
   color: #1f2027;
 }
+
+.handsontable td.htInvalid {
+  background-color: rgb(249, 149, 149) !important;
+}

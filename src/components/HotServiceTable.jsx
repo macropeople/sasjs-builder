@@ -3,6 +3,7 @@ import { HotTable } from "@handsontable/react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
+import "handsontable/dist/handsontable.full.css";
 import "./HotServiceTable.scss";
 import produce from "immer";
 import EditColumnModal from "./EditColumnModal";
@@ -91,7 +92,7 @@ const HotServiceTable = (props) => {
                       }
                     }}
                     stretchH="all"
-                    minSpareRows={5}
+                    minSpareRows={1}
                     afterChange={(e) => {
                       if (!!e) {
                         onUpdate({

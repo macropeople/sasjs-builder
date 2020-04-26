@@ -27,11 +27,13 @@ const HotTableDefinition = ({ columns, onUpdate }) => {
     {
       title: "title",
       type: "text",
+      width: 200,
     },
     {
       title: "type",
       type: "dropdown",
       source: ["numeric", "text"],
+      width: 200,
     },
     { title: "label", type: "text" },
   ];
@@ -42,10 +44,9 @@ const HotTableDefinition = ({ columns, onUpdate }) => {
       ref={tableRef}
       columns={tableDefinitionSchema}
       comments={true}
-      stretchH="none"
+      stretchH="last"
       rowHeaders={true}
-      colWidths={395}
-      minSpareRows={5}
+      minSpareRows={1}
       data={data}
       afterChange={(e) => {
         if (!!e) {
@@ -64,7 +65,20 @@ const HotTableDefinition = ({ columns, onUpdate }) => {
               !(value == null || value === "")
             ) {
               cell.valid = false;
-              cell.comment = { value: "Error: No Duplicate Values allowed." };
+              cell.comment = { value: "Error: Column names must be unique." };
+              valid = false;
+            } else if (!/^[a-zA-Z_]+[a-zA-Z0-9]*/.test(value) && !!value) {
+              cell.valid = false;
+              cell.comment = {
+                value:
+                  "Error: Column names must match SAS format - i.e. start with a letter or underscore, and contain only letters, numbers and underscores.",
+              };
+              valid = false;
+            } else if (!value) {
+              cell.valid = false;
+              cell.comment = {
+                value: "Error: Column names must not be blank.",
+              };
               valid = false;
             } else {
               cell.valid = true;

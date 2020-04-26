@@ -9,7 +9,9 @@ import PopupIcon from "../components/PopupIcon";
 import produce from "immer";
 
 const Services = () => {
-  const { masterJson, setMasterJson, isDarkMode } = useContext(AppContext);
+  const { masterJson, setMasterJson, isDarkMode, isDataCleared } = useContext(
+    AppContext
+  );
   const [folders, setFolders] = useState([]);
   const [currentFolderIndex, setCurrentFolderIndex] = useState(-1);
   const [currentServiceIndex, setCurrentServiceIndex] = useState(-1);
@@ -27,6 +29,14 @@ const Services = () => {
     );
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    setFolders(masterJson.folders ? masterJson.folders : []);
+    setCurrentFolderIndex(
+      masterJson.folders && masterJson.folders.length ? 0 : -1
+    );
+    // eslint-disable-next-line
+  }, [isDataCleared]);
 
   useEffect(() => {
     setMasterJson({ ...masterJson, folders });

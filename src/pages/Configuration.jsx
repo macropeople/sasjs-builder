@@ -192,7 +192,7 @@ const Configuration = () => {
             <Form.Select
               name="serverType"
               placeholder="Server type"
-              onBlur={(_, { value }) => {
+              onChange={(_, { value }) => {
                 setMasterJson({
                   ...masterJson,
                   sasJsConfig: { ...sasJsConfig, serverType: value },
