@@ -60,19 +60,18 @@ const TryItOut = ({ path, serviceName, requestTables, isDarkMode }) => {
           onClose={() => setIsLoginModalOpen(false)}
         />
       )}
-      {!!response ||
-        (!!error && (
-          <Highlight
-            language="javascript"
-            className="code-snippet"
-            style={{ marginTop: "10px" }}
-          >
-            {!!response && JSON.stringify(response, null, 1)}
-            {!!error && (
-              <span className="error">{JSON.stringify(error, null, 1)}</span>
-            )}
-          </Highlight>
-        ))}
+      {(!!response || !!error) && (
+        <Highlight
+          language="javascript"
+          className="code-snippet"
+          style={{ marginTop: "10px" }}
+        >
+          {!!response && JSON.stringify(response, null, 1)}
+          {!!error && (
+            <span className="error">{JSON.stringify(error, null, 1)}</span>
+          )}
+        </Highlight>
+      )}
     </div>
   );
 };
