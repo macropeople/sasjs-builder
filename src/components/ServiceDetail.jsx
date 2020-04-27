@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Header, Form, Icon, Tab } from "semantic-ui-react";
+import { Header, Form, Icon, Tab, Label } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import "./ServiceDetail.scss";
 import CodeSnippet from "./CodeSnippet";
@@ -10,6 +10,7 @@ import TryItOut from "./TryItOut";
 import { useCallback } from "react";
 import { useRef } from "react";
 import HotServiceTable from "./HotServiceTable";
+import isEqual from "lodash.isequal";
 
 const notifyUpdate = (serviceObject, onUpdate) => {
   onUpdate(serviceObject);
@@ -37,6 +38,7 @@ const ServiceDetail = ({
   const [description, setDescription] = useState("");
   const [requestTables, setRequestTables] = useState([]);
   const [responseTables, setResponseTables] = useState([]);
+  const [resultTables, setResultTables] = useState([]);
   const serviceNameRef = useRef();
   const requestTabRef = useRef();
   const responseTabRef = useRef();
@@ -437,14 +439,7 @@ const ServiceDetail = ({
                 return {
                   menuItem: table.tableName,
                   render: () => (
-                    <Tab.Pane
-                      inverted={isDarkMode}
-                      key={table.tableName}
-                      // active={
-                      //   currentResponseTable &&
-                      //   currentResponseTable.tableName === table.tableName
-                      // }
-                    >
+                    <Tab.Pane inverted={isDarkMode} key={table.tableName}>
                       <div className="tables-header">
                         <Header inverted={isDarkMode} as="h3">
                           <ContentEditable
@@ -519,6 +514,42 @@ const ServiceDetail = ({
             ></Tab>
           )}
         </Form>
+        {!!resultTables.length && (
+          <>
+            <Header as="h3" inverted={isDarkMode}>
+              Result Tables
+            </Header>
+            {resultTables.map((table, index) => {
+              return (
+                <>
+                  <Header as="h3">
+                    <span style={{ padding: "0 8px 0 0 " }}>
+                      {table.tableName}
+                    </span>
+                    {isEqual(table.columns, responseTables[index].columns) && (
+                      <Label color="green">
+                        <Icon name="check circle"></Icon>
+                        {"   "}Matches expected format
+                      </Label>
+                    )}
+                    {!isEqual(table.columns, responseTables[index].columns) && (
+                      <Label color="red">
+                        <Icon name="warning circle"></Icon>
+                        {"   "}Not in expected format
+                      </Label>
+                    )}
+                  </Header>
+                  <HotServiceTable
+                    readOnly={true}
+                    key={index}
+                    isDarkMode={isDarkMode}
+                    table={table}
+                  />
+                </>
+              );
+            })}
+          </>
+        )}
         {!!service && (
           <div className="code">
             <CodeSnippet
@@ -534,6 +565,7 @@ const ServiceDetail = ({
               serviceName={service.name}
               requestTables={requestTables}
               responseTables={responseTables}
+              onResult={(resultTables) => setResultTables(resultTables)}
             />
           </div>
         )}

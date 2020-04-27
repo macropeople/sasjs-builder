@@ -15,8 +15,7 @@ import {
 import { Tab } from "semantic-ui-react";
 import HotTableDefinition from "./HotTableDefinition";
 
-const HotServiceTable = (props) => {
-  const { table, onUpdate, isDarkMode } = props;
+const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
   const { data, columns } = table;
 
   const [tableData, setTableData] = useState([]);
@@ -53,6 +52,7 @@ const HotServiceTable = (props) => {
                 >
                   <HotTableDefinition
                     columns={tableColumns}
+                    readOnly={readOnly}
                     onUpdate={(newColumns) => {
                       setTableColumns(newColumns);
                       onUpdate({
@@ -83,6 +83,7 @@ const HotServiceTable = (props) => {
                 >
                   <HotTable
                     ref={tableRef}
+                    readOnly={readOnly}
                     licenseKey="non-commercial-and-evaluation"
                     data={tableData}
                     autoRowSize={true}

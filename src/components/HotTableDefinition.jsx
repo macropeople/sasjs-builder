@@ -15,7 +15,7 @@ const mapColumns = (schema, data) => {
   return mappedColumns;
 };
 
-const HotTableDefinition = ({ columns, onUpdate }) => {
+const HotTableDefinition = ({ columns, onUpdate, readOnly }) => {
   const [data, setData] = useState([]);
   const tableRef = useRef();
 
@@ -45,6 +45,7 @@ const HotTableDefinition = ({ columns, onUpdate }) => {
     <HotTable
       licenseKey="non-commercial-and-evaluation"
       ref={tableRef}
+      readOnly={readOnly}
       columns={tableDefinitionSchema}
       comments={true}
       stretchH="last"

@@ -1,11 +1,18 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Button, Icon, Header, Loader } from "semantic-ui-react";
 import { AppContext } from "../context/AppContext";
 import Highlight from "react-highlight.js";
 import LoginModal from "../pages/LoginModal";
 import { transformToObject } from "../utils";
 
-const TryItOut = ({ path, serviceName, requestTables, isDarkMode }) => {
+const TryItOut = ({
+  path,
+  serviceName,
+  requestTables,
+  responseTables,
+  isDarkMode,
+  onResult,
+}) => {
   const { adapter, isLoggedIn } = useContext(AppContext);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +39,30 @@ const TryItOut = ({ path, serviceName, requestTables, isDarkMode }) => {
         setIsLoading(false);
       });
   };
+
+  useEffect(() => {
+    if (response) {
+      const mappedTables = [];
+      responseTables.forEach((table) => {
+        const data = response[table.tableName];
+        let columns = [];
+        if (data.length) {
+          const columnNames = Object.keys(data[0]);
+          columns = columnNames.map((columnName) => {
+            const isNumeric = data.every((x) => !isNaN(x));
+            return { title: columnName, type: isNumeric ? "numeric" : "text" };
+          });
+        }
+        mappedTables.push({
+          tableName: table.tableName,
+          columns,
+          data: { [table.tableName]: data },
+        });
+      });
+      onResult(mappedTables);
+    }
+  }, [response]);
+
   return (
     <div className="try-it-out">
       <div className="tables-header">
