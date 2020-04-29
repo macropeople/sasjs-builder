@@ -89,7 +89,6 @@ const Configuration = () => {
               <input
                 name="name"
                 required
-                pattern="[a-zA-Z0-9_]+"
                 maxLength="32"
                 placeholder="Name"
                 defaultValue={appConfig.name}
