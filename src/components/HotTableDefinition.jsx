@@ -34,6 +34,7 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly }) => {
     {
       title: "Type",
       name: "type",
+      allowInvalid: false,
       type: "dropdown",
       source: ["numeric", "text"],
       width: 200,
@@ -53,21 +54,39 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly }) => {
       minSpareRows={1}
       data={data}
       contextMenu={{
-        remove_row: {
-          name: "Remove row",
-          callback: (_, options) => {
-            setTimeout(() => {
-              const rowIndex = options[0].end.row;
-              const newData = produce(data, (draft) => {
-                return draft.filter((_, index) => index !== rowIndex);
+        items: {
+          row_below: {
+            name: "Add row",
+            callback: () => {
+              setTimeout(() => {
+                const newData = produce(data, (draft) => {
+                  draft.push([null, "numeric", null]);
+                });
+                setData([...newData]);
+                const mappedColumns = mapColumns(
+                  tableDefinitionSchema,
+                  newData
+                );
+                onUpdate(mappedColumns);
               });
-              setData(newData);
-              const mappedColumns = mapColumns(
-                tableDefinitionSchema,
-                data.filter(isNonEmpty)
-              );
-              onUpdate(mappedColumns);
-            });
+            },
+          },
+          removeRow: {
+            name: "Remove row",
+            callback: (_, options) => {
+              setTimeout(() => {
+                const rowIndex = options[0].end.row;
+                const newData = produce(data, (draft) => {
+                  return draft.filter((_, index) => index !== rowIndex);
+                });
+                setData([...newData]);
+                const mappedColumns = mapColumns(
+                  tableDefinitionSchema,
+                  newData.filter(isNonEmpty)
+                );
+                onUpdate(mappedColumns);
+              });
+            },
           },
         },
       }}

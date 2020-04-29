@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useRef } from "react";
 import "handsontable/dist/handsontable.full.css";
 import "./HotServiceTable.scss";
-import produce from "immer";
+import { produce } from "immer";
 import EditColumnModal from "./EditColumnModal";
 import {
   convertToHotTableFormat,
@@ -16,7 +16,7 @@ import { Tab } from "semantic-ui-react";
 import HotTableDefinition from "./HotTableDefinition";
 
 const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
-  const { data, columns } = table;
+  const { columns } = table;
 
   const [tableData, setTableData] = useState([]);
   const [tableColumns, setTableColumns] = useState([]);
@@ -93,7 +93,6 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                       }
                     }}
                     stretchH="all"
-                    minSpareRows={1}
                     afterChange={(e) => {
                       if (!!e) {
                         onUpdate({
@@ -113,6 +112,7 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                     manualColumnResize={true}
                     manualRowResize={true}
                     rowHeaders={true}
+                    minSpareRows={1}
                     columns={tableColumns}
                     contextMenu={{
                       items: {
@@ -120,7 +120,7 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                           name: "Add row",
                           callback: () => {
                             setTimeout(() => {
-                              const newData = produce(data, (draft) => {
+                              const newData = produce(tableData, (draft) => {
                                 const newRow = [];
                                 tableColumns.forEach(() => newRow.push(null));
                                 draft.push(newRow);
@@ -132,7 +132,7 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                                 data: convertToSasJsFormat([
                                   {
                                     columns: tableColumns,
-                                    data: newData.filter(isNonEmpty),
+                                    data: newData,
                                     tableName: table.tableName,
                                   },
                                 ]),
@@ -145,7 +145,7 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                           callback: (_, options) => {
                             setTimeout(() => {
                               const rowIndex = options[0].end.row;
-                              const newData = produce(data, (draft) => {
+                              const newData = produce(tableData, (draft) => {
                                 return draft.filter(
                                   (_, index) => index !== rowIndex
                                 );

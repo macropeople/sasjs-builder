@@ -20,11 +20,13 @@ export const convertToSasJsFormat = (tables) => {
   const mappedTables = {};
   tables.forEach((table) => {
     const data = table.data.map((row) => {
-      const mappedRow = {};
-      row.forEach((cell, index) => {
-        const columnName = table.columns[index].title;
-        mappedRow[columnName] = cell;
-      });
+      let mappedRow = {};
+      if (Array.isArray(row)) {
+        row.forEach((cell, index) => {
+          const columnName = table.columns[index].title;
+          mappedRow[columnName] = cell;
+        });
+      }
       return mappedRow;
     });
     mappedTables[table.tableName] = data;
@@ -58,5 +60,5 @@ export const transformToObject = (array) => {
 };
 
 export const isNonEmpty = (row) => {
-  return row.some((cell) => !!cell);
+  return Array.isArray(row) && row.some((cell) => !!cell);
 };
