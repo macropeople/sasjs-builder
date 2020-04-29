@@ -165,7 +165,7 @@ const Configuration = () => {
             <input
               name="appLoc"
               required
-              pattern="[a-zA-Z0-9_/-]+"
+              pattern="[a-zA-Z0-9_/-.]+"
               placeholder="App Location"
               defaultValue={sasJsConfig.appLoc}
               onBlur={(e) => {
