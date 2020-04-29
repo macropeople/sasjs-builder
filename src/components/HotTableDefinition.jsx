@@ -60,7 +60,7 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly }) => {
             callback: () => {
               setTimeout(() => {
                 const newData = produce(data, (draft) => {
-                  draft.push([null, "numeric", null]);
+                  draft.push([null, null, null]);
                 });
                 setData([...newData]);
                 const mappedColumns = mapColumns(
