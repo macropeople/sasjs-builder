@@ -61,7 +61,7 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                         data: convertToSasJsFormat([
                           {
                             columns: newColumns,
-                            data: tableData.filter(isNonEmpty),
+                            data: tableData,
                             tableName: table.tableName,
                           },
                         ]),
@@ -95,16 +95,20 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                     stretchH="all"
                     afterChange={(e) => {
                       if (!!e) {
-                        onUpdate({
-                          tableName: table.tableName,
-                          columns: tableColumns,
-                          data: convertToSasJsFormat([
-                            {
-                              columns: tableColumns,
-                              data: tableData.filter(isNonEmpty),
+                        tableRef.current.hotInstance.validateCells((valid) => {
+                          if (valid) {
+                            onUpdate({
                               tableName: table.tableName,
-                            },
-                          ]),
+                              columns: tableColumns,
+                              data: convertToSasJsFormat([
+                                {
+                                  columns: tableColumns,
+                                  data: tableData.filter(isNonEmpty),
+                                  tableName: table.tableName,
+                                },
+                              ]),
+                            });
+                          }
                         });
                       }
                     }}

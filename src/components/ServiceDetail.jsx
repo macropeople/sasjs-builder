@@ -294,7 +294,7 @@ const ServiceDetail = ({
                 setDescription(value);
                 notifyUpdate(
                   {
-                    name,
+                    name: serviceNameRef.current.innerText,
                     description: value,
                     requestTables,
                     responseTables,
