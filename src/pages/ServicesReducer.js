@@ -90,6 +90,20 @@ export const ServicesReducer = (state, action) => {
         currentServiceIndex: state.folders[action.index].services.length,
       };
     }
+
+    case "removeService": {
+      const newFolders = produce(state.folders, (draft) => {
+        draft[state.currentFolderIndex].services = draft[
+          state.currentFolderIndex
+        ].services.filter((_, index) => index !== action.index);
+      });
+      action.callback(newFolders);
+      return {
+        folders: newFolders,
+        currentFolderIndex: state.currentFolderIndex,
+        currentServiceIndex: state.currentServiceIndex - 1,
+      };
+    }
     case "updateService": {
       const updatedFolder = produce(
         state.folders[state.currentFolderIndex],

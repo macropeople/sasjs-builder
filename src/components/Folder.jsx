@@ -14,6 +14,7 @@ const Folder = (props) => {
     onDelete,
     onServiceClick,
     onAddService,
+    onRemoveService,
     onFolderRename,
     selectedServiceIndex,
   } = props;
@@ -69,14 +70,23 @@ const Folder = (props) => {
         {isExpanded &&
           folder.services.map((service, index) => {
             return (
-              <div
-                key={service.name}
-                className={
-                  selectedServiceIndex === index ? "service active" : "service"
-                }
-                onClick={() => onServiceClick(index)}
-              >
-                {service.name}
+              <div key={service.name}>
+                <div
+                  className={
+                    selectedServiceIndex === index
+                      ? "service active"
+                      : "service"
+                  }
+                  onClick={() => onServiceClick(index)}
+                >
+                  {service.name}
+                </div>
+                <PopupIcon
+                  text="Delete service"
+                  icon="trash alternate outline"
+                  color="red"
+                  onClick={() => onRemoveService(index)}
+                />
               </div>
             );
           })}

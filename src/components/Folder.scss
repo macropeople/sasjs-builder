@@ -45,6 +45,8 @@ i.remove {
   .service {
     cursor: pointer;
     padding: 6px 0;
+    width: 80%;
+    display: inline-block;
     &:hover {
       text-decoration: underline;
     }

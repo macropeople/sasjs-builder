@@ -66,6 +66,13 @@ const Services = () => {
                       callback: setFolders,
                     });
                   }}
+                  onRemoveService={(serviceIndex) =>
+                    dispatch({
+                      type: "removeService",
+                      index: serviceIndex,
+                      callback: setFolders,
+                    })
+                  }
                   onDelete={() => {
                     dispatch({
                       type: "removeFolder",
