@@ -44,6 +44,17 @@ const Services = () => {
                   selected={state.currentFolderIndex === index}
                   selectedServiceIndex={state.currentServiceIndex}
                   onClick={() => dispatch({ type: "setCurrentFolder", index })}
+                  validateServiceName={(name) => {
+                    return (
+                      !state.folders[state.currentFolderIndex].services
+                        .map((s) => s.name)
+                        .includes(name) ||
+                      name ===
+                        state.folders[state.currentFolderIndex].services[
+                          state.currentServiceIndex
+                        ].name
+                    );
+                  }}
                   onFolderRename={(newFolderName) => {
                     dispatch({
                       type: "renameFolder",
@@ -77,6 +88,13 @@ const Services = () => {
                     dispatch({
                       type: "removeFolder",
                       index,
+                      callback: setFolders,
+                    });
+                  }}
+                  onRenameService={(updatedService) => {
+                    dispatch({
+                      type: "updateService",
+                      updatedService,
                       callback: setFolders,
                     });
                   }}

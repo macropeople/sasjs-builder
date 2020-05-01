@@ -17,6 +17,8 @@ const Folder = (props) => {
     onRemoveService,
     onFolderRename,
     selectedServiceIndex,
+    validateServiceName,
+    onRenameService,
   } = props;
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isExpanded, setIsExpanded] = useState(selected);
@@ -79,7 +81,18 @@ const Folder = (props) => {
                   }
                   onClick={() => onServiceClick(index)}
                 >
-                  {service.name}
+                  <ContentEditable
+                    className="folder-name"
+                    html={`${service.name}`}
+                    onBlur={(e) => {
+                      const value = e.target.innerText;
+                      if (value !== service.name) {
+                        if (validateServiceName(value)) {
+                          onRenameService({ ...service, name: value });
+                        }
+                      }
+                    }}
+                  />
                 </div>
                 <PopupIcon
                   text="Delete service"

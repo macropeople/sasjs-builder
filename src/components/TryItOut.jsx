@@ -25,7 +25,7 @@ const TryItOut = ({
     const mappedTables = requestTables.map((r) => r.data);
     const inputTables = mappedTables.length
       ? transformToObject(mappedTables)
-      : {};
+      : null;
     adapter
       .request(`${path}/${serviceName}`, inputTables)
       .then((res) => {

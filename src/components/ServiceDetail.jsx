@@ -7,7 +7,6 @@ import ContentEditable from "./ContentEditable";
 import PopupIcon from "./PopupIcon";
 import TryItOut from "./TryItOut";
 import HotServiceTable from "./HotServiceTable";
-import isEqual from "lodash.isequal";
 import { ServiceDetailReducer } from "./ServiceDetailReducer";
 
 const notifyUpdate = (serviceObject, onUpdate) => {
@@ -19,6 +18,16 @@ const notifyUpdate = (serviceObject, onUpdate) => {
     description: `Service ${serviceObject.name} has now been updated.`,
     time: 2000,
   });
+};
+
+const areEqual = (a, b) => {
+  let result = true;
+  a.forEach((row) => {
+    result =
+      result && !!b.find((r) => r.title === row.title && r.type === row.type);
+  });
+
+  return result;
 };
 
 const ServiceDetail = ({
@@ -296,7 +305,7 @@ const ServiceDetail = ({
                     <span style={{ padding: "0 8px 0 0 " }}>
                       {table.tableName}
                     </span>
-                    {isEqual(
+                    {areEqual(
                       table.columns,
                       state.responseTables[index].columns
                     ) && (
@@ -305,7 +314,7 @@ const ServiceDetail = ({
                         {"   "}Matches expected format
                       </Label>
                     )}
-                    {!isEqual(
+                    {!areEqual(
                       table.columns,
                       state.responseTables[index].columns
                     ) && (
