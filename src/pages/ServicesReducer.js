@@ -4,15 +4,11 @@ import { toast } from "react-semantic-toasts";
 export const ServicesReducer = (state, action) => {
   switch (action.type) {
     case "initialise": {
+      debugger;
       const newFolders = produce(action.folders, (draft) => draft);
       return {
+        ...state,
         folders: newFolders,
-        currentFolderIndex: action.folders.length - 1,
-        currentServiceIndex: action.folders.length
-          ? action.folders[0].services && action.folders[0].services.length
-            ? 0
-            : -1
-          : -1,
       };
     }
     case "addFolder": {
@@ -29,9 +25,9 @@ export const ServicesReducer = (state, action) => {
       };
     }
     case "removeFolder": {
-      const newFolders = produce(state.folders, (draft) =>
-        draft.filter((_, index) => index !== action.index)
-      );
+      const newFolders = produce(state.folders, (draft) => {
+        return draft.filter((_, index) => index !== action.index);
+      });
       action.callback(newFolders);
       return {
         folders: newFolders,
@@ -81,6 +77,8 @@ export const ServicesReducer = (state, action) => {
             : 1
         }`,
         description: "This is my SASjs service description. Click me to edit!",
+        requestTables: [],
+        responseTables: [],
       };
       const newFolders = produce(state.folders, (draft) => {
         draft[action.index].services.push(service);
@@ -89,7 +87,7 @@ export const ServicesReducer = (state, action) => {
       return {
         folders: newFolders,
         currentFolderIndex: state.currentFolderIndex,
-        currentServiceIndex: state.folders[action.index].services,
+        currentServiceIndex: state.folders[action.index].services.length,
       };
     }
     case "updateService": {

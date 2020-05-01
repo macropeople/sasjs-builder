@@ -15,7 +15,7 @@ const Services = () => {
   const [state, dispatch] = useReducer(ServicesReducer, {
     folders,
     currentFolderIndex: folders.length - 1,
-    currentServiceIndex: -1,
+    currentServiceIndex: folders.length && folders[0].services.length ? 0 : -1,
   });
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const Services = () => {
             icon="add"
             color="blue"
             onClick={() => {
-              dispatch({ type: "addFolder" });
+              dispatch({ type: "addFolder", callback: setFolders });
             }}
           />
           <div className="folder-list">

@@ -8,29 +8,21 @@ import { useRef } from "react";
 import { clearAllSelections } from "../utils";
 
 const Configuration = () => {
-  const { masterJson, setMasterJson, isDarkMode } = useContext(AppContext);
+  const { config, setConfig, isDarkMode } = useContext(AppContext);
   const [serverType, setServerType] = useState(
-    masterJson && masterJson.sasJsConfig
-      ? masterJson.sasJsConfig.serverType
-      : null
+    config && config.sasJsConfig ? config.sasJsConfig.serverType : null
   );
   const [appConfig, setAppConfig] = useState({});
   const [sasJsConfig, setSasJsConfig] = useState({});
   const formRef = useRef();
 
   useEffect(() => {
-    setAppConfig(
-      masterJson && masterJson.appConfig ? masterJson.appConfig : {}
-    );
-    setSasJsConfig(
-      masterJson && masterJson.sasJsConfig ? masterJson.sasJsConfig : {}
-    );
+    setAppConfig(config && config.appConfig ? config.appConfig : {});
+    setSasJsConfig(config && config.sasJsConfig ? config.sasJsConfig : {});
     setServerType(
-      masterJson && masterJson.sasJsConfig
-        ? masterJson.sasJsConfig.serverType
-        : null
+      config && config.sasJsConfig ? config.sasJsConfig.serverType : null
     );
-    if (masterJson) {
+    if (config) {
       toast({
         type: "success",
         icon: "code",
@@ -45,7 +37,7 @@ const Configuration = () => {
         time: 2000,
       });
     }
-  }, [masterJson]);
+  }, [config]);
 
   useEffect(() => {
     clearAllSelections();
@@ -70,8 +62,8 @@ const Configuration = () => {
                   e.target.classList.remove("invalid");
                   e.target.setCustomValidity("");
                   if (e.target.checkValidity()) {
-                    setMasterJson({
-                      ...masterJson,
+                    setConfig({
+                      ...config,
                       appConfig: { ...appConfig, id: e.target.value },
                     });
                   } else {
@@ -96,8 +88,8 @@ const Configuration = () => {
                   e.target.classList.remove("invalid");
                   e.target.setCustomValidity("");
                   if (e.target.checkValidity()) {
-                    setMasterJson({
-                      ...masterJson,
+                    setConfig({
+                      ...config,
                       appConfig: { ...appConfig, name: e.target.value },
                     });
                   } else {
@@ -121,8 +113,8 @@ const Configuration = () => {
               onBlur={(e) => {
                 e.target.classList.remove("invalid");
                 if (e.target.checkValidity()) {
-                  setMasterJson({
-                    ...masterJson,
+                  setConfig({
+                    ...config,
                     appConfig: { ...appConfig, description: e.target.value },
                   });
                 } else {
@@ -146,8 +138,8 @@ const Configuration = () => {
                 e.target.setCustomValidity("");
                 e.target.classList.remove("invalid");
                 if (e.target.checkValidity()) {
-                  setMasterJson({
-                    ...masterJson,
+                  setConfig({
+                    ...config,
                     sasJsConfig: { ...sasJsConfig, serverUrl: e.target.value },
                   });
                 } else {
@@ -172,8 +164,8 @@ const Configuration = () => {
                 e.target.classList.remove("invalid");
                 e.target.setCustomValidity("");
                 if (e.target.checkValidity()) {
-                  setMasterJson({
-                    ...masterJson,
+                  setConfig({
+                    ...config,
                     sasJsConfig: { ...sasJsConfig, appLoc: e.target.value },
                   });
                 } else {
@@ -192,8 +184,8 @@ const Configuration = () => {
               name="serverType"
               placeholder="Server type"
               onChange={(_, { value }) => {
-                setMasterJson({
-                  ...masterJson,
+                setConfig({
+                  ...config,
                   sasJsConfig: { ...sasJsConfig, serverType: value },
                 });
               }}
@@ -224,8 +216,8 @@ const Configuration = () => {
                 e.target.classList.remove("invalid");
                 e.target.setCustomValidity("");
                 if (e.target.checkValidity()) {
-                  setMasterJson({
-                    ...masterJson,
+                  setConfig({
+                    ...config,
                     sasJsConfig: { ...sasJsConfig, pathSAS9: e.target.value },
                   });
                 } else {
@@ -250,8 +242,8 @@ const Configuration = () => {
                 e.target.classList.remove("invalid");
                 e.target.setCustomValidity("");
                 if (e.target.checkValidity()) {
-                  setMasterJson({
-                    ...masterJson,
+                  setConfig({
+                    ...config,
                     sasJsConfig: {
                       ...sasJsConfig,
                       pathSASViya: e.target.value,

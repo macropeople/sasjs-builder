@@ -4,6 +4,7 @@ import { useCallback } from "react";
 
 const defaultConfig = {
   appConfig: {
+    id: "mySasJsApp",
     name: "MySASjsApp",
     description: "My SASjs App",
   },
@@ -70,7 +71,6 @@ export const AppProvider = ({ children }) => {
     if (storedJson) {
       parsedJson = JSON.parse(storedJson);
     }
-
     if (parsedJson && parsedJson.sasJsConfig) {
       sasjs = new SASjs(parsedJson.sasJsConfig);
     } else {
@@ -103,9 +103,7 @@ export const AppProvider = ({ children }) => {
   }, [config]);
 
   useEffect(() => {
-    if (folders.length) {
-      localStorage.setItem("sasJsBuilderFolders", JSON.stringify(folders));
-    }
+    localStorage.setItem("sasJsBuilderFolders", JSON.stringify(folders));
   }, [folders]);
 
   const logIn = useCallback(

@@ -40,7 +40,7 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly }) => {
       width: 200,
       renderer: function (instance, td, row, col, prop, value) {
         if (value === null) {
-          td.innerHTML = '<div class="htAutocompleteArrow">▼</div>numeric';
+          td.innerHTML = '<div class="htAutocompleteArrow">▼</div>text';
         } else {
           td.innerHTML = `<div class="htAutocompleteArrow">▼</div>${value}`;
         }
@@ -130,10 +130,7 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly }) => {
             });
             instance.render();
             if (valid) {
-              const mappedColumns = mapColumns(
-                tableDefinitionSchema,
-                data.filter(isNonEmpty)
-              );
+              const mappedColumns = mapColumns(tableDefinitionSchema, data);
               onUpdate(mappedColumns);
             }
           }

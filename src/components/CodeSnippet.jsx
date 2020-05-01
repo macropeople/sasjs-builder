@@ -47,7 +47,13 @@ const CodeSnippet = ({
 
     if (responseTables.length) {
       codeSnippet += `res => {\n    console.log(res);\n/* Response Format\n${JSON.stringify(
-        [...responseTables.map((r) => r.data)],
+        [
+          ...responseTables.map((r) =>
+            r.columns.map((c) => ({
+              [c.title]: c.type === "numeric" ? 123 : "foo",
+            }))
+          ),
+        ],
         null,
         1
       )}\n*/\n});`;
