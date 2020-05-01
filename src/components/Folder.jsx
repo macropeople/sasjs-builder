@@ -49,8 +49,10 @@ const Folder = (props) => {
             innerRef={folderNameRef}
             onBlur={(e) => {
               const value = e.target.innerText;
-              setFolderName(value);
-              onFolderRename(value);
+              if (value !== folderName) {
+                setFolderName(value);
+                onFolderRename(value);
+              }
             }}
           />
         </div>

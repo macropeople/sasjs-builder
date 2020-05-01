@@ -6,10 +6,12 @@ import FileUpload from "../components/FileUpload";
 import { AppContext } from "../context/AppContext";
 
 const ImportExport = (props) => {
-  const { setMasterJson, masterJson } = useContext(AppContext);
+  const { setConfig, setFolders, config, folders } = useContext(AppContext);
 
   const importJson = (jsonObject) => {
-    setMasterJson(jsonObject);
+    const { config, folders } = jsonObject;
+    setConfig(config);
+    setFolders(folders);
     toast({
       type: "success",
       icon: "file",
@@ -23,7 +25,7 @@ const ImportExport = (props) => {
   const exportJson = () => {
     const dataStr =
       "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(masterJson, null, 2));
+      encodeURIComponent(JSON.stringify({ config, folders }, null, 2));
     const downloadLink = document.createElement("a");
     downloadLink.setAttribute("href", dataStr);
     downloadLink.setAttribute("download", "sasServices.json");
@@ -71,7 +73,7 @@ const ImportExport = (props) => {
     <div className="import-export-container">
       <div className="file-upload">
         <FileUpload text="Upload JSON file" onFileChange={onFileChanged} />
-        {!!Object.keys(masterJson).length && (
+        {!!config && !!folders && (
           <Button color="green" onClick={exportJson}>
             Export JSON
           </Button>

@@ -13,35 +13,35 @@ const defaultConfig = {
     serverType: "SASVIYA",
     debug: false,
   },
-  folders: [
-    {
-      name: "common",
-      services: [
-        {
-          name: "appInit",
-          description:
-            "This is my SASjs service description. Click me to edit!",
-          requestTables: [
-            {
-              tableName: "test",
-              columns: [
-                { title: "Person", type: "text" },
-                { title: "Value", type: "numeric" },
-              ],
-              data: {
-                test: [
-                  { Person: "Krishna", Value: 42 },
-                  { Person: "Allan", Value: 64 },
-                ],
-              },
-            },
-          ],
-          responseTables: [],
-        },
-      ],
-    },
-  ],
 };
+
+const defaultFolders = [
+  {
+    name: "common",
+    services: [
+      {
+        name: "appInit",
+        description: "This is my SASjs service description. Click me to edit!",
+        requestTables: [
+          {
+            tableName: "test",
+            columns: [
+              { title: "Person", type: "text" },
+              { title: "Value", type: "numeric" },
+            ],
+            data: {
+              test: [
+                { Person: "Krishna", Value: 42 },
+                { Person: "Allan", Value: 64 },
+              ],
+            },
+          },
+        ],
+        responseTables: [],
+      },
+    ],
+  },
+];
 
 export const AppContext = createContext({
   masterJson: defaultConfig,
@@ -53,7 +53,8 @@ export const AppContext = createContext({
 });
 
 export const AppProvider = ({ children }) => {
-  const [masterJson, setMasterJson] = useState(defaultConfig);
+  const [config, setConfig] = useState(defaultConfig);
+  const [folders, setFolders] = useState(defaultFolders);
   const [adapter, setAdapter] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -64,7 +65,7 @@ export const AppProvider = ({ children }) => {
       localStorage.getItem("sasJsBuilderDarkMode") || "false"
     );
     setIsDarkMode(darkModeEnabled);
-    const storedJson = localStorage.getItem("sasJsBuilderJson");
+    const storedJson = localStorage.getItem("sasJsBuilderConfig");
     let parsedJson, sasjs;
     if (storedJson) {
       parsedJson = JSON.parse(storedJson);
@@ -78,24 +79,34 @@ export const AppProvider = ({ children }) => {
     setAdapter(sasjs);
     const config = sasjs.getSasjsConfig();
     if (parsedJson) {
-      setMasterJson({ ...parsedJson, sasJsConfig: config });
+      setConfig({ ...parsedJson, sasJsConfig: config });
     } else {
-      setMasterJson((m) => ({
+      setConfig((m) => ({
         ...m,
         sasJsConfig: config,
       }));
     }
+    const storedFolders = JSON.parse(
+      localStorage.getItem("sasJsBuilderFolders") || "[]"
+    );
+    setFolders(storedFolders);
     sasjs.checkSession().then((response) => setIsLoggedIn(response.isLoggedIn));
   }, []);
 
   useEffect(() => {
-    if (masterJson) {
-      if (masterJson.sasJsConfig) {
-        setAdapter(new SASjs(masterJson.sasJsConfig));
+    if (config) {
+      if (config.sasJsConfig) {
+        setAdapter(new SASjs(config.sasJsConfig));
       }
-      localStorage.setItem("sasJsBuilderJson", JSON.stringify(masterJson));
+      localStorage.setItem("sasJsBuilderConfig", JSON.stringify(config));
     }
-  }, [masterJson]);
+  }, [config]);
+
+  useEffect(() => {
+    if (folders.length) {
+      localStorage.setItem("sasJsBuilderFolders", JSON.stringify(folders));
+    }
+  }, [folders]);
 
   const logIn = useCallback(
     (username, password) => {
@@ -112,17 +123,9 @@ export const AppProvider = ({ children }) => {
   }, [adapter]);
 
   const clearStoredData = useCallback(() => {
-    const storedJson = localStorage.getItem("sasJsBuilderJson");
-    let parsedJson;
-    if (storedJson) {
-      parsedJson = JSON.parse(storedJson);
-    }
-    parsedJson.folders = [];
-    setMasterJson({ ...masterJson, folders: [] });
+    setFolders([]);
     setIsDataCleared(true);
-
-    localStorage.setItem("sasJsBuilderJson", JSON.stringify(parsedJson));
-  }, [masterJson]);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("sasJsBuilderDarkMode", isDarkMode);
@@ -136,8 +139,10 @@ export const AppProvider = ({ children }) => {
   return (
     <AppContext.Provider
       value={{
-        masterJson,
-        setMasterJson,
+        config,
+        folders,
+        setConfig,
+        setFolders,
         adapter,
         isLoggedIn,
         logIn,

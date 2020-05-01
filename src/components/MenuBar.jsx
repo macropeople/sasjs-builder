@@ -14,11 +14,11 @@ const MenuBar = () => {
     isLoggedIn,
     logOut,
     setIsDarkMode,
-    masterJson,
-    setMasterJson,
+    config,
+    setConfig,
     clearStoredData,
   } = useContext(AppContext);
-  const { sasJsConfig } = masterJson;
+  const { sasJsConfig } = config;
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   return (
@@ -65,8 +65,8 @@ const MenuBar = () => {
                   checked={sasJsConfig.debug}
                   onChange={(_, event) => {
                     const newDebugValue = event.checked;
-                    setMasterJson({
-                      ...masterJson,
+                    setConfig({
+                      ...config,
                       sasJsConfig: { ...sasJsConfig, debug: newDebugValue },
                     });
                   }}

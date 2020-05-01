@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useReducer, useRef } from "react";
 import { Header, Form, Icon, Tab, Label } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import "./ServiceDetail.scss";
 import CodeSnippet from "./CodeSnippet";
 import ContentEditable from "./ContentEditable";
 import PopupIcon from "./PopupIcon";
-import produce from "immer";
 import TryItOut from "./TryItOut";
-import { useCallback } from "react";
-import { useRef } from "react";
 import HotServiceTable from "./HotServiceTable";
 import isEqual from "lodash.isequal";
+import { ServiceDetailReducer } from "./ServiceDetailReducer";
 
 const notifyUpdate = (serviceObject, onUpdate) => {
   onUpdate(serviceObject);
@@ -30,202 +28,26 @@ const ServiceDetail = ({
   validateServiceName,
   isDarkMode,
 }) => {
-  const [name, setName] = useState("");
-  const [currentRequestTableIndex, setCurrentRequestTableIndex] = useState(-1);
-  const [currentResponseTableIndex, setCurrentResponseTableIndex] = useState(
-    -1
-  );
-  const [description, setDescription] = useState("");
-  const [requestTables, setRequestTables] = useState([]);
-  const [responseTables, setResponseTables] = useState([]);
-  const [resultTables, setResultTables] = useState([]);
   const serviceNameRef = useRef();
   const requestTabRef = useRef();
   const responseTabRef = useRef();
-
-  const addRequestTable = useCallback(() => {
-    const newRequestTables = produce(requestTables, (draft) => {
-      draft.push({
-        tableName: `NewRequestTable${draft.length + 1}`,
-        columns: [{ title: "column1", type: "numeric" }],
-        data: { [`NewRequestTable${draft.length + 1}`]: [{ column1: "" }] },
-      });
-    });
-    setRequestTables(newRequestTables);
-    setCurrentRequestTableIndex(newRequestTables.length - 1);
-    if (requestTabRef.current) {
-      requestTabRef.current.render();
-    }
-    const serviceObject = {
-      name,
-      description,
-      requestTables: newRequestTables,
-      responseTables,
-    };
-    notifyUpdate(serviceObject, onUpdate);
-  }, [requestTables, responseTables, name, description, onUpdate]);
-
-  const addResponseTable = useCallback(() => {
-    const newResponseTables = produce(responseTables, (draft) => {
-      draft.push({
-        tableName: `NewResponseTable${draft.length + 1}`,
-        columns: [{ title: "column1", type: "numeric" }],
-        data: { [`NewResponseTable${draft.length + 1}`]: [{ column1: "" }] },
-      });
-    });
-    setResponseTables(newResponseTables);
-    setCurrentResponseTableIndex(newResponseTables.length - 1);
-    const serviceObject = {
-      name,
-      description,
-      requestTables,
-      responseTables: newResponseTables,
-    };
-    notifyUpdate(serviceObject, onUpdate);
-  }, [requestTables, responseTables, name, description, onUpdate]);
-
-  const removeRequestTable = useCallback(
-    (table) => {
-      const newRequestTables = produce(requestTables, (draft) => {
-        return draft.filter((t) => t.tableName !== table.tableName);
-      });
-
-      setRequestTables(newRequestTables);
-      if (newRequestTables.length) {
-        setCurrentRequestTableIndex(0);
-      } else {
-        setCurrentRequestTableIndex(-1);
-      }
-
-      toast({
-        type: "info",
-        icon: "trash alternate outline",
-        title: "Table Removed",
-        description: `Table ${table.tableName} has now been removed.`,
-        time: 2000,
-      });
-      const serviceObject = {
-        name,
-        description,
-        requestTables: newRequestTables,
-        responseTables,
-      };
-      notifyUpdate(serviceObject, onUpdate);
-    },
-    [requestTables, responseTables, name, description, onUpdate]
-  );
-
-  const removeResponseTable = useCallback(
-    (table) => {
-      const newResponseTables = produce(responseTables, (draft) => {
-        return draft.filter((t) => t.tableName !== table.tableName);
-      });
-
-      setResponseTables(newResponseTables);
-      if (newResponseTables.length) {
-        setCurrentResponseTableIndex(0);
-      } else {
-        setCurrentResponseTableIndex(-1);
-      }
-
-      toast({
-        type: "info",
-        icon: "trash alternate outline",
-        title: "Table Removed",
-        description: `Table ${table.tableName} has now been removed.`,
-        time: 2000,
-      });
-      const serviceObject = {
-        name,
-        description,
-        requestTables,
-        responseTables: newResponseTables,
-      };
-      notifyUpdate(serviceObject, onUpdate);
-    },
-    [requestTables, responseTables, name, description, onUpdate]
-  );
-
-  const updateResponseTableName = useCallback(
-    (value, index) => {
-      const newResponseTables = produce(responseTables, (draft) => {
-        draft[index].tableName = value;
-      });
-      setResponseTables(newResponseTables);
-      const serviceObject = {
-        name,
-        description,
-        requestTables,
-        responseTables: newResponseTables,
-      };
-      notifyUpdate(serviceObject, onUpdate);
-    },
-    [requestTables, responseTables, name, description, onUpdate]
-  );
-
-  const updateRequestTableName = useCallback(
-    (value, index) => {
-      const newRequestTables = produce(requestTables, (draft) => {
-        draft[index].tableName = value;
-      });
-      setRequestTables(newRequestTables);
-      const serviceObject = {
-        name,
-        description,
-        requestTables: newRequestTables,
-        responseTables,
-      };
-      notifyUpdate(serviceObject, onUpdate);
-    },
-    [requestTables, responseTables, name, description, onUpdate]
-  );
-
-  const updateRequestTable = useCallback(
-    (updatedTable, index) => {
-      const newRequestTables = produce(requestTables, (draft) => {
-        draft[index] = updatedTable;
-      });
-      setRequestTables(newRequestTables);
-      const serviceObject = {
-        name,
-        description,
-        requestTables: newRequestTables,
-        responseTables,
-      };
-      notifyUpdate(serviceObject, onUpdate);
-    },
-    [requestTables, responseTables, name, description, onUpdate]
-  );
-
-  const updateResponseTable = useCallback(
-    (updatedTable, index) => {
-      const newResponseTables = produce(responseTables, (draft) => {
-        draft[index] = updatedTable;
-      });
-      setResponseTables(newResponseTables);
-      const serviceObject = {
-        name,
-        description,
-        requestTables,
-        responseTables: newResponseTables,
-      };
-      notifyUpdate(serviceObject, onUpdate);
-    },
-    [requestTables, responseTables, name, description, onUpdate]
-  );
+  const [state, dispatch] = useReducer(ServiceDetailReducer, {
+    name: service ? service.name : "",
+    description: service ? service.description : "",
+    requestTables: service ? service.requestTables : [],
+    responseTables: service ? service.responseTables : [],
+    resultTables: [],
+    currentRequestTableIndex: service.requestTables
+      ? service.requestTables.length - 1
+      : -1,
+    currentResponseTableIndex: service.responseTables
+      ? service.responseTables.length - 1
+      : -1,
+  });
 
   useEffect(() => {
     if (service) {
-      setName(service.name);
-      setDescription(service.description);
-      setRequestTables(service.requestTables || []);
-      setResponseTables(service.responseTables || []);
-      if (service.requestTables && service.requestTables.length) {
-        setCurrentRequestTableIndex(0);
-      }
-      if (service.responseTables && service.responseTables.length) {
-        setCurrentResponseTableIndex(0);
-      }
+      dispatch({ type: "initialise", service });
     }
   }, [service]);
 
@@ -246,62 +68,35 @@ const ServiceDetail = ({
         <div className="fields">
           <ContentEditable
             className="service-name-field"
-            html={`${name}`}
+            html={`${state.name}`}
             innerRef={serviceNameRef}
             onClick={(e) => e.stopPropagation()}
             disabled={false}
             onBlur={(e) => {
-              e.stopPropagation();
               const value = e.target.innerText;
-              if (value !== name) {
-                if (validateServiceName(value)) {
-                  setName(value);
-                  notifyUpdate(
-                    {
-                      name: value,
-                      description,
-                      requestTables,
-                      responseTables,
-                    },
-                    onUpdate
-                  );
-                } else {
-                  e.preventDefault();
-                  e.returnValue = false;
-                  setName(name);
-                  e.target.innerText = name;
-                  toast({
-                    type: "error",
-                    icon: "server",
-                    title: "A service with that name already exists",
-                    description: `Please try again with a different name`,
-                    time: 2000,
-                  });
-                }
-              }
+              dispatch({
+                type: "updateName",
+                event: e,
+                validate: validateServiceName,
+                value,
+                callback: (service) => notifyUpdate(service, onUpdate),
+              });
             }}
           />
           <ContentEditable
             className="service-description-field"
             maxLength={255}
             allowSpaces={true}
-            html={`${description}`}
+            html={`${state.description}`}
             onClick={(e) => e.stopPropagation()}
             disabled={false}
             onBlur={(e) => {
               const value = e.target.innerText;
-              if (description !== value) {
-                setDescription(value);
-                notifyUpdate(
-                  {
-                    name: serviceNameRef.current.innerText,
-                    description: value,
-                    requestTables,
-                    responseTables,
-                  },
-                  onUpdate
-                );
-              }
+              dispatch({
+                type: "updateDescription",
+                value,
+                callback: (service) => notifyUpdate(service, onUpdate),
+              });
             }}
           />
         </div>
@@ -316,10 +111,15 @@ const ServiceDetail = ({
               text="Add request table"
               icon="add circle"
               color="blue"
-              onClick={addRequestTable}
+              onClick={() => {
+                dispatch({
+                  type: "addRequestTable",
+                  callback: (service) => notifyUpdate(service, onUpdate),
+                });
+              }}
             />
           </div>
-          {!!requestTables.length && (
+          {!!state.requestTables.length && (
             <Tab
               menu={{
                 tabular: true,
@@ -327,11 +127,14 @@ const ServiceDetail = ({
                 inverted: isDarkMode,
               }}
               ref={requestTabRef}
-              activeIndex={currentRequestTableIndex}
+              activeIndex={state.currentRequestTableIndex}
               onTabChange={(_, data) =>
-                setCurrentRequestTableIndex(data.activeIndex)
+                dispatch({
+                  type: "setCurrentRequestTable",
+                  index: data.activeIndex,
+                })
               }
-              panes={requestTables.map((table, index) => {
+              panes={state.requestTables.map((table, index) => {
                 return {
                   menuItem: table.tableName,
                   render: () => (
@@ -345,44 +148,14 @@ const ServiceDetail = ({
                             disabled={false}
                             onBlur={(e) => {
                               const value = e.target.innerText;
-                              if (value === table.tableName) {
-                                return;
-                              }
-                              const tableNames = requestTables.map(
-                                (t) => t.tableName
-                              );
-                              if (
-                                tableNames.includes(value) &&
-                                tableNames.indexOf(value) !== index
-                              ) {
-                                toast({
-                                  type: "error",
-                                  icon: "warning",
-                                  title: "Table already exists",
-                                  description: (
-                                    <>
-                                      A table with the name <b>{value}</b>{" "}
-                                      already exists.
-                                      <br />
-                                      Please try again with a different table
-                                      name.
-                                    </>
-                                  ),
-                                  time: 2000,
-                                });
-                                e.target.innerText = table.tableName;
-                                e.target.focus();
-                                const timeout = setTimeout(() => {
-                                  document.execCommand(
-                                    "selectAll",
-                                    false,
-                                    null
-                                  );
-                                  clearTimeout(timeout);
-                                });
-                              } else {
-                                updateRequestTableName(value, index);
-                              }
+                              dispatch({
+                                type: "renameRequestTable",
+                                index,
+                                value,
+                                event: e,
+                                callback: (service) =>
+                                  notifyUpdate(service, onUpdate),
+                              });
                             }}
                           />
                         </Header>
@@ -392,7 +165,12 @@ const ServiceDetail = ({
                           color="red"
                           onClick={(e) => {
                             e.stopPropagation();
-                            removeRequestTable(table);
+                            dispatch({
+                              type: "removeRequestTable",
+                              index,
+                              callback: (service) =>
+                                notifyUpdate(service, onUpdate),
+                            });
                           }}
                         />
                       </div>
@@ -400,10 +178,13 @@ const ServiceDetail = ({
                         isDarkMode={isDarkMode}
                         table={table}
                         onUpdate={(updatedTable) => {
-                          updateRequestTable(
-                            { ...updatedTable, tableName: table.tableName },
-                            index
-                          );
+                          dispatch({
+                            type: "updateRequestTable",
+                            updatedTable,
+                            index,
+                            callback: (service) =>
+                              notifyUpdate(service, onUpdate),
+                          });
                         }}
                       />
                     </Tab.Pane>
@@ -420,10 +201,15 @@ const ServiceDetail = ({
               text="Add response table"
               icon="add circle"
               color="blue"
-              onClick={addResponseTable}
+              onClick={() => {
+                dispatch({
+                  type: "addResponseTable",
+                  callback: (service) => notifyUpdate(service, onUpdate),
+                });
+              }}
             />
           </div>
-          {!!responseTables.length && (
+          {!!state.responseTables.length && (
             <Tab
               menu={{
                 tabular: true,
@@ -431,11 +217,14 @@ const ServiceDetail = ({
                 inverted: isDarkMode,
               }}
               ref={responseTabRef}
-              activeIndex={currentResponseTableIndex}
+              activeIndex={state.currentResponseTableIndex}
               onTabChange={(_, data) =>
-                setCurrentResponseTableIndex(data.activeIndex)
+                dispatch({
+                  type: "setCurrentResponseTable",
+                  index: data.activeIndex,
+                })
               }
-              panes={responseTables.map((table, index) => {
+              panes={state.responseTables.map((table, index) => {
                 return {
                   menuItem: table.tableName,
                   render: () => (
@@ -449,41 +238,14 @@ const ServiceDetail = ({
                             disabled={false}
                             onBlur={(e) => {
                               const value = e.target.innerText;
-                              const tableNames = responseTables.map(
-                                (t) => t.tableName
-                              );
-                              if (
-                                tableNames.includes(value) &&
-                                tableNames.indexOf(value) !== index
-                              ) {
-                                toast({
-                                  type: "error",
-                                  icon: "warning",
-                                  title: "Table already exists",
-                                  description: (
-                                    <>
-                                      A table with the name <b>{value}</b>{" "}
-                                      already exists.
-                                      <br />
-                                      Please try again with a different table
-                                      name.
-                                    </>
-                                  ),
-                                  time: 2000,
-                                });
-                                e.target.innerText = table.tableName;
-                                e.target.focus();
-                                const timeout = setTimeout(() => {
-                                  document.execCommand(
-                                    "selectAll",
-                                    false,
-                                    null
-                                  );
-                                  clearTimeout(timeout);
-                                });
-                              } else {
-                                updateResponseTableName(value, index);
-                              }
+                              dispatch({
+                                type: "renameResponseTable",
+                                index,
+                                value,
+                                event: e,
+                                callback: (service) =>
+                                  notifyUpdate(service, onUpdate),
+                              });
                             }}
                           />
                         </Header>
@@ -493,7 +255,12 @@ const ServiceDetail = ({
                           color="red"
                           onClick={(e) => {
                             e.stopPropagation();
-                            removeResponseTable(table);
+                            dispatch({
+                              type: "removeResponseTable",
+                              index,
+                              callback: (service) =>
+                                notifyUpdate(service, onUpdate),
+                            });
                           }}
                         />
                       </div>
@@ -501,10 +268,13 @@ const ServiceDetail = ({
                         isDarkMode={isDarkMode}
                         table={table}
                         onUpdate={(updatedTable) => {
-                          updateResponseTable(
-                            { ...updatedTable, tableName: table.tableName },
-                            index
-                          );
+                          dispatch({
+                            type: "updateResponseTable",
+                            updatedTable,
+                            index,
+                            callback: (service) =>
+                              notifyUpdate(service, onUpdate),
+                          });
                         }}
                       />
                     </Tab.Pane>
@@ -514,25 +284,31 @@ const ServiceDetail = ({
             ></Tab>
           )}
         </Form>
-        {!!resultTables.length && (
+        {!!state.resultTables.length && (
           <>
             <Header as="h3" inverted={isDarkMode}>
               Result Tables
             </Header>
-            {resultTables.map((table, index) => {
+            {state.resultTables.map((table, index) => {
               return (
                 <>
                   <Header as="h3">
                     <span style={{ padding: "0 8px 0 0 " }}>
                       {table.tableName}
                     </span>
-                    {isEqual(table.columns, responseTables[index].columns) && (
+                    {isEqual(
+                      table.columns,
+                      state.responseTables[index].columns
+                    ) && (
                       <Label color="green">
                         <Icon name="check circle"></Icon>
                         {"   "}Matches expected format
                       </Label>
                     )}
-                    {!isEqual(table.columns, responseTables[index].columns) && (
+                    {!isEqual(
+                      table.columns,
+                      state.responseTables[index].columns
+                    ) && (
                       <Label color="red">
                         <Icon name="warning circle"></Icon>
                         {"   "}Not in expected format
@@ -556,16 +332,18 @@ const ServiceDetail = ({
               isDarkMode={isDarkMode}
               path={path}
               serviceName={service.name}
-              requestTables={requestTables}
-              responseTables={responseTables}
+              requestTables={state.requestTables}
+              responseTables={state.responseTables}
             />
             <TryItOut
               isDarkMode={isDarkMode}
               path={path}
               serviceName={service.name}
-              requestTables={requestTables}
-              responseTables={responseTables}
-              onResult={(resultTables) => setResultTables(resultTables)}
+              requestTables={state.requestTables}
+              responseTables={state.responseTables}
+              onResult={(resultTables) =>
+                dispatch({ type: "setResultTables", resultTables })
+              }
             />
           </div>
         )}

@@ -16,8 +16,8 @@ const CodeSnippet = ({
   isDarkMode,
 }) => {
   const [snippet, setSnippet] = useState("");
-  const { masterJson } = useContext(AppContext);
-  const { sasJsConfig } = masterJson;
+  const { config } = useContext(AppContext);
+  const { sasJsConfig } = config;
 
   useEffect(() => {
     const config = {
@@ -47,7 +47,7 @@ const CodeSnippet = ({
 
     if (responseTables.length) {
       codeSnippet += `res => {\n    console.log(res);\n/* Response Format\n${JSON.stringify(
-        [...responseTables.map((r) => r.rows)],
+        [...responseTables.map((r) => r.data)],
         null,
         1
       )}\n*/\n});`;
