@@ -60,6 +60,7 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly }) => {
         comments={true}
         stretchH="last"
         rowHeaders={true}
+        minSpareRows={1}
         data={data}
         contextMenu={{
           items: {
@@ -68,12 +69,12 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly }) => {
               callback: () => {
                 setTimeout(() => {
                   const newData = produce(data, (draft) => {
-                    draft.push([null, null, null]);
+                    draft.push([null, "text", null]);
                   });
                   setData([...newData]);
                   const mappedColumns = mapColumns(
                     tableDefinitionSchema,
-                    newData
+                    newData.filter((d) => isNonEmpty(d) && !!d[0])
                   );
                   onUpdate(mappedColumns);
                 });
@@ -131,7 +132,10 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly }) => {
             });
             instance.render();
             if (valid) {
-              const mappedColumns = mapColumns(tableDefinitionSchema, data);
+              const mappedColumns = mapColumns(
+                tableDefinitionSchema,
+                data.filter((d) => isNonEmpty(d) && !!d[0])
+              );
               onUpdate(mappedColumns);
             }
           }
