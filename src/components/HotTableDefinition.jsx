@@ -41,6 +41,7 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly }) => {
       renderer: function (instance, td, row, col, prop, value) {
         if (value === null) {
           td.innerHTML = '<div class="htAutocompleteArrow">▼</div>text';
+          value = "text";
         } else {
           td.innerHTML = `<div class="htAutocompleteArrow">▼</div>${value}`;
         }
