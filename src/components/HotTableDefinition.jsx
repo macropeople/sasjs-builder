@@ -164,25 +164,27 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly, isDarkMode }) => {
           }}
         />
       </div>
-      <div className="save-icon">
-        <Button
-          primary
-          onClick={() => {
-            dispatch({
-              type: "saveData",
-              callback: onUpdate,
-              tableInstance: tableRef.current.hotInstance,
-            });
-          }}
-        >
-          <Icon name="save"></Icon>
-          {"  "}Save table definition
-        </Button>
-        <Button secondary onClick={() => dispatch({ type: "addRow" })}>
-          <Icon name="add"></Icon>
-          {"  "} Add row
-        </Button>
-      </div>
+      {!readOnly && (
+        <div className="save-icon">
+          <Button
+            primary
+            onClick={() => {
+              dispatch({
+                type: "saveData",
+                callback: onUpdate,
+                tableInstance: tableRef.current.hotInstance,
+              });
+            }}
+          >
+            <Icon name="save"></Icon>
+            {"  "}Save table definition
+          </Button>
+          <Button secondary onClick={() => dispatch({ type: "addRow" })}>
+            <Icon name="add"></Icon>
+            {"  "} Add row
+          </Button>
+        </div>
+      )}
     </>
   );
 };
