@@ -155,30 +155,6 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
           menuItem: "Table Data",
           render: () => (
             <Tab.Pane inverted={isDarkMode}>
-              <div className="save-icon">
-                <Button
-                  primary
-                  onClick={() => {
-                    tableRef.current.hotInstance.validateCells((valid) => {
-                      if (valid) {
-                        onUpdate({
-                          ...state,
-                          data: convertToSasJsFormat([
-                            {
-                              columns: state.columns,
-                              data: state.data.filter(isNonEmpty),
-                              tableName: state.tableName,
-                            },
-                          ]),
-                        });
-                      }
-                    });
-                  }}
-                >
-                  <Icon name="save"></Icon>
-                  {"  "}Save table data
-                </Button>
-              </div>
               <div
                 className={
                   isDarkMode ? "table-container inverted" : "table-container"
@@ -194,7 +170,6 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                   manualColumnResize={true}
                   manualRowResize={true}
                   rowHeaders={true}
-                  minSpareRows={1}
                   stretchH="all"
                   columns={state.columns}
                   contextMenu={{
@@ -226,6 +201,42 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                     },
                   }}
                 ></HotTable>
+              </div>
+              <div className="save-icon">
+                <Button
+                  primary
+                  onClick={() => {
+                    tableRef.current.hotInstance.validateCells((valid) => {
+                      if (valid) {
+                        onUpdate({
+                          ...state,
+                          data: convertToSasJsFormat([
+                            {
+                              columns: state.columns,
+                              data: state.data.filter(isNonEmpty),
+                              tableName: state.tableName,
+                            },
+                          ]),
+                        });
+                      }
+                    });
+                  }}
+                >
+                  <Icon name="save"></Icon>
+                  {"  "}Save table data
+                </Button>
+                <Button
+                  secondary
+                  onClick={() =>
+                    dispatch({
+                      type: "addDataRow",
+                      callback: onUpdate,
+                    })
+                  }
+                >
+                  <Icon name="add"></Icon>
+                  {"  "} Add row
+                </Button>
               </div>
             </Tab.Pane>
           ),
