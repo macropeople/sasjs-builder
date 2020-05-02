@@ -11,8 +11,14 @@ export const ServiceDetailReducer = (state, action) => {
         draft.requestTables = action.service.requestTables || [];
         draft.responseTables = action.service.responseTables || [];
         draft.resultTables = [];
-        draft.currentRequestTableIndex = draft.requestTables.length - 1;
-        draft.currentResponseTableIndex = draft.responseTables.length - 1;
+        draft.currentRequestTableIndex =
+          state.currentRequestTableIndex > -1
+            ? state.currentRequestTableIndex
+            : draft.requestTables.length - 1;
+        draft.currentResponseTableIndex =
+          state.currentResponseTableIndex > -1
+            ? state.currentResponseTableIndex
+            : draft.responseTables.length - 1;
       });
       return initialState;
     }
@@ -59,10 +65,8 @@ export const ServiceDetailReducer = (state, action) => {
       const newRequestTables = produce(state.requestTables, (draft) => {
         draft.push({
           tableName: `NewRequestTable${draft.length + 1}`,
-          columns: [{ title: "column1", type: "numeric" }],
-          data: {
-            [`NewRequestTable${draft.length + 1}`]: [{ column1: "" }],
-          },
+          columns: [{ title: "column1", type: "text" }],
+          data: [[null]],
         });
       });
       const newState = produce(state, (draft) => {
@@ -76,10 +80,8 @@ export const ServiceDetailReducer = (state, action) => {
       const newResponseTables = produce(state.responseTables, (draft) => {
         draft.push({
           tableName: `NewResponseTable${draft.length + 1}`,
-          columns: [{ title: "column1", type: "numeric" }],
-          data: {
-            [`NewResponseTable${draft.length + 1}`]: [{ column1: "" }],
-          },
+          columns: [{ title: "column1", type: "text" }],
+          data: [[null]],
         });
       });
       const newState = produce(state, (draft) => {

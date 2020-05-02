@@ -22,9 +22,8 @@ export const convertToSasJsFormat = (tables) => {
     const data = table.data.map((row) => {
       let mappedRow = {};
       if (Array.isArray(row)) {
-        row.forEach((cell, index) => {
-          const columnName = table.columns[index].title;
-          mappedRow[columnName] = cell;
+        table.columns.forEach((column, index) => {
+          mappedRow[column.title] = row[index] || null;
         });
       }
       return mappedRow;
@@ -42,11 +41,15 @@ export const convertToHotTableFormat = (table) => {
   const tableData = table.data[Object.keys(table.data)[0]];
   tableData.forEach((row) => {
     const mappedRow = new Array(table.columns.length);
-    Object.keys(row).forEach((property, index) => {
-      const columnIndex = table.columns.findIndex((c) => c.title === property);
-      mappedRow[columnIndex] = row[property];
-    });
-    mappedTable.push(mappedRow);
+    if (row) {
+      Object.keys(row).forEach((property, index) => {
+        const columnIndex = table.columns.findIndex(
+          (c) => c.title === property
+        );
+        mappedRow[columnIndex] = row[property];
+      });
+      mappedTable.push(mappedRow);
+    }
   });
   return mappedTable;
 };

@@ -1,212 +1,238 @@
-import React from "react";
+import React, { useReducer, useEffect } from "react";
 import { HotTable } from "@handsontable/react";
-import { useState } from "react";
-import { useEffect } from "react";
 import { useRef } from "react";
 import "handsontable/dist/handsontable.full.css";
 import "./HotServiceTable.scss";
 import { produce } from "immer";
-import EditColumnModal from "./EditColumnModal";
 import {
+  isNonEmpty,
   convertToHotTableFormat,
   convertToSasJsFormat,
-  isNonEmpty,
 } from "../utils";
-import { Tab } from "semantic-ui-react";
+import { Tab, Button, Icon } from "semantic-ui-react";
 import HotTableDefinition from "./HotTableDefinition";
 
-const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
-  const { columns } = table;
+const ServiceTableReducer = (state, action) => {
+  switch (action.type) {
+    case "initialise": {
+      return {
+        tableName: action.tableName,
+        data: convertToHotTableFormat({
+          columns: action.columns,
+          data: action.data,
+        }),
+        columns: [...action.columns],
+      };
+    }
+    case "updateDefinition": {
+      action.callback({
+        tableName: state.tableName,
+        columns: [...action.columns],
+        data: convertToSasJsFormat([
+          {
+            columns: action.columns,
+            data: state.data.filter(isNonEmpty),
+            tableName: state.tableName,
+          },
+        ]),
+      });
+      return {
+        ...state,
+        columns: [...action.columns],
+      };
+    }
+    case "updateData": {
+      action.callback({
+        tableName: state.tableName,
+        columns: state.columns,
+        data: convertToSasJsFormat([
+          {
+            columns: state.columns,
+            data: action.data,
+            tableName: state.tableName,
+          },
+        ]),
+      });
+      return {
+        ...state,
+        data: [...action.data],
+      };
+    }
+    case "addDataRow": {
+      const newData = produce(state.data, (draft) => {
+        const newRow = [];
+        state.columns.forEach(() => newRow.push(null));
+        draft.push(newRow);
+      });
+      action.callback({
+        tableName: state.tableName,
+        columns: state.columns,
+        data: convertToSasJsFormat([
+          {
+            columns: state.columns,
+            data: newData,
+            tableName: state.tableName,
+          },
+        ]),
+      });
+      return {
+        ...state,
+        data: [...newData],
+      };
+    }
+    case "removeDataRow": {
+      const newData = produce(state.data, (draft) => {
+        return draft.filter((_, index) => index !== action.rowIndex);
+      });
+      action.callback({
+        tableName: state.tableName,
+        columns: state.columns,
+        data: convertToSasJsFormat([
+          {
+            columns: state.columns,
+            data: newData,
+            tableName: state.tableName,
+          },
+        ]),
+      });
+      return {
+        ...state,
+        data: [...newData],
+      };
+    }
+    default:
+      return state;
+  }
+};
 
-  const [tableData, setTableData] = useState([]);
-  const [tableColumns, setTableColumns] = useState([]);
-  const [columnIndexToEdit, setColumnIndexToEdit] = useState(-1);
+const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
+  const { columns, data } = table;
+
+  const [state, dispatch] = useReducer(ServiceTableReducer, {
+    data,
+    columns,
+    tableName: table ? table.tableName : "",
+  });
   const tableRef = useRef();
 
   useEffect(() => {
-    setTableData(convertToHotTableFormat(table));
+    dispatch({
+      type: "initialise",
+      ...table,
+    });
   }, [table]);
 
-  useEffect(() => {
-    setTableColumns(columns);
-  }, [columns]);
-
   return (
-    <>
-      <Tab
-        style={{ width: "100%" }}
-        menu={{
-          fluid: true,
-          secondary: true,
-          inverted: isDarkMode,
-        }}
-        panes={[
-          {
-            menuItem: "Table Definition",
-            render: () => (
-              <Tab.Pane inverted={isDarkMode}>
-                <div
-                  className={
-                    isDarkMode ? "table-container inverted" : "table-container"
-                  }
-                >
-                  <HotTableDefinition
-                    columns={tableColumns}
-                    readOnly={readOnly}
-                    onUpdate={(newColumns) => {
-                      setTableColumns(newColumns);
-                      onUpdate({
-                        tableName: table.tableName,
-                        columns: newColumns,
-                        data: convertToSasJsFormat([
-                          {
-                            columns: newColumns,
-                            data: tableData,
-                            tableName: table.tableName,
-                          },
-                        ]),
-                      });
-                    }}
-                  />
-                </div>
-              </Tab.Pane>
-            ),
-          },
-          {
-            menuItem: "Table Data",
-            render: () => (
-              <Tab.Pane inverted={isDarkMode}>
-                <div
-                  className={
-                    isDarkMode ? "table-container inverted" : "table-container"
-                  }
-                >
-                  <HotTable
-                    ref={tableRef}
-                    readOnly={readOnly}
-                    licenseKey="non-commercial-and-evaluation"
-                    data={tableData}
-                    autoRowSize={true}
-                    beforeKeyDown={(event) => {
-                      if (!event.target.closest(".handsontableInput")) {
-                        event.stopImmediatePropagation();
-                      }
-                    }}
-                    stretchH="all"
-                    afterChange={(e) => {
-                      if (!!e) {
-                        tableRef.current.hotInstance.validateCells((valid) => {
-                          if (valid) {
-                            onUpdate({
-                              tableName: table.tableName,
-                              columns: tableColumns,
-                              data: convertToSasJsFormat([
-                                {
-                                  columns: tableColumns,
-                                  data: tableData.filter(isNonEmpty),
-                                  tableName: table.tableName,
-                                },
-                              ]),
-                            });
-                          }
+    <Tab
+      renderActiveOnly={true}
+      style={{ width: "100%" }}
+      menu={{
+        fluid: true,
+        secondary: true,
+        inverted: isDarkMode,
+      }}
+      panes={[
+        {
+          menuItem: "Table Definition",
+          render: () => (
+            <Tab.Pane inverted={isDarkMode}>
+              <HotTableDefinition
+                columns={state.columns}
+                readOnly={readOnly}
+                isDarkMode={isDarkMode}
+                onUpdate={(newColumns) => {
+                  dispatch({
+                    type: "updateDefinition",
+                    columns: newColumns,
+                    callback: onUpdate,
+                  });
+                }}
+              />
+            </Tab.Pane>
+          ),
+        },
+        {
+          menuItem: "Table Data",
+          render: () => (
+            <Tab.Pane inverted={isDarkMode}>
+              <div className="save-icon">
+                <Button
+                  primary
+                  onClick={() => {
+                    tableRef.current.hotInstance.validateCells((valid) => {
+                      if (valid) {
+                        onUpdate({
+                          ...state,
+                          data: convertToSasJsFormat([
+                            {
+                              columns: state.columns,
+                              data: state.data.filter(isNonEmpty),
+                              tableName: state.tableName,
+                            },
+                          ]),
                         });
                       }
-                    }}
-                    autoColumnSize={true}
-                    manualColumnResize={true}
-                    manualRowResize={true}
-                    rowHeaders={true}
-                    minSpareRows={1}
-                    columns={tableColumns}
-                    contextMenu={{
-                      items: {
-                        row_below: {
-                          name: "Add row",
-                          callback: () => {
-                            setTimeout(() => {
-                              const newData = produce(tableData, (draft) => {
-                                const newRow = [];
-                                tableColumns.forEach(() => newRow.push(null));
-                                draft.push(newRow);
-                              });
-                              setTableData(newData);
-                              onUpdate({
-                                tableName: table.tableName,
-                                columns: tableColumns,
-                                data: convertToSasJsFormat([
-                                  {
-                                    columns: tableColumns,
-                                    data: newData,
-                                    tableName: table.tableName,
-                                  },
-                                ]),
-                              });
+                    });
+                  }}
+                >
+                  <Icon name="save"></Icon>
+                  {"  "}Save table data
+                </Button>
+              </div>
+              <div
+                className={
+                  isDarkMode ? "table-container inverted" : "table-container"
+                }
+              >
+                <HotTable
+                  ref={tableRef}
+                  readOnly={readOnly}
+                  licenseKey="non-commercial-and-evaluation"
+                  data={state.data}
+                  autoRowSize={true}
+                  autoColumnSize={true}
+                  manualColumnResize={true}
+                  manualRowResize={true}
+                  rowHeaders={true}
+                  minSpareRows={1}
+                  stretchH="all"
+                  columns={state.columns}
+                  contextMenu={{
+                    items: {
+                      row_below: {
+                        name: "Add row",
+                        callback: () => {
+                          setTimeout(() => {
+                            dispatch({
+                              type: "addDataRow",
+                              callback: onUpdate,
                             });
-                          },
-                        },
-                        remove_row: {
-                          name: "Remove row",
-                          callback: (_, options) => {
-                            setTimeout(() => {
-                              const rowIndex = options[0].end.row;
-                              const newData = produce(tableData, (draft) => {
-                                return draft.filter(
-                                  (_, index) => index !== rowIndex
-                                );
-                              });
-                              setTableData(newData);
-                              onUpdate({
-                                tableName: table.tableName,
-                                columns: tableColumns,
-                                data: convertToSasJsFormat([
-                                  {
-                                    columns: tableColumns,
-                                    data: newData.filter(isNonEmpty),
-                                    tableName: table.tableName,
-                                  },
-                                ]),
-                              });
-                            });
-                          },
+                          });
                         },
                       },
-                    }}
-                  ></HotTable>
-                </div>
-              </Tab.Pane>
-            ),
-          },
-        ]}
-      ></Tab>
-
-      {columnIndexToEdit > -1 && (
-        <EditColumnModal
-          columns={tableColumns}
-          columnIndexToEdit={columnIndexToEdit}
-          onEdit={(newColumn) => {
-            const newColumns = produce(tableColumns, (draft) => {
-              draft[columnIndexToEdit].title = newColumn.title;
-              draft[columnIndexToEdit].type = newColumn.type;
-            });
-            setTableColumns(newColumns);
-            setColumnIndexToEdit(-1);
-            onUpdate({
-              tableName: table.tableName,
-              columns: newColumns,
-              data: convertToSasJsFormat([
-                {
-                  columns: newColumns,
-                  data: tableData.filter(isNonEmpty),
-                  tableName: table.tableName,
-                },
-              ]),
-            });
-          }}
-          onCancel={() => setColumnIndexToEdit(-1)}
-        />
-      )}
-    </>
+                      remove_row: {
+                        name: "Remove row",
+                        callback: (_, options) => {
+                          setTimeout(() => {
+                            const rowIndex = options[0].end.row;
+                            dispatch({
+                              type: "removeDataRow",
+                              rowIndex,
+                              callback: onUpdate,
+                            });
+                          });
+                        },
+                      },
+                    },
+                  }}
+                ></HotTable>
+              </div>
+            </Tab.Pane>
+          ),
+        },
+      ]}
+    ></Tab>
   );
 };
 
-export default HotServiceTable;
+export default React.memo(HotServiceTable);

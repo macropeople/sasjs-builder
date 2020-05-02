@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useRef } from "react";
-import { Header, Form, Icon, Tab, Label } from "semantic-ui-react";
+import { Header, Form, Icon, Tab, Label, Menu } from "semantic-ui-react";
 import { toast } from "react-semantic-toasts";
 import "./ServiceDetail.scss";
 import CodeSnippet from "./CodeSnippet";
@@ -135,6 +135,7 @@ const ServiceDetail = ({
                 fluid: true,
                 inverted: isDarkMode,
               }}
+              renderActiveOnly={true}
               ref={requestTabRef}
               activeIndex={state.currentRequestTableIndex}
               onTabChange={(_, data) =>
@@ -145,44 +146,42 @@ const ServiceDetail = ({
               }
               panes={state.requestTables.map((table, index) => {
                 return {
-                  menuItem: table.tableName,
+                  menuItem: (
+                    <Menu.Item key={index} className="tables-header">
+                      <ContentEditable
+                        className="table-name-header h3"
+                        html={`${table.tableName}`}
+                        disabled={false}
+                        onBlur={(e) => {
+                          const value = e.target.innerText;
+                          dispatch({
+                            type: "renameRequestTable",
+                            index,
+                            value,
+                            event: e,
+                            callback: (service) =>
+                              notifyUpdate(service, onUpdate),
+                          });
+                        }}
+                      />
+                      <Icon
+                        className="icon-button"
+                        name="trash alternate outline"
+                        color="red"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          dispatch({
+                            type: "removeRequestTable",
+                            index,
+                            callback: (service) =>
+                              notifyUpdate(service, onUpdate),
+                          });
+                        }}
+                      />
+                    </Menu.Item>
+                  ),
                   render: () => (
                     <Tab.Pane inverted={isDarkMode} key={table.tableName}>
-                      <div className="tables-header">
-                        <Header inverted={isDarkMode} as="h3">
-                          <ContentEditable
-                            className="table-name-header h3"
-                            html={`${table.tableName}`}
-                            onClick={(e) => e.stopPropagation()}
-                            disabled={false}
-                            onBlur={(e) => {
-                              const value = e.target.innerText;
-                              dispatch({
-                                type: "renameRequestTable",
-                                index,
-                                value,
-                                event: e,
-                                callback: (service) =>
-                                  notifyUpdate(service, onUpdate),
-                              });
-                            }}
-                          />
-                        </Header>
-                        <Icon
-                          className="icon-button"
-                          name="trash alternate outline"
-                          color="red"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            dispatch({
-                              type: "removeRequestTable",
-                              index,
-                              callback: (service) =>
-                                notifyUpdate(service, onUpdate),
-                            });
-                          }}
-                        />
-                      </div>
                       <HotServiceTable
                         isDarkMode={isDarkMode}
                         table={table}
@@ -235,44 +234,42 @@ const ServiceDetail = ({
               }
               panes={state.responseTables.map((table, index) => {
                 return {
-                  menuItem: table.tableName,
+                  menuItem: (
+                    <Menu.Item key={index} className="tables-header">
+                      <ContentEditable
+                        className="table-name-header h3"
+                        html={`${table.tableName}`}
+                        disabled={false}
+                        onBlur={(e) => {
+                          const value = e.target.innerText;
+                          dispatch({
+                            type: "renameResponseTable",
+                            index,
+                            value,
+                            event: e,
+                            callback: (service) =>
+                              notifyUpdate(service, onUpdate),
+                          });
+                        }}
+                      />
+                      <Icon
+                        className="icon-button"
+                        name="trash alternate outline"
+                        color="red"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          dispatch({
+                            type: "removeResponseTable",
+                            index,
+                            callback: (service) =>
+                              notifyUpdate(service, onUpdate),
+                          });
+                        }}
+                      />
+                    </Menu.Item>
+                  ),
                   render: () => (
                     <Tab.Pane inverted={isDarkMode} key={table.tableName}>
-                      <div className="tables-header">
-                        <Header inverted={isDarkMode} as="h3">
-                          <ContentEditable
-                            className="table-name-header h3"
-                            html={`${table.tableName}`}
-                            onClick={(e) => e.stopPropagation()}
-                            disabled={false}
-                            onBlur={(e) => {
-                              const value = e.target.innerText;
-                              dispatch({
-                                type: "renameResponseTable",
-                                index,
-                                value,
-                                event: e,
-                                callback: (service) =>
-                                  notifyUpdate(service, onUpdate),
-                              });
-                            }}
-                          />
-                        </Header>
-                        <Icon
-                          className="icon-button"
-                          name="trash alternate outline"
-                          color="red"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            dispatch({
-                              type: "removeResponseTable",
-                              index,
-                              callback: (service) =>
-                                notifyUpdate(service, onUpdate),
-                            });
-                          }}
-                        />
-                      </div>
                       <HotServiceTable
                         isDarkMode={isDarkMode}
                         table={table}
@@ -363,4 +360,4 @@ const ServiceDetail = ({
   );
 };
 
-export default ServiceDetail;
+export default React.memo(ServiceDetail);

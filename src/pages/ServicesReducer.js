@@ -4,7 +4,6 @@ import { toast } from "react-semantic-toasts";
 export const ServicesReducer = (state, action) => {
   switch (action.type) {
     case "initialise": {
-      debugger;
       const newFolders = produce(action.folders, (draft) => draft);
       return {
         ...state,

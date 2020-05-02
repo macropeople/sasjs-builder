@@ -86,10 +86,12 @@ export const AppProvider = ({ children }) => {
         sasJsConfig: config,
       }));
     }
-    const storedFolders = JSON.parse(
-      localStorage.getItem("sasJsBuilderFolders") || "[]"
-    );
-    setFolders(storedFolders);
+    const storedFolders = localStorage.getItem("sasJsBuilderFolders");
+    if (storedFolders) {
+      setFolders(JSON.parse(storedFolders));
+    } else {
+      setFolders(defaultFolders);
+    }
     sasjs.checkSession().then((response) => setIsLoggedIn(response.isLoggedIn));
   }, []);
 

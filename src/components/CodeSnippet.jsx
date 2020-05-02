@@ -46,14 +46,16 @@ const CodeSnippet = ({
     codeSnippet += "\n.then(";
 
     if (responseTables.length) {
+      const responseTablesObject = {};
+      responseTables.forEach((table) => {
+        const data = {};
+        table.columns.forEach((column) => {
+          data[column.title] = column.type === "numeric" ? 123 : "foo";
+        });
+        responseTablesObject[table.tableName] = [data];
+      });
       codeSnippet += `res => {\n    console.log(res);\n/* Response Format\n${JSON.stringify(
-        [
-          ...responseTables.map((r) =>
-            r.columns.map((c) => ({
-              [c.title]: c.type === "numeric" ? 123 : "foo",
-            }))
-          ),
-        ],
+        responseTablesObject,
         null,
         1
       )}\n*/\n});`;
