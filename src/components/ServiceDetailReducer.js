@@ -26,8 +26,10 @@ export const ServiceDetailReducer = (state, action) => {
       if (action.value !== state.name) {
         if (action.validate(action.value)) {
           action.callback({
-            ...state,
             name: action.value,
+            description: state.description,
+            requestTables: state.requestTables,
+            responseTables: state.responseTables,
           });
           return {
             ...state,
@@ -55,7 +57,12 @@ export const ServiceDetailReducer = (state, action) => {
         const newState = produce(state, (draft) => {
           draft.description = action.value;
         });
-        action.callback(newState);
+        action.callback({
+          name: state.name,
+          description: newState.description,
+          requestTables: state.requestTables,
+          responseTables: state.responseTables,
+        });
         return newState;
       } else {
         return state;
@@ -73,7 +80,12 @@ export const ServiceDetailReducer = (state, action) => {
         draft.requestTables = newRequestTables;
         draft.currentRequestTableIndex = newRequestTables.length - 1;
       });
-      action.callback(newState);
+      action.callback({
+        name: state.name,
+        description: state.description,
+        requestTables: newState.requestTables,
+        responseTables: state.responseTables,
+      });
       return newState;
     }
     case "addResponseTable": {
@@ -88,7 +100,12 @@ export const ServiceDetailReducer = (state, action) => {
         draft.responseTables = newResponseTables;
         draft.currentResponseTableIndex = newResponseTables.length - 1;
       });
-      action.callback(newState);
+      action.callback({
+        name: state.name,
+        description: state.description,
+        requestTables: state.requestTables,
+        responseTables: newState.responseTables,
+      });
       return newState;
     }
     case "renameRequestTable": {
@@ -128,7 +145,12 @@ export const ServiceDetailReducer = (state, action) => {
         const newState = produce(state, (draft) => {
           draft.requestTables = newRequestTables;
         });
-        action.callback(newState);
+        action.callback({
+          name: state.name,
+          description: state.description,
+          requestTables: newState.requestTables,
+          responseTables: state.responseTables,
+        });
         return newState;
       }
     }
@@ -169,7 +191,12 @@ export const ServiceDetailReducer = (state, action) => {
         const newState = produce(state, (draft) => {
           draft.responseTables = newResponseTables;
         });
-        action.callback(newState);
+        action.callback({
+          name: state.name,
+          description: state.description,
+          requestTables: state.requestTables,
+          responseTables: newState.responseTables,
+        });
         return newState;
       }
     }
@@ -193,7 +220,12 @@ export const ServiceDetailReducer = (state, action) => {
         } has now been removed.`,
         time: 2000,
       });
-      action.callback(newState);
+      action.callback({
+        name: state.name,
+        description: state.description,
+        requestTables: newState.requestTables,
+        responseTables: state.responseTables,
+      });
       return newState;
     }
 
@@ -216,7 +248,12 @@ export const ServiceDetailReducer = (state, action) => {
         } has now been removed.`,
         time: 2000,
       });
-      action.callback(newState);
+      action.callback({
+        name: state.name,
+        description: state.description,
+        requestTables: state.requestTables,
+        responseTables: newState.responseTables,
+      });
       return newState;
     }
 
@@ -227,7 +264,12 @@ export const ServiceDetailReducer = (state, action) => {
       const newState = produce(state, (draft) => {
         draft.requestTables = newRequestTables;
       });
-      action.callback(newState);
+      action.callback({
+        name: state.name,
+        description: state.description,
+        requestTables: newState.requestTables,
+        responseTables: state.responseTables,
+      });
       return newState;
     }
 
@@ -238,7 +280,12 @@ export const ServiceDetailReducer = (state, action) => {
       const newState = produce(state, (draft) => {
         draft.responseTables = newResponseTables;
       });
-      action.callback(newState);
+      action.callback({
+        name: state.name,
+        description: state.description,
+        requestTables: state.requestTables,
+        responseTables: newState.responseTables,
+      });
       return newState;
     }
 

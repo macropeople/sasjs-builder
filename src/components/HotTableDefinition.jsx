@@ -54,6 +54,9 @@ const TableDefinitionReducer = (state, action) => {
     case "setUnsaved": {
       return { ...state, saved: false };
     }
+    case "setSaved": {
+      return { ...state, saved: false };
+    }
     case "addRow": {
       const newData = produce(state.data, (draft) => {
         draft.push([null, "text", null]);
@@ -222,7 +225,11 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly, isDarkMode }) => {
           stretchH="last"
           rowHeaders={true}
           data={state.data}
-          beforeChange={() => dispatch({ type: "setUnsaved" })}
+          beforeChange={(e) => {
+            if (!!e) {
+              dispatch({ type: "setUnsaved" });
+            }
+          }}
           contextMenu={{
             items: {
               row_below: {
