@@ -5,13 +5,15 @@ import "handsontable/dist/handsontable.full.css";
 import "./HotServiceTable.scss";
 import { produce } from "immer";
 import { convertToHotTableFormat, convertToSasJsFormat } from "../utils";
-import { Tab, Button, Icon } from "semantic-ui-react";
+import { Tab, Button, Icon, Message } from "semantic-ui-react";
 import HotTableDefinition from "./HotTableDefinition";
 
 const ServiceTableReducer = (state, action) => {
   switch (action.type) {
     case "initialise": {
       const newState = {
+        saved: true,
+        valid: true,
         tableName: action.tableName,
         data: convertToHotTableFormat({
           columns: action.columns,
@@ -26,6 +28,15 @@ const ServiceTableReducer = (state, action) => {
       }
 
       return newState;
+    }
+    case "setUnsaved": {
+      return { ...state, saved: false };
+    }
+    case "setSaved": {
+      return { ...state, saved: true };
+    }
+    case "setValidity": {
+      return { ...state, valid: action.valid };
     }
     case "updateDefinition": {
       action.callback({
@@ -45,17 +56,6 @@ const ServiceTableReducer = (state, action) => {
       };
     }
     case "updateData": {
-      action.callback({
-        tableName: state.tableName,
-        columns: state.columns,
-        data: convertToSasJsFormat([
-          {
-            columns: state.columns,
-            data: action.data,
-            tableName: state.tableName,
-          },
-        ]),
-      });
       return {
         ...state,
         data: [...action.data],
@@ -67,19 +67,9 @@ const ServiceTableReducer = (state, action) => {
         state.columns.forEach(() => newRow.push(null));
         draft.push(newRow);
       });
-      action.callback({
-        tableName: state.tableName,
-        columns: state.columns,
-        data: convertToSasJsFormat([
-          {
-            columns: state.columns,
-            data: newData,
-            tableName: state.tableName,
-          },
-        ]),
-      });
       return {
         ...state,
+        saved: false,
         data: [...newData],
       };
     }
@@ -87,19 +77,9 @@ const ServiceTableReducer = (state, action) => {
       const newData = produce(state.data, (draft) => {
         return draft.filter((_, index) => index !== action.rowIndex);
       });
-      action.callback({
-        tableName: state.tableName,
-        columns: state.columns,
-        data: convertToSasJsFormat([
-          {
-            columns: state.columns,
-            data: newData,
-            tableName: state.tableName,
-          },
-        ]),
-      });
       return {
         ...state,
+        saved: false,
         data: [...newData],
       };
     }
@@ -112,6 +92,7 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
   const { columns, data } = table;
 
   const [state, dispatch] = useReducer(ServiceTableReducer, {
+    saved: true,
     data,
     columns,
     tableName: table ? table.tableName : "",
@@ -158,42 +139,76 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
           menuItem: "Table Data",
           render: () => (
             <Tab.Pane inverted={isDarkMode}>
-              <div className="save-icon">
-                <Button
-                  primary
-                  onClick={() => {
-                    tableRef.current.hotInstance.validateCells((valid) => {
-                      if (valid) {
-                        onUpdate({
-                          ...state,
-                          data: convertToSasJsFormat([
-                            {
-                              columns: state.columns,
-                              data: state.data,
-                              tableName: state.tableName,
-                            },
-                          ]),
-                        });
-                      }
-                    });
-                  }}
-                >
-                  <Icon name="save"></Icon>
-                  {"  "}Save table data
-                </Button>
-                <Button
-                  secondary
-                  onClick={() =>
-                    dispatch({
-                      type: "addDataRow",
-                      callback: onUpdate,
-                    })
-                  }
-                >
-                  <Icon name="add"></Icon>
-                  {"  "} Add row
-                </Button>
-              </div>
+              <>
+                <div className="save-icon">
+                  <Button
+                    primary
+                    onClick={() => {
+                      tableRef.current.hotInstance.validateCells((valid) => {
+                        dispatch({ type: "setValidity", valid });
+                        if (valid) {
+                          onUpdate({
+                            ...state,
+                            data: convertToSasJsFormat([
+                              {
+                                columns: state.columns,
+                                data: state.data,
+                                tableName: state.tableName,
+                              },
+                            ]),
+                          });
+                          dispatch({ type: "setSaved" });
+                        }
+                      });
+                    }}
+                  >
+                    <Icon name="save"></Icon>
+                    {"  "}Save table data
+                  </Button>
+                  <Button
+                    secondary
+                    onClick={() =>
+                      dispatch({
+                        type: "addDataRow",
+                      })
+                    }
+                  >
+                    <Icon name="add"></Icon>
+                    {"  "} Add row
+                  </Button>
+                </div>
+                <div className="save-icon" style={{ marginTop: "10px" }}>
+                  {!state.saved ? (
+                    <Message info>
+                      <Message.Content>
+                        <Icon name="warning circle" />
+                        There are currently unsaved changes in your table data.
+                        <br />
+                        Please click 'Save table data' to save them.
+                      </Message.Content>
+                    </Message>
+                  ) : (
+                    <Message success visible={true}>
+                      <Message.Content>
+                        <Icon name="check circle" />
+                        Your table data has no unsaved changes.
+                      </Message.Content>
+                    </Message>
+                  )}
+                </div>
+                <div className="save-icon" style={{ marginTop: "10px" }}>
+                  {!state.valid && (
+                    <Message error visible={true}>
+                      <Message.Content>
+                        <Icon name="warning sign" />
+                        Your table data has validation errors.
+                        <br />
+                        Please check that all values match their data types.
+                      </Message.Content>
+                    </Message>
+                  )}
+                </div>
+              </>
               <div
                 className={
                   isDarkMode ? "table-container inverted" : "table-container"
@@ -211,6 +226,14 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                   rowHeaders={true}
                   stretchH="all"
                   columns={state.columns}
+                  beforeChange={() => dispatch({ type: "setUnsaved" })}
+                  afterChange={() => {
+                    if (tableRef.current) {
+                      tableRef.current.hotInstance.validateCells((valid) => {
+                        dispatch({ type: "setValidity", valid });
+                      });
+                    }
+                  }}
                   contextMenu={{
                     items: {
                       row_below: {
@@ -219,7 +242,6 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                           setTimeout(() => {
                             dispatch({
                               type: "addDataRow",
-                              callback: onUpdate,
                             });
                           });
                         },
@@ -232,7 +254,6 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                             dispatch({
                               type: "removeDataRow",
                               rowIndex,
-                              callback: onUpdate,
                             });
                           });
                         },

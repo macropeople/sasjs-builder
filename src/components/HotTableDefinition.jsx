@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { HotTable } from "@handsontable/react";
-import { Icon, Button } from "semantic-ui-react";
+import { Icon, Button, Message } from "semantic-ui-react";
 import { produce } from "immer";
 import { useReducer } from "react";
 import cloneDeep from "lodash.clonedeep";
@@ -21,6 +21,8 @@ const TableDefinitionReducer = (state, action) => {
   switch (action.type) {
     case "initialise": {
       return {
+        saved: true,
+        validationErrors: [],
         data: [...action.columns.map((c) => Object.values(c))],
         tableDefinitionSchema: [
           {
@@ -49,12 +51,16 @@ const TableDefinitionReducer = (state, action) => {
         ],
       };
     }
+    case "setUnsaved": {
+      return { ...state, saved: false };
+    }
     case "addRow": {
       const newData = produce(state.data, (draft) => {
         draft.push([null, "text", null]);
       });
       return {
         ...state,
+        saved: false,
         data: [...cloneDeep(newData)],
       };
     }
@@ -65,36 +71,52 @@ const TableDefinitionReducer = (state, action) => {
 
       return {
         ...state,
+        saved: false,
         data: [...newData],
       };
     }
     case "saveData": {
       const column = action.tableInstance.getDataAtCol(0);
       let valid = true;
+      let validationErrors = [];
       column.forEach(function (value, row) {
         let data = [...column];
         const index = data.indexOf(value);
         data.splice(index, 1);
         const secondIndex = data.indexOf(value);
         const cell = action.tableInstance.getCellMeta(row, 0);
+        if (!value) {
+          cell.valid = false;
+          const validationError = "Column names are required";
+          validationErrors.push(validationError);
+          cell.comment = { value: validationError };
+          valid = false;
+        }
         if (
           index > -1 &&
           secondIndex > -1 &&
           !(value == null || value === "")
         ) {
           cell.valid = false;
-          cell.comment = { value: "Error: Column names must be unique." };
+          const validationError = (
+            <>
+              Column names must be unique. Please check column{" "}
+              <strong>{value}</strong> at row <strong>{row}</strong>.
+            </>
+          );
+          validationErrors.push(validationError);
+          cell.comment = { value: validationError };
           valid = false;
-        } else if (!/^[a-zA-Z_]+[a-zA-Z0-9]*/.test(value) && !!value) {
+        }
+        if (!/^[a-zA-Z_]+[a-zA-Z0-9]*/.test(value) && !!value) {
           cell.valid = false;
+          const validationError =
+            "Column names must match SAS format - i.e. start with a letter or underscore, and contain only letters, numbers and underscores.";
+          validationErrors.push(validationError);
           cell.comment = {
-            value:
-              "Error: Column names must match SAS format - i.e. start with a letter or underscore, and contain only letters, numbers and underscores.",
+            value: validationError,
           };
           valid = false;
-        } else {
-          cell.valid = true;
-          cell.comment = "";
         }
       });
       action.tableInstance.render();
@@ -105,7 +127,11 @@ const TableDefinitionReducer = (state, action) => {
         );
         action.callback(mappedColumns);
       }
-      return state;
+      return {
+        ...state,
+        saved: valid,
+        validationErrors: Array.from(new Set(validationErrors)),
+      };
     }
     default:
       return state;
@@ -116,6 +142,8 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly, isDarkMode }) => {
   const [state, dispatch] = useReducer(TableDefinitionReducer, {
     data: [],
     tableDefinitionSchema: [],
+    saved: true,
+    validationErrors: [],
   });
   const tableRef = useRef();
 
@@ -126,25 +154,61 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly, isDarkMode }) => {
   return (
     <>
       {!readOnly && (
-        <div className="save-icon">
-          <Button
-            primary
-            onClick={() => {
-              dispatch({
-                type: "saveData",
-                callback: onUpdate,
-                tableInstance: tableRef.current.hotInstance,
-              });
-            }}
-          >
-            <Icon name="save"></Icon>
-            {"  "}Save table definition
-          </Button>
-          <Button secondary onClick={() => dispatch({ type: "addRow" })}>
-            <Icon name="add"></Icon>
-            {"  "} Add row
-          </Button>
-        </div>
+        <>
+          <div className="save-icon">
+            <Button
+              primary
+              onClick={() => {
+                dispatch({
+                  type: "saveData",
+                  callback: onUpdate,
+                  tableInstance: tableRef.current.hotInstance,
+                });
+              }}
+            >
+              <Icon name="save"></Icon>
+              {"  "}Save table definition
+            </Button>
+            <Button secondary onClick={() => dispatch({ type: "addRow" })}>
+              <Icon name="add"></Icon>
+              {"  "} Add row
+            </Button>
+          </div>
+          <div className="save-icon" style={{ marginTop: "10px" }}>
+            {!state.saved ? (
+              <Message info>
+                <Message.Content>
+                  <Icon name="warning circle" />
+                  There are currently unsaved changes in your table definition.
+                  <br />
+                  Please click 'Save table definition' to save them.
+                </Message.Content>
+              </Message>
+            ) : (
+              <Message success visible={true}>
+                <Message.Content>
+                  <Icon name="check circle" />
+                  Your table definition has no unsaved changes.
+                </Message.Content>
+              </Message>
+            )}
+          </div>
+          <div className="save-icon" style={{ marginTop: "10px" }}>
+            {!!state.validationErrors.length && (
+              <Message error visible={true}>
+                <Message.Content>
+                  <Icon name="warning sign" />
+                  Please correct the following validation errors:
+                  <ul>
+                    {state.validationErrors.map((e, index) => (
+                      <li key={index}>{e}</li>
+                    ))}
+                  </ul>
+                </Message.Content>
+              </Message>
+            )}
+          </div>
+        </>
       )}
       <div
         className={isDarkMode ? "table-container inverted" : "table-container"}
@@ -158,6 +222,7 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly, isDarkMode }) => {
           stretchH="last"
           rowHeaders={true}
           data={state.data}
+          beforeChange={() => dispatch({ type: "setUnsaved" })}
           contextMenu={{
             items: {
               row_below: {
