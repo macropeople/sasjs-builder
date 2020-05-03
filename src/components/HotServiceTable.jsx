@@ -4,18 +4,14 @@ import { useRef } from "react";
 import "handsontable/dist/handsontable.full.css";
 import "./HotServiceTable.scss";
 import { produce } from "immer";
-import {
-  isNonEmpty,
-  convertToHotTableFormat,
-  convertToSasJsFormat,
-} from "../utils";
+import { convertToHotTableFormat, convertToSasJsFormat } from "../utils";
 import { Tab, Button, Icon } from "semantic-ui-react";
 import HotTableDefinition from "./HotTableDefinition";
 
 const ServiceTableReducer = (state, action) => {
   switch (action.type) {
     case "initialise": {
-      return {
+      const newState = {
         tableName: action.tableName,
         data: convertToHotTableFormat({
           columns: action.columns,
@@ -23,6 +19,13 @@ const ServiceTableReducer = (state, action) => {
         }),
         columns: [...action.columns],
       };
+
+      if (!newState.data.length) {
+        const emptyRow = newState.columns.map(() => null);
+        newState.data.push(emptyRow);
+      }
+
+      return newState;
     }
     case "updateDefinition": {
       action.callback({
@@ -31,7 +34,7 @@ const ServiceTableReducer = (state, action) => {
         data: convertToSasJsFormat([
           {
             columns: action.columns,
-            data: state.data.filter(isNonEmpty),
+            data: state.data,
             tableName: state.tableName,
           },
         ]),
@@ -155,6 +158,42 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
           menuItem: "Table Data",
           render: () => (
             <Tab.Pane inverted={isDarkMode}>
+              <div className="save-icon">
+                <Button
+                  primary
+                  onClick={() => {
+                    tableRef.current.hotInstance.validateCells((valid) => {
+                      if (valid) {
+                        onUpdate({
+                          ...state,
+                          data: convertToSasJsFormat([
+                            {
+                              columns: state.columns,
+                              data: state.data,
+                              tableName: state.tableName,
+                            },
+                          ]),
+                        });
+                      }
+                    });
+                  }}
+                >
+                  <Icon name="save"></Icon>
+                  {"  "}Save table data
+                </Button>
+                <Button
+                  secondary
+                  onClick={() =>
+                    dispatch({
+                      type: "addDataRow",
+                      callback: onUpdate,
+                    })
+                  }
+                >
+                  <Icon name="add"></Icon>
+                  {"  "} Add row
+                </Button>
+              </div>
               <div
                 className={
                   isDarkMode ? "table-container inverted" : "table-container"
@@ -201,42 +240,6 @@ const HotServiceTable = ({ table, onUpdate, isDarkMode, readOnly = false }) => {
                     },
                   }}
                 ></HotTable>
-              </div>
-              <div className="save-icon">
-                <Button
-                  primary
-                  onClick={() => {
-                    tableRef.current.hotInstance.validateCells((valid) => {
-                      if (valid) {
-                        onUpdate({
-                          ...state,
-                          data: convertToSasJsFormat([
-                            {
-                              columns: state.columns,
-                              data: state.data.filter(isNonEmpty),
-                              tableName: state.tableName,
-                            },
-                          ]),
-                        });
-                      }
-                    });
-                  }}
-                >
-                  <Icon name="save"></Icon>
-                  {"  "}Save table data
-                </Button>
-                <Button
-                  secondary
-                  onClick={() =>
-                    dispatch({
-                      type: "addDataRow",
-                      callback: onUpdate,
-                    })
-                  }
-                >
-                  <Icon name="add"></Icon>
-                  {"  "} Add row
-                </Button>
               </div>
             </Tab.Pane>
           ),

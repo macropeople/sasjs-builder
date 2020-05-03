@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import { HotTable } from "@handsontable/react";
-import { isNonEmpty } from "../utils";
 import { Icon, Button } from "semantic-ui-react";
 import { produce } from "immer";
 import { useReducer } from "react";
@@ -102,7 +101,7 @@ const TableDefinitionReducer = (state, action) => {
       if (valid) {
         const mappedColumns = mapColumns(
           state.tableDefinitionSchema,
-          state.data.filter((d) => isNonEmpty(d) && !!d[0])
+          state.data
         );
         action.callback(mappedColumns);
       }
@@ -126,6 +125,27 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly, isDarkMode }) => {
 
   return (
     <>
+      {!readOnly && (
+        <div className="save-icon">
+          <Button
+            primary
+            onClick={() => {
+              dispatch({
+                type: "saveData",
+                callback: onUpdate,
+                tableInstance: tableRef.current.hotInstance,
+              });
+            }}
+          >
+            <Icon name="save"></Icon>
+            {"  "}Save table definition
+          </Button>
+          <Button secondary onClick={() => dispatch({ type: "addRow" })}>
+            <Icon name="add"></Icon>
+            {"  "} Add row
+          </Button>
+        </div>
+      )}
       <div
         className={isDarkMode ? "table-container inverted" : "table-container"}
       >
@@ -164,27 +184,6 @@ const HotTableDefinition = ({ columns, onUpdate, readOnly, isDarkMode }) => {
           }}
         />
       </div>
-      {!readOnly && (
-        <div className="save-icon">
-          <Button
-            primary
-            onClick={() => {
-              dispatch({
-                type: "saveData",
-                callback: onUpdate,
-                tableInstance: tableRef.current.hotInstance,
-              });
-            }}
-          >
-            <Icon name="save"></Icon>
-            {"  "}Save table definition
-          </Button>
-          <Button secondary onClick={() => dispatch({ type: "addRow" })}>
-            <Icon name="add"></Icon>
-            {"  "} Add row
-          </Button>
-        </div>
-      )}
     </>
   );
 };
